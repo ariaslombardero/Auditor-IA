@@ -32,10 +32,24 @@ export async function exportOfficialDossierDocx(
   llmCritique?: string,
   idioma: AppIdioma = 'castellano'
 ): Promise<void> {
+  const doc = buildOfficialDossierDocument(state, llmCritique, idioma);
+  const blob = await Packer.toBlob(doc);
+  const safeTitle = state.ingest.appName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+  saveAs(blob, `Expediente_Conformidad_IA_${safeTitle}_${Date.now()}.docx`);
+}
+
+/**
+ * Construye el expediente oficial sin descargarlo (reutilizable en pruebas y otros exportadores).
+ */
+export function buildOfficialDossierDocument(
+  state: FullAuditState,
+  llmCritique?: string,
+  idioma: AppIdioma = 'castellano'
+): Document {
   const { ingest, answers, diagnostic, metadata } = state;
   const isGl = idioma === 'galego';
 
-  const doc = new Document({
+  return new Document({
     styles: {
       default: {
         document: {
@@ -656,10 +670,6 @@ export async function exportOfficialDossierDocx(
       },
     ],
   });
-
-  const blob = await Packer.toBlob(doc);
-  const safeTitle = ingest.appName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-  saveAs(blob, `Expediente_Conformidad_IA_${safeTitle}_${Date.now()}.docx`);
 }
 
 function makeSectionHeading(text: string): Paragraph {

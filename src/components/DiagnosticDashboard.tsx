@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import type { DiagnosticResult, AppIdioma, RoleViewMode } from '../types';
 import { RichDictamenView } from './RichDictamenView';
+import { computeExecutivePillars, computeExecutiveVerdict } from '../lib/dashboardPillars';
 
 interface DiagnosticDashboardProps {
   diagnostic: DiagnosticResult;
@@ -75,33 +76,17 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
   const [roleView, setRoleView] = React.useState<RoleViewMode>('completo');
 
   // Cálculo del Semáforo Ejecutivo de Madurez en 4 Pilares
-  const pilarRia = diagnostic.riskClassification === 'prohibited'
-    ? { status: 'danger', label: 'Inadmisible (Art. 5)', text: 'Práctica prohibida legalmente' }
-    : diagnostic.riskClassification === 'high_risk'
-    ? { status: 'danger', label: 'Alto Riesgo (Anexo III)', text: 'Requiere marcado CE previo' }
-    : diagnostic.riskClassification === 'not_ai_system'
-    ? { status: 'neutral', label: 'Excluido (Art. 3.1)', text: 'Software determinista sin IA' }
-    : diagnostic.riskClassification === 'minimal_risk'
-    ? { status: 'success', label: 'Riesgo Mínimo (Art. 95)', text: 'Exento de trámites de IA' }
-    : { status: 'info', label: 'Riesgo Limitado (Art. 50)', text: 'Cumple vía transparencia' };
-
-  const pilarRgpd = diagnostic.redFlags.some((f) => f.includes('Transferencia') || f.includes('Sensibles'))
-    ? { status: 'warning', label: 'Condicionado a EIPD', text: 'Datos sensibles o nube externa' }
-    : { status: 'success', label: 'Conforme con RAT', text: 'Base legítima acreditada' };
-
-  const pilarEns = diagnostic.ensCategory === 'ALTA'
-    ? { status: 'warning', label: 'Categoría ENS ALTA', text: 'Máximas salvaguardas D-A-I-C-T' }
-    : diagnostic.ensCategory === 'MEDIA'
-    ? { status: 'info', label: 'Categoría ENS MEDIA', text: 'Medidas reforzadas CCN-STIC' }
-    : { status: 'success', label: 'Categoría ENS BÁSICA', text: 'Impacto limitado transitorio' };
-
-  const pilarGobernanza = diagnostic.isAutomatedAdministrativeAct
-    ? { status: 'warning', label: 'Actuación Automatizada', text: 'Requiere Orden formal Art. 41' }
-    : { status: 'success', label: 'Auxilio Instrumental', text: 'Supervisión humana previa' };
+  const {
+    ria: pilarRia,
+    rgpd: pilarRgpd,
+    ens: pilarEns,
+    gobernanza: pilarGobernanza,
+  } = computeExecutivePillars(diagnostic);
 
   // Veredicto Global Ejecutivo
-  const isBlocked = diagnostic.riskClassification === 'prohibited';
-  const isConditioned = diagnostic.riskClassification === 'high_risk' || diagnostic.redFlags.length > 0 || diagnostic.isAutomatedAdministrativeAct;
+  const verdict = computeExecutiveVerdict(diagnostic);
+  const isBlocked = verdict.level === 'blocked';
+  const isConditioned = verdict.level === 'conditioned';
 
   return (
     <div className="animate-fade-in" style={{ width: '100%' }}>
@@ -267,18 +252,10 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
               fontSize: '0.9375rem',
               color: isBlocked ? '#991b1b' : isConditioned ? '#92400e' : '#166534',
             }}>
-              {isBlocked
-                ? 'VEREDICTO: NO DESPLEGABLE EN PRODUCCIÓN (BLOQUEANTE LEGAL INSUBSANABLE)'
-                : isConditioned
-                ? 'VEREDICTO: APTO CONDICIONADO A SUBSANACIÓN PREVIA'
-                : 'VEREDICTO: APTO PARA DESPLIEGUE EN PRODUCCIÓN (CON SALVAGUARDAS)'}
+              {verdict.label}
             </div>
             <div style={{ fontSize: '0.75rem', color: isBlocked ? '#7f1d1d' : isConditioned ? '#78350f' : '#14532d', marginTop: '1px' }}>
-              {isBlocked
-                ? 'El sistema vulnera prohibiciones expresas del Art. 5 del RIA o carece de control humano.'
-                : isConditioned
-                ? 'Requiere ratificar EIPD, publicar resolución de actuación automatizada o cumplir medidas CCN-STIC.'
-                : 'Herramienta de auxilio instrumental plenamente ajustada al marco RIA, RGPD, ENS y Ley 40/2015.'}
+              {verdict.detail}
             </div>
           </div>
         </div>

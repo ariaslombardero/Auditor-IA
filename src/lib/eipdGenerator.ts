@@ -33,6 +33,14 @@ const COLOR_SECONDARY = '047857';
 const COLOR_DARK = '0F172A';
 const COLOR_MUTED = '64748B';
 
+export interface EipdCriterion {
+  id: string;
+  title: string;
+  applies: boolean;
+  impact: string;
+  justification: string;
+}
+
 export async function exportEipdDocx(
   state: FullAuditState,
   idioma: AppIdioma = 'castellano'
@@ -40,85 +48,8 @@ export async function exportEipdDocx(
   const { ingest, answers, diagnostic, metadata } = state;
   const isGl = idioma === 'galego';
 
-  // Evaluación de los 9 criterios del Grupo del Art. 29 (WP248)
-  const criteria = [
-    {
-      id: 'C1',
-      title: '1. Evaluación o puntuación (Scoring/Profiling)',
-      applies: answers.administrativeNature === 'citizen_assessment',
-      impact: answers.administrativeNature === 'citizen_assessment' ? 'ALTO' : 'BAJO',
-      justification: answers.administrativeNature === 'citizen_assessment'
-        ? 'El sistema procesa y evalúa méritos o situaciones individuales de ciudadanos.'
-        : 'El sistema actúa como auxilio documental técnico sin perfilado sistemático.',
-    },
-    {
-      id: 'C2',
-      title: '2. Toma de decisiones automatizadas con efectos jurídicos (Art. 22 RGPD)',
-      applies: answers.humanOversightLevel === 'fully_automated',
-      impact: answers.humanOversightLevel === 'fully_automated' ? 'CRÍTICO' : 'BAJO',
-      justification: answers.humanOversightLevel === 'fully_automated'
-        ? 'Se detecta riesgo de acto administrativo automatizado sin filtro humano directo.'
-        : 'Existe supervisión humana preceptiva que valida previamente cualquier salida.',
-    },
-    {
-      id: 'C3',
-      title: '3. Observación, monitorización o control sistemático',
-      applies: false,
-      impact: 'BAJO',
-      justification: 'No se realiza geolocalización ni videovigilancia continuada de interesados.',
-    },
-    {
-      id: 'C4',
-      title: '4. Datos de categorías especiales o altamente personales (Art. 9 RGPD)',
-      applies: answers.processesSpecialCategoryData,
-      impact: answers.processesSpecialCategoryData ? 'ALTO' : 'BAJO',
-      justification: answers.processesSpecialCategoryData
-        ? 'Se tratan datos de salud, discapacidad, afiliación o categorías protegidas.'
-        : 'No se declaran datos de categorías especiales según el Art. 9 del RGPD.',
-    },
-    {
-      id: 'C5',
-      title: '5. Tratamiento de datos a gran escala',
-      applies: ingest.targetAudience === 'public_citizens',
-      impact: ingest.targetAudience === 'public_citizens' ? 'MEDIO' : 'BAJO',
-      justification: ingest.targetAudience === 'public_citizens'
-        ? 'Dirigido potencialmente a una colectividad amplia de ciudadanos o administrados.'
-        : 'Uso circunscrito al personal empleado público tramitador.',
-    },
-    {
-      id: 'C6',
-      title: '6. Cruce o combinación de conjuntos de datos',
-      applies: false,
-      impact: 'BAJO',
-      justification: 'No se cruzan bases de datos masivas heterogéneas para inferir perfiles.',
-    },
-    {
-      id: 'C7',
-      title: '7. Datos relativos a interesados vulnerables',
-      applies: answers.administrativeNature === 'citizen_assessment' && answers.processesSpecialCategoryData,
-      impact: (answers.administrativeNature === 'citizen_assessment' && answers.processesSpecialCategoryData) ? 'ALTO' : 'BAJO',
-      justification: 'Requiere cautela reforzada si los administrados se encuentran en situación de asimetría o vulnerabilidad social.',
-    },
-    {
-      id: 'C8',
-      title: '8. Uso innovador o aplicación de nuevas soluciones tecnológicas / IA',
-      applies: true,
-      impact: 'MEDIO',
-      justification: 'Uso de Inteligencia Artificial Generativa / Modelos de Lenguaje Avanzados.',
-    },
-    {
-      id: 'C9',
-      title: '9. Transferencias internacionales de datos fuera del Espacio Económico Europeo',
-      applies: answers.hostingModel === 'us_hyperscaler',
-      impact: answers.hostingModel === 'us_hyperscaler' ? 'CRÍTICO' : 'BAJO',
-      justification: answers.hostingModel === 'us_hyperscaler'
-        ? 'Uso de nubes bajo jurisdicción extracomunitaria (FISA 702 / CLOUD Act).'
-        : 'Inferencia local soberana en CPD propio o en nube europea con garantías DPA.',
-    },
-  ];
-
-  const applicableCount = criteria.filter((c) => c.applies).length;
-  const isEipdMandatory = applicableCount >= 2 || answers.processesSpecialCategoryData || answers.humanOversightLevel === 'fully_automated';
+  const criteria = buildEipdCriteria(state);
+  const isEipdMandatory = isEipdMandatoryFor(state, criteria);
 
   const doc = new Document({
     styles: {
@@ -509,4 +440,92 @@ export async function exportEipdDocx(
   const cleanName = ingest.appName ? ingest.appName.replace(/\s+/g, '_') : 'Sistema_IA';
   const fileName = `EIPD_Oficial_AEPD_${cleanName}_${Date.now()}.docx`;
   saveAs(blob, fileName);
+}
+
+/**
+ * Evaluación de los 9 criterios del Grupo del Art. 29 (WP248).
+ */
+export function buildEipdCriteria(state: FullAuditState): EipdCriterion[] {
+  const { ingest, answers } = state;
+  return [
+    {
+      id: 'C1',
+      title: '1. Evaluación o puntuación (Scoring/Profiling)',
+      applies: answers.administrativeNature === 'citizen_assessment',
+      impact: answers.administrativeNature === 'citizen_assessment' ? 'ALTO' : 'BAJO',
+      justification: answers.administrativeNature === 'citizen_assessment'
+        ? 'El sistema procesa y evalúa méritos o situaciones individuales de ciudadanos.'
+        : 'El sistema actúa como auxilio documental técnico sin perfilado sistemático.',
+    },
+    {
+      id: 'C2',
+      title: '2. Toma de decisiones automatizadas con efectos jurídicos (Art. 22 RGPD)',
+      applies: answers.humanOversightLevel === 'fully_automated',
+      impact: answers.humanOversightLevel === 'fully_automated' ? 'CRÍTICO' : 'BAJO',
+      justification: answers.humanOversightLevel === 'fully_automated'
+        ? 'Se detecta riesgo de acto administrativo automatizado sin filtro humano directo.'
+        : 'Existe supervisión humana preceptiva que valida previamente cualquier salida.',
+    },
+    {
+      id: 'C3',
+      title: '3. Observación, monitorización o control sistemático',
+      applies: false,
+      impact: 'BAJO',
+      justification: 'No se realiza geolocalización ni videovigilancia continuada de interesados.',
+    },
+    {
+      id: 'C4',
+      title: '4. Datos de categorías especiales o altamente personales (Art. 9 RGPD)',
+      applies: answers.processesSpecialCategoryData,
+      impact: answers.processesSpecialCategoryData ? 'ALTO' : 'BAJO',
+      justification: answers.processesSpecialCategoryData
+        ? 'Se tratan datos de salud, discapacidad, afiliación o categorías protegidas.'
+        : 'No se declaran datos de categorías especiales según el Art. 9 del RGPD.',
+    },
+    {
+      id: 'C5',
+      title: '5. Tratamiento de datos a gran escala',
+      applies: ingest.targetAudience === 'public_citizens',
+      impact: ingest.targetAudience === 'public_citizens' ? 'MEDIO' : 'BAJO',
+      justification: ingest.targetAudience === 'public_citizens'
+        ? 'Dirigido potencialmente a una colectividad amplia de ciudadanos o administrados.'
+        : 'Uso circunscrito al personal empleado público tramitador.',
+    },
+    {
+      id: 'C6',
+      title: '6. Cruce o combinación de conjuntos de datos',
+      applies: false,
+      impact: 'BAJO',
+      justification: 'No se cruzan bases de datos masivas heterogéneas para inferir perfiles.',
+    },
+    {
+      id: 'C7',
+      title: '7. Datos relativos a interesados vulnerables',
+      applies: answers.administrativeNature === 'citizen_assessment' && answers.processesSpecialCategoryData,
+      impact: (answers.administrativeNature === 'citizen_assessment' && answers.processesSpecialCategoryData) ? 'ALTO' : 'BAJO',
+      justification: 'Requiere cautela reforzada si los administrados se encuentran en situación de asimetría o vulnerabilidad social.',
+    },
+    {
+      id: 'C8',
+      title: '8. Uso innovador o aplicación de nuevas soluciones tecnológicas / IA',
+      applies: true,
+      impact: 'MEDIO',
+      justification: 'Uso de Inteligencia Artificial Generativa / Modelos de Lenguaje Avanzados.',
+    },
+    {
+      id: 'C9',
+      title: '9. Transferencias internacionales de datos fuera del Espacio Económico Europeo',
+      applies: answers.hostingModel === 'us_hyperscaler',
+      impact: answers.hostingModel === 'us_hyperscaler' ? 'CRÍTICO' : 'BAJO',
+      justification: answers.hostingModel === 'us_hyperscaler'
+        ? 'Uso de nubes bajo jurisdicción extracomunitaria (FISA 702 / CLOUD Act).'
+        : 'Inferencia local soberana en CPD propio o en nube europea con garantías DPA.',
+    },
+  ];
+}
+
+export function isEipdMandatoryFor(state: FullAuditState, criteria: EipdCriterion[]): boolean {
+  const { answers } = state;
+  const applicableCount = criteria.filter((c) => c.applies).length;
+  return applicableCount >= 2 || answers.processesSpecialCategoryData || answers.humanOversightLevel === 'fully_automated';
 }
