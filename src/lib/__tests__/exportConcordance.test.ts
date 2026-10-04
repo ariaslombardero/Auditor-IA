@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { generateOfficialDossierMarkdown } from '../officialDossierMd';
 import { buildAuditManifest } from '../auditManifestGenerator';
-import { buildEipdCriteria } from '../eipdGenerator';
+import { buildEipdCriteria, buildEipdDocument } from '../eipdGenerator';
 import { generateCryptographicReceipt } from '../signatureService';
-import { CASES, makeState, officialDossierText } from '../../test/fixtures';
+import { CASES, docxText, makeState, officialDossierText } from '../../test/fixtures';
 import { computeExecutiveVerdict } from '../dashboardPillars';
 import { unaccreditedRequirements } from '../assessmentModel';
 import { buildDocumentTraceability, NORMATIVE_SNAPSHOT } from '../traceability';
@@ -112,6 +112,17 @@ describe('EIPD (criterios WP248)', () => {
     const state = makeState('Calculadora de plazos administrativos', {}, { isAiSystem: false });
     const c8 = buildEipdCriteria(state).find((c) => c.id === 'C8')!;
     expect(c8.applies).toBe(false);
+  });
+
+  it('EIPD-04 · el borrador de EIPD no redacta el dictamen del DPD ni se presenta como metodología oficial', async () => {
+    for (const [, build] of ALL_CASES) {
+      const text = await docxText(buildEipdDocument(build()));
+      expect(text).not.toMatch(/emite dictamen/i);
+      expect(text).not.toMatch(/FAVORABLE (PARA|CONDICIONADO)/);
+      expect(text).not.toMatch(/Metodolog[íi]a Oficial/i);
+      expect(text).not.toMatch(/preceptiva por ley/i);
+      expect(text).toMatch(/A CUMPLIMENTAR POR EL DPD/);
+    }
   });
 
   it('EIPD-02 · el criterio 9 de WP248 es el impedimento al ejercicio de derechos, no las transferencias internacionales', () => {

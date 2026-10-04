@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import { Packer } from 'docx';
+import { Packer, type Document } from 'docx';
 import type { AppIngestData, DiagnosticResult, FullAuditState, LegalEnrichmentAnswers } from '../types';
 import { DEFAULT_ANSWERS, DEFAULT_INGEST, DEFAULT_METADATA } from '../lib/auditDefaults';
 import { evaluateRulesDeterministically } from '../lib/auditEngine';
@@ -79,7 +79,12 @@ export async function officialDossierText(
   llmCritique?: string,
   traceability?: DocumentTraceability
 ): Promise<string> {
-  const buffer = await Packer.toBuffer(buildOfficialDossierDocument(state, llmCritique, 'castellano', traceability));
+  return docxText(buildOfficialDossierDocument(state, llmCritique, 'castellano', traceability));
+}
+
+/** Extrae el texto plano de cualquier documento DOCX construido con la librería docx. */
+export async function docxText(doc: Document): Promise<string> {
+  const buffer = await Packer.toBuffer(doc);
   const zip = await JSZip.loadAsync(buffer);
   const xml = await zip.file('word/document.xml')!.async('string');
   return decodeXml(xml.replace(/<w:tab\/>/g, ' ').replace(/<\/w:p>/g, '\n').replace(/<[^>]+>/g, ''));

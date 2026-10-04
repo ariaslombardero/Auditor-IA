@@ -45,13 +45,25 @@ export async function exportEipdDocx(
   state: FullAuditState,
   idioma: AppIdioma = 'castellano'
 ): Promise<void> {
-  const { ingest, answers, diagnostic, metadata } = state;
+  const doc = buildEipdDocument(state, idioma);
+  const blob = await Packer.toBlob(doc);
+  const cleanName = state.ingest.appName ? state.ingest.appName.replace(/\s+/g, '_') : 'Sistema_IA';
+  const fileName = `EIPD_Borrador_${cleanName}_${Date.now()}.docx`;
+  saveAs(blob, fileName);
+}
+
+/**
+ * Construye el borrador de EIPD sin descargarlo. Es un borrador para completar por el
+ * responsable del tratamiento con el asesoramiento del DPD: no contiene su dictamen.
+ */
+export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'castellano'): Document {
+  const { ingest, answers, metadata } = state;
   const isGl = idioma === 'galego';
 
   const criteria = buildEipdCriteria(state);
   const isEipdMandatory = isEipdMandatoryFor(state, criteria);
 
-  const doc = new Document({
+  return new Document({
     styles: {
       default: {
         document: {
@@ -169,8 +181,8 @@ export async function exportEipdDocx(
             children: [
               new TextRun({
                 text: isGl
-                  ? 'Metodoloxía Oficial da Axencia Española de Protección de Datos (AEPD) · Artigo 35 do REXPD'
-                  : 'Metodología Oficial de la Agencia Española de Protección de Datos (AEPD) · Artículo 35 del RGPD',
+                  ? 'Borrador preliminar para completar polo responsable do tratamento co asesoramento do DPD · Artigo 35 do RXPD'
+                  : 'Borrador preliminar para completar por el responsable del tratamiento con el asesoramiento del DPD · Artículo 35 del RGPD',
                 size: 20,
                 italics: true,
                 color: COLOR_SECONDARY,
@@ -210,11 +222,11 @@ export async function exportEipdDocx(
                       }),
                       new Paragraph({
                         children: [
-                          new TextRun({ text: 'PRECEPTIVIDAD DE LA EIPD: ', bold: true, color: COLOR_PRIMARY }),
+                          new TextRun({ text: 'CRIBADO PRELIMINAR DE NECESIDAD: ', bold: true, color: COLOR_PRIMARY }),
                           new TextRun({
                             text: isEipdMandatory
-                              ? 'OBLIGATORIA (Cumple 2 o más criterios del Grupo del Art. 29 o trata datos sensibles)'
-                              : 'RECOMENDADA COMO BUENA PRÁCTICA PREVENTIVA',
+                              ? 'EIPD PROBABLEMENTE NECESARIA (2 o más criterios WP248 o datos sensibles declarados)'
+                              : 'NO INDICADA POR LOS CRITERIOS EVALUADOS (valoración pendiente del DPD)',
                             bold: true,
                             color: isEipdMandatory ? 'B91C1C' : '047857',
                           }),
@@ -223,7 +235,7 @@ export async function exportEipdDocx(
                       }),
                       new Paragraph({
                         children: [
-                          new TextRun({ text: 'FECHA DEL DICTAMEN: ', bold: true, color: COLOR_PRIMARY }),
+                          new TextRun({ text: 'FECHA DEL BORRADOR: ', bold: true, color: COLOR_PRIMARY }),
                           new TextRun({ text: metadata.auditDate }),
                         ],
                         spacing: { after: 120 },
@@ -244,11 +256,11 @@ export async function exportEipdDocx(
           new Paragraph({
             children: [
               new TextRun({
-                text: 'El presente documento evalúa los riesgos para los derechos y libertades de las personas físicas derivados del despliegue del sistema de inteligencia artificial "',
+                text: 'El presente borrador recoge una valoración preliminar, basada en lo declarado por el promotor, de los riesgos para los derechos y libertades de las personas físicas derivados del sistema de inteligencia artificial "',
               }),
               new TextRun({ text: ingest.appName, bold: true }),
               new TextRun({
-                text: '", de conformidad con el Artículo 35 del Reglamento (UE) 2016/679 (RGPD), la Ley Orgánica 3/2018 (LOPDGDD) y la Guía de Gestión del Riesgo y Evaluación de Impacto de la AEPD.',
+                text: '", tomando como referencia el Artículo 35 del Reglamento (UE) 2016/679 (RGPD), la Ley Orgánica 3/2018 (LOPDGDD) y las guías de la AEPD. No sustituye la evaluación de impacto completa, que corresponde al responsable del tratamiento con el asesoramiento del DPD.',
               }),
             ],
             spacing: { after: 200 },
@@ -261,7 +273,7 @@ export async function exportEipdDocx(
             spacing: { before: 400, after: 200 },
           }),
           new Paragraph({
-            text: 'Conforme al Dictamen WP248 adoptado por la AEPD, cuando un tratamiento cumple 2 o más de los siguientes criterios, la realización de una EIPD formal previa es preceptiva por ley:',
+            text: 'Según las directrices WP248 del Grupo de Trabajo del Artículo 29 (asumidas por el Comité Europeo de Protección de Datos), en la mayoría de los casos un tratamiento que cumple dos o más de los siguientes criterios requiere una EIPD. Debe consultarse además la lista de la AEPD del Art. 35.4 RGPD. Valoración preliminar, a revisar por el DPD:',
             spacing: { after: 200 },
           }),
 
@@ -325,7 +337,7 @@ export async function exportEipdDocx(
           new Paragraph({
             children: [
               new TextRun({ text: '• Recogida e Ingesta: ', bold: true }),
-              new TextRun({ text: 'Las entradas proceden de la tramitación de expedientes en el procedimiento administrativo (' + answers.publicCompetenceNorm + ').' }),
+              new TextRun({ text: 'Declarado: las entradas proceden de la tramitación de expedientes en el procedimiento administrativo (' + answers.publicCompetenceNorm + ').' }),
             ],
             spacing: { after: 120 },
           }),
@@ -334,10 +346,10 @@ export async function exportEipdDocx(
               new TextRun({ text: '• Modelo de Alojamiento e Inferencia: ', bold: true }),
               new TextRun({
                 text: answers.hostingModel === 'local_on_premise'
-                  ? 'Soberano On-Premise (Ollama/vLLM en CPD propio). Sin transferencias internacionales.'
+                  ? 'Declarado: ejecución local en servidores propios (Ollama/vLLM). Debe comprobarse que el proveedor configurado es efectivamente local.'
                   : answers.hostingModel === 'eu_cloud_dpa'
-                  ? 'Nube de la Unión Europea con Acuerdo de Encargo de Tratamiento (Art. 28 RGPD).'
-                  : 'Nube extracomunitaria (Riesgo de acceso judicial no autorizado bajo FISA 702).',
+                  ? 'Declarado: nube de la Unión Europea con contrato de encargo del tratamiento (Art. 28 RGPD).'
+                  : 'Declarado: nube fuera del Espacio Económico Europeo. Debe valorarse la transferencia internacional y el riesgo de acceso por autoridades de terceros países.',
               }),
             ],
             spacing: { after: 120 },
@@ -347,8 +359,8 @@ export async function exportEipdDocx(
               new TextRun({ text: '• Conservación y Trazabilidad: ', bold: true }),
               new TextRun({
                 text: answers.auditLogsEnabled
-                  ? `Se conservan logs sellados con hash SHA-256 durante ${answers.logRetentionMonths} meses según el ENS.`
-                  : 'ADVERTENCIA: No se ha acreditado un log de auditoría inmutable.',
+                  ? `Declarado: registro de actividad con conservación de ${answers.logRetentionMonths} meses. No se ha comprobado su existencia ni su protección.`
+                  : 'Declarado que no existe registro de actividad.',
               }),
             ],
             spacing: { after: 200 },
@@ -356,52 +368,54 @@ export async function exportEipdDocx(
 
           // SECCIÓN 4: MEDIDAS MITIGADORAS
           new Paragraph({
-            text: '4. PLAN DE MITIGACIÓN DE RIESGOS Y SALVAGUARDAS TÉCNICAS',
+            text: '4. MEDIDAS DE MITIGACIÓN PREVISTAS (PENDIENTES DE VERIFICAR)',
             heading: HeadingLevel.HEADING_1,
             spacing: { before: 400, after: 200 },
           }),
           new Paragraph({
             children: [
-              new TextRun({ text: '1. Principio de Intervención Humana Preceptiva (Art. 14 AI Act / Art. 22 RGPD): ', bold: true }),
-              new TextRun({ text: `Se asigna la supervisión al ${answers.supervisionRole}, impidiendo que el software dicte actos firmes sin refrendo.` }),
+              new TextRun({ text: '1. Intervención humana (Art. 22 RGPD; Art. 14 RIA en sistemas de alto riesgo): ', bold: true }),
+              new TextRun({ text: `Declarado: la supervisión corresponde a ${answers.supervisionRole}. Debe verificarse que ningún resultado produce efectos sin revisión humana.` }),
             ],
             spacing: { after: 120 },
           }),
           new Paragraph({
             children: [
-              new TextRun({ text: '2. Deber de Información y Transparencia Reforzada (Art. 50 AI Act / Art. 13 RGPD): ', bold: true }),
-              new TextRun({ text: 'Incorporación del componente visual de advertencia y rotulación en sede electrónica y documentos.' }),
+              new TextRun({ text: '2. Información y transparencia (Art. 13 RGPD; Art. 50 RIA): ', bold: true }),
+              new TextRun({ text: 'Previsto: incorporar el aviso de uso de IA y rotular los documentos generados. Pendiente de implantación y verificación.' }),
             ],
             spacing: { after: 120 },
           }),
           new Paragraph({
             children: [
-              new TextRun({ text: '3. Aislamiento y No Entrenamiento: ', bold: true }),
-              new TextRun({ text: 'Garantía contractual de que las peticiones y datos ciudadanos NO son utilizados por el proveedor para el reentrenamiento de modelos comerciales.' }),
+              new TextRun({ text: '3. Uso de los datos por el proveedor: ', bold: true }),
+              new TextRun({ text: 'Pendiente: comprobar en el contrato o en las condiciones del proveedor que las peticiones y los datos no se utilizan para entrenar sus modelos.' }),
             ],
             spacing: { after: 300 },
           }),
 
           // SECCIÓN 5: CONCLUSIÓN Y FIRMAS
           new Paragraph({
-            text: '5. DICTAMEN DEL DELEGADO DE PROTECCIÓN DE DATOS (DPD)',
+            text: '5. DICTAMEN DEL DELEGADO DE PROTECCIÓN DE DATOS (A CUMPLIMENTAR POR EL DPD)',
             heading: HeadingLevel.HEADING_1,
             spacing: { before: 400, after: 200 },
           }),
           new Paragraph({
             children: [
               new TextRun({
-                text: 'A la vista de las salvaguardas técnicas, del modelo de supervisión humana implantado y de las garantías de soberanía del dato acreditadas, el Delegado de Protección de Datos emite dictamen ',
+                text: 'Este apartado lo redacta el Delegado de Protección de Datos tras revisar la evaluación. La herramienta no emite el dictamen del DPD.',
+                italics: true,
+                color: COLOR_MUTED,
               }),
-              new TextRun({
-                text: isEipdMandatory && answers.hostingModel === 'us_hyperscaler'
-                  ? 'FAVORABLE CONDICIONADO A LA MIGRACIÓN A CPD LOCAL'
-                  : 'FAVORABLE PARA EL PASO A PRODUCCIÓN',
-                bold: true,
-                color: COLOR_PRIMARY,
-              }),
-              new TextRun({ text: '.' }),
             ],
+            spacing: { after: 200 },
+          }),
+          new Paragraph({
+            children: [new TextRun({ text: 'Sentido del dictamen:  ☐ Favorable    ☐ Favorable con condiciones    ☐ Desfavorable', bold: true })],
+            spacing: { after: 200 },
+          }),
+          new Paragraph({
+            children: [new TextRun({ text: 'Motivación y condiciones: ______________________________________________________________' })],
             spacing: { after: 400 },
           }),
 
@@ -435,11 +449,6 @@ export async function exportEipdDocx(
       },
     ],
   });
-
-  const blob = await Packer.toBlob(doc);
-  const cleanName = ingest.appName ? ingest.appName.replace(/\s+/g, '_') : 'Sistema_IA';
-  const fileName = `EIPD_Oficial_AEPD_${cleanName}_${Date.now()}.docx`;
-  saveAs(blob, fileName);
 }
 
 /**

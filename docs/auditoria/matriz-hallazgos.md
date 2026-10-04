@@ -2,7 +2,7 @@
 
 > Relaciona cada hallazgo de las auditorías independientes (Claude Opus 5.5 y GPT Sol 6.1) con su reproducción, el comportamiento esperado, la fase que lo corrige y la prueba que lo verifica.
 > **Línea base:** commit `48956a6` · `npm test` el 05/10/2026: **50 pruebas, 49 en rojo, 1 en verde** (DOC-06). Los hallazgos ⚪ dependen de decisiones de diseño de su fase (modelo de requisitos, papeles, calendario, ADR 001) y su prueba se escribirá al inicio de esa fase, antes de corregir.
-> **Cierre de la Fase 1** (05/10/2026): **54 pruebas, 28 en verde y 26 en rojo**. Las 26 en rojo corresponden a hallazgos asignados a las Fases 2 y 3. Se añaden NOR-10, DOC-11, DOC-12 y ALM-06, detectados o introducidos durante la fase.
+> **Cierre de la Fase 1** (05/10/2026): **55 pruebas, 29 en verde y 26 en rojo**. Las 26 en rojo corresponden a hallazgos asignados a las Fases 2 y 3. Se añaden NOR-10, DOC-11, DOC-12, ALM-06 y EIPD-04, detectados o introducidos durante la fase.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -72,6 +72,7 @@
 | EIPD-01 | C8 (tecnología innovadora) en `applies: true` para cualquier sistema | G (corrige a C) | Valoración motivada | 2 | 🔴 |
 | EIPD-02 | C9 rotulado como «transferencias internacionales» | G | Impedimento al ejercicio de derechos (WP248) | 2 | 🔴 |
 | EIPD-03 | Sin cálculo de riesgo residual; C3/C6 fijos en `false`; WP248 y lista AEPD mezclados | C+G | Riesgo inherente → medidas → residual; numeraciones separadas | 2 | ⚪ |
+| EIPD-04 | El borrador de EIPD redactaba el dictamen del DPD («FAVORABLE PARA EL PASO A PRODUCCIÓN»), se presentaba como «Metodología Oficial de la AEPD» y daba por implantadas medidas no comprobadas | C (en Fase 1) | Borrador rotulado como tal; medidas como declaradas o pendientes; dictamen en blanco para el DPD | 1 | 🟢 |
 
 ## E. Historial local (`src/lib/auditHistoryService.ts`)
 
