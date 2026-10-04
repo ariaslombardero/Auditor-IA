@@ -1,0 +1,52 @@
+import { describe, expect, it } from 'vitest';
+import { getStoredAudits, importHistoryJson, saveAuditRecord } from '../auditHistoryService';
+import { MemoryStorage } from '../../test/memoryStorage';
+import { CASES } from '../../test/fixtures';
+
+/**
+ * Custodia local del historial de auditorías.
+ */
+
+describe('Historial local de auditorías', () => {
+  it('ALM-01 · dos auditorías de la misma aplicación en menos de 30 minutos se conservan ambas', () => {
+    const state = CASES.asistenteRedaccion();
+    saveAuditRecord(state);
+    saveAuditRecord({ ...state, answers: { ...state.answers, auditLogsEnabled: false } });
+    expect(getStoredAudits()).toHaveLength(2);
+  });
+
+  it('ALM-02 · un guardado fallido no se presenta como guardado correcto', () => {
+    (localStorage as MemoryStorage).failWrites = true;
+    let result: unknown;
+    try {
+      result = saveAuditRecord(CASES.asistenteRedaccion());
+    } catch (err) {
+      result = err;
+    }
+    expect(result === null || result instanceof Error).toBe(true);
+  });
+
+  it('ALM-03 · rechaza importaciones con registros malformados', () => {
+    const malformed = JSON.stringify({
+      audits: [{ id: 'x-1', appName: 'Malformado', createdAt: new Date().toISOString(), state: {} }],
+    });
+    expect(importHistoryJson(malformed).importedCount).toBe(0);
+  });
+
+  it('ALM-04 · rechaza importaciones con una clasificación de riesgo inexistente', () => {
+    const valid = CASES.asistenteRedaccion();
+    const tampered = JSON.stringify({
+      audits: [
+        {
+          id: 'x-2',
+          appName: 'Manipulado',
+          entityName: 'Entidad',
+          createdAt: new Date().toISOString(),
+          riskClassification: 'riesgo_inventado',
+          state: valid,
+        },
+      ],
+    });
+    expect(importHistoryJson(tampered).importedCount).toBe(0);
+  });
+});
