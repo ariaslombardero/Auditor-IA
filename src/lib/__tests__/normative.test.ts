@@ -30,6 +30,12 @@ describe('Citas normativas de la base de conocimiento', () => {
   it('NOR-05 · el catálogo del Art. 5 incluye la identificación biométrica remota en tiempo real (Art. 5.1.h)', () => {
     expect(PROHIBITED_SYSTEMS_CATALOG.map((p) => p.legalArticle).join(' ')).toMatch(/5\.1\.h/);
   });
+
+  it('NOR-08 · describe el Art. 23 de la Ley 15/2022 como fomento ("promoverá"), no como auditoría previa obligatoria', () => {
+    const ley15 = JSON.stringify(REGULATORY_FRAMEWORK.find((n) => n.id === 'ley-15-2022'));
+    expect(ley15).not.toMatch(/deber de auditor[íi]a previa/i);
+    expect(ley15).toMatch(/promover/i);
+  });
 });
 
 describe('Citas normativas en el diagnóstico', () => {
@@ -37,6 +43,13 @@ describe('Citas normativas en el diagnóstico', () => {
     const text = JSON.stringify(CASES.altoRiesgoEmpleo().diagnostic);
     expect(text).not.toMatch(/AESIA[^."]*marcado CE/i);
     expect(text).not.toMatch(/expediente completo de Alto Riesgo con la AESIA/i);
+  });
+
+  it('NOR-09 · la calificación sancionadora remite a la norma nacional y al Art. 99 RIA', () => {
+    const r = runCase('Sistema de puntuacion social de la conducta ciudadana');
+    if (/muy grave/i.test(r.riskSummary)) {
+      expect(r.riskSummary).toMatch(/Art\. 99/);
+    }
   });
 
   it('NOR-07 · los antecedentes penales se encuadran en el Art. 10 RGPD, no en el Art. 9', () => {

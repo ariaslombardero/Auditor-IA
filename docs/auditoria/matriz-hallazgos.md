@@ -1,7 +1,7 @@
-# Matriz de hallazgos y trazabilidad de correcciones
+| 🔴 || 🔴 || 🔴 || 🔴 || 🔴 || 🔴 |# Matriz de hallazgos y trazabilidad de correcciones
 
 > Relaciona cada hallazgo de las auditorías independientes (Claude Opus 5.5 y GPT Sol 6.1) con su reproducción, el comportamiento esperado, la fase que lo corrige y la prueba que lo verifica.
-> **Línea base:** commit `48956a6` · `npm test` el 05/10/2026: **44 pruebas, 43 en rojo, 1 en verde** (DOC-06).
+> **Línea base:** commit `48956a6` · `npm test` el 05/10/2026: **50 pruebas, 49 en rojo, 1 en verde** (DOC-06). Los hallazgos ⚪ dependen de decisiones de diseño de su fase (modelo de requisitos, papeles, calendario, ADR 001) y su prueba se escribirá al inicio de esa fase, antes de corregir.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 

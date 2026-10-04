@@ -37,6 +37,11 @@ describe('Expediente oficial (DOCX)', () => {
     expect(generateOfficialDossierMarkdown(state)).not.toMatch(/✅ \*\*CONFORME\*\*/);
   });
 
+  it('DOC-08 · el análisis generado por el modelo de lenguaje figura rotulado como no verificado', async () => {
+    const text = await officialDossierText(CASES.asistenteRedaccion(), 'Texto sintético producido por el modelo.');
+    expect(text).toMatch(/no verificad/i);
+  });
+
   it('DOC-06 · DOCX, Markdown y manifiesto expresan la misma clasificación', async () => {
     for (const [, build] of ALL_CASES) {
       const state = build();

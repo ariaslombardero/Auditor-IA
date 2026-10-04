@@ -29,6 +29,13 @@ describe('Detección del ámbito de alto riesgo (Anexo III)', () => {
     expect(['transparency_risk', 'minimal_risk']).not.toContain(r.riskClassification);
   });
 
+  it('MOT-17 · un ámbito del Anexo III no cubierto (justicia) no se cierra en silencio como riesgo limitado o mínimo', () => {
+    const r = runCase('Apoyo a la valoración de pruebas en procedimientos judiciales', {
+      evaluatedSubjectType: 'natural_persons_or_applicants',
+    });
+    expect(['transparency_risk', 'minimal_risk']).not.toContain(r.riskClassification);
+  });
+
   it('MOT-07 · el perfilado fuera de los ámbitos del Anexo III no basta para declarar alto riesgo', () => {
     const r = runCase('Recomendador de rutas turísticas para visitantes', { performsProfilingOrScoring: true });
     expect(r.riskClassification).not.toBe('high_risk');
