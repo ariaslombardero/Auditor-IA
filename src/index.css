@@ -1,0 +1,437 @@
+/* ── Arias Lombardero · Aplicaciones – Design System ─────────────────── */
+/* Territorio Aplicaciones: Azul #2457A6 | Tinta #13243A | Papel #F7F8F6 */
+
+:root {
+  /* Marca Arias Lombardero */
+  --brand-black: #0a0a0a;
+  --brand-charcoal: #151515;
+  --brand-ink: #13243a;
+  --brand-paper: #f7f8f6;
+  --brand-soft: #e9eeeb;
+  --brand-white: #ffffff;
+  --brand-red: #ff3333;
+  --brand-teal: #087f73;
+  --brand-blue: #2457a6;
+  --brand-blue-soft: #6d9ee8;
+  --brand-green: #2f7a4a;
+  --brand-amber: #c98212;
+  --brand-muted-dark: #9ca3af;
+  --brand-muted-light: #5d6875;
+  --brand-line-light: #dce2df;
+
+  /* Asignación semántica para Auditor IA */
+  --color-primary: var(--brand-blue);
+  --color-primary-hover: #1a4180;
+  --color-accent: var(--brand-blue);
+  --color-accent-dark: #1a4180;
+  --color-accent-light: #ebf2fc;
+  --color-bg: var(--brand-paper);
+  --color-card-bg: var(--brand-white);
+  --color-surface: var(--brand-white);
+  --color-text: var(--brand-ink);
+  --color-text-muted: var(--brand-muted-light);
+  --color-border: var(--brand-line-light);
+  --color-border-hover: #cbd5e1;
+  --color-success: var(--brand-green);
+  --color-success-bg: #ecfdf5;
+  --color-warning: var(--brand-amber);
+  --color-warning-bg: #fffbeb;
+  --color-danger: var(--brand-red);
+  --color-danger-bg: #fef2f2;
+
+  /* Radios corporativos estandarizados: 4px a 10px */
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 10px;
+  --radius-xl: 10px;
+  --radius-2xl: 10px;
+
+  /* Sombras del kit */
+  --shadow-sm: 0 1px 3px rgba(19, 36, 58, 0.07);
+  --shadow-md: 0 4px 12px rgba(19, 36, 58, 0.08);
+  --shadow-lg: 0 18px 44px rgba(19, 36, 58, 0.11);
+
+  --font-sans: Inter, Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header & Container Panorámico */
+.container {
+  max-width: 82rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem;
+}
+
+/* Cards */
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.2s;
+}
+
+.card:hover {
+  border-color: var(--color-border-hover);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid #bbf7d0;
+}
+
+.badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid #fde68a;
+}
+
+.badge-danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid #fecaca;
+}
+
+.badge-info {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  border: 1px solid #93c5fd;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 42px;
+  padding: 0.625rem 1.15rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all 0.15s ease-in-out;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: 1px solid #1a4180;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  border-color: var(--color-border-hover);
+}
+
+.btn-accent {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.btn-accent:hover:not(:disabled) {
+  background-color: #1a4180;
+}
+
+/* Stepper Tabs */
+.stepper-nav {
+  display: flex;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.stepper-tab {
+  flex: 1;
+  min-width: 140px;
+  min-height: 44px;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.stepper-tab.active {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.stepper-tab.completed {
+  color: var(--color-primary);
+  background: #eff6ff;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+  color: var(--color-text);
+}
+
+.form-help {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background-color: white;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(36, 87, 166, 0.15);
+}
+
+/* Diagnostic Meters & Risk Gauges */
+.risk-banner {
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.risk-banner-prohibited {
+  background: #fef2f2;
+  border: 2px solid #ef4444;
+  color: #991b1b;
+}
+
+.risk-banner-high {
+  background: #fff7ed;
+  border: 2px solid #f97316;
+  color: #9a3412;
+}
+
+.risk-banner-transparency {
+  background: #eff6ff;
+  border: 2px solid #3b82f6;
+  color: #1e40af;
+}
+
+.risk-banner-minimal {
+  background: #f0fdf4;
+  border: 2px solid #22c55e;
+  color: #166534;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Code blocks */
+pre {
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  overflow-x: auto;
+}
+
+/* ── Form Controls & Modal Fields ────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.5rem 0.875rem;
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  outline: none;
+  transition: all 0.2s ease;
+}
+.input-field:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(36, 87, 166, 0.15);
+  background: white;
+}
+.input-field::placeholder {
+  color: #94a3b8;
+}
+
+.select-field {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.5rem 0.875rem;
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  outline: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  appearance: auto;
+}
+.select-field:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(36, 87, 166, 0.15);
+  background: white;
+}
+
+.label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.375rem;
+  margin-left: 0.125rem;
+}
+
+/* ── Dialog Overlays & Modals (Radix UI) ─────────────────────────────── */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 36, 58, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  animation: fadeIn 0.2s ease;
+}
+
+.dialog-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  z-index: 101;
+  width: 95%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+

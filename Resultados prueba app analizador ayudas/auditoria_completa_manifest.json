@@ -1,0 +1,209 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_type": "audit_governance_record",
+  "audit_id": "EXP-IA-2026-LUGO-0042",
+  "created_at": "2026-10-03T11:48:43.835Z",
+  "audit_date": "03/10/2026",
+  "entity": {
+    "id": "LUGO-DIP-01",
+    "name": "Diputación Provincial de Lugo",
+    "type": "administracion_local_provincial",
+    "department": "Área de Fondos Europeos, Innovación y Régimen Jurídico",
+    "functional_responsible": "Jefatura de Servicio de Fondos Europeos y Subvenciones",
+    "technical_responsible": "Dirección de Tecnologías de la Información y Transformación Digital",
+    "ciso_contact": "Responsable de Seguridad ENS (CISO)",
+    "dpo_contact": "Delegado de Protección de Datos (DPD / DPO)"
+  },
+  "application": {
+    "name": "Analizador de convocatorias de ayudas y subvenciones",
+    "short_name": "analizador-subvenciones",
+    "category": "gestion_fondos_publicos_asistida",
+    "description": "Aplicación para analizar convocatorias de ayudas, subvenciones y fondos públicos nacionales y europeos. Genera una ficha resumen con los datos estructurados de cada convocatoria, score de encaje ponderado para la Diputación Provincial de Lugo, bloque JSON para bases de datos e ideas de proyecto adaptadas a entidades locales.",
+    "source_repository": "https://github.com/ariaslombardero/Analizador-de-ayudas-y-subvenciones",
+    "target_audience": "public_employees",
+    "tech_stack": "React 19, TypeScript, Vite, TailwindCSS 4, Google Gemini API (@google/genai), Ollama / vLLM (Gemma/ALIA local on-premise), Mammoth, pdfjs-dist, docx, Lucide React, Radix UI",
+    "hosting_model": "local_on_premise",
+    "model_family": "Gemini / Gemma / ALIA (Galego)",
+    "documentation_coverage": {
+      "has_readme": true,
+      "has_agents_md": true,
+      "audit_depth_level": "cobertura_pericial_completa"
+    }
+  },
+  "governance_and_compliance": {
+    "ai_act": {
+      "risk_classification": "transparency_risk",
+      "risk_label": "Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA)",
+      "legal_basis": "Reglamento (UE) 2024/1689 Art. 50 & Reglamento (UE) 2026/1744 (Ómnibus Digital)",
+      "is_annex_iii_high_risk": false,
+      "is_prohibited": false,
+      "prohibited_practices_check": [
+        {
+          "id": "manipulacion_subliminal",
+          "legal_article": "Art. 5.1.a RIA",
+          "title": "Manipulación Cognitiva o Engaño Subliminal",
+          "detected": false,
+          "status": "CONFORME"
+        },
+        {
+          "id": "social_scoring",
+          "legal_article": "Art. 5.1.c RIA",
+          "title": "Puntuación Social de Ciudadanos",
+          "detected": false,
+          "status": "CONFORME"
+        },
+        {
+          "id": "emotion_workplace",
+          "legal_article": "Art. 5.1.f RIA",
+          "title": "Reconocimiento de Emociones en el Trabajo",
+          "detected": false,
+          "status": "CONFORME"
+        },
+        {
+          "id": "biometria_sensible",
+          "legal_article": "Art. 5.1.g RIA",
+          "title": "Categorización Biométrica Sensible",
+          "detected": false,
+          "status": "CONFORME"
+        }
+      ],
+      "human_oversight": {
+        "level": "pre_execution",
+        "mode": "Human-in-the-Loop preceptivo",
+        "role": "Técnico de Fondos Europeos / Funcionario instructor del expediente",
+        "legal_article": "Art. 14 RIA"
+      }
+    },
+    "administrative_nature": {
+      "type": "technical_auxiliary",
+      "is_automated_administrative_act": false,
+      "legal_status": "Auxilio técnico preparatorio instrumental deslindado de la actuación administrativa automatizada (Art. 41 Ley 40/2015)"
+    },
+    "ens_rd_311_2022": {
+      "category": "BASICA",
+      "security_measures": [
+        {
+          "id": "IA-01",
+          "name": "Protección de Credenciales",
+          "status": "CONFORME",
+          "implementation": "BYOK en cliente / Proxy corporativo en servidor on-premise"
+        },
+        {
+          "id": "IA-04",
+          "name": "Sanitización y Clasificación de Entradas",
+          "status": "CONFORME",
+          "implementation": "Bases de datos públicas de boletines oficiales sin datos clasificados"
+        },
+        {
+          "id": "IA-08",
+          "name": "Trazabilidad Criptográfica y Logs",
+          "status": "CONFORME",
+          "retention_months": 24,
+          "hash_algorithm": "SHA-256"
+        }
+      ]
+    },
+    "gdpr_rgpd": {
+      "legal_basis": "Art. 6.1.e) RGPD (Misión de interés público / potestades públicas)",
+      "competence_norm": "Ley 7/1985 (LRBRL - Asistencia a municipios) y Ley 38/2003 General de Subvenciones",
+      "special_categories_art_9": false,
+      "rat_activity_name": "Gestión, Asesoramiento y Análisis de Convocatorias de Fondos Europeos",
+      "dpia_eipd": {
+        "status": "FAVORABLE",
+        "residual_risk": "BAJO",
+        "criteria_met_count": "1/9 (Criterio 8: Uso de tecnología innovadora)",
+        "requires_prior_consultation_aepd": false
+      }
+    }
+  },
+  "live_legislation_telematics_check": {
+    "verified_at": "2026-10-03T11:48:43.835Z",
+    "sources": [
+      {
+        "name": "Diario Oficial de la Unión Europea (DOUE / Cellar REST API)",
+        "codes": [
+          "CELEX 32024R1689 (AI Act)",
+          "CELEX 32016R0679 (RGPD)"
+        ],
+        "status": "vigente_consolidado"
+      },
+      {
+        "name": "Boletín Oficial del Estado (BOE / Legalize-ES)",
+        "codes": [
+          "BOE-A-2015-10566 (Ley 40/2015 Art. 41)",
+          "BOE-A-2022-7191 (ENS RD 311/2022)",
+          "BOE-A-1985-5392 (Ley 7/1985 LRBRL)"
+        ],
+        "status": "vigente_consolidado"
+      }
+    ],
+    "conclusion": "Verificación telemática positiva: No se han detectado modificaciones derogatorias sobrevenidas en los preceptos analizados."
+  },
+  "generated_artifacts": [
+    {
+      "file_name": "Expediente_Conformidad_IA_Analizador_Ayudas.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "description": "Expediente Oficial de Gobernanza IA con cabecera de monograma Arias Lombardero y rúbricas",
+      "relative_path": "./Expediente_Conformidad_IA_Analizador_Ayudas.docx"
+    },
+    {
+      "file_name": "EIPD_AEPD_Analizador_Ayudas.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "description": "Evaluación de Impacto en Protección de Datos bajo metodología de la AEPD y Grupo WP248",
+      "relative_path": "./EIPD_AEPD_Analizador_Ayudas.docx"
+    },
+    {
+      "file_name": "Expediente_Conformidad_IA_Analizador_Ayudas.md",
+      "mime_type": "text/markdown",
+      "description": "Expediente técnico en Markdown para transparencia y control de versiones Git",
+      "relative_path": "./Expediente_Conformidad_IA_Analizador_Ayudas.md"
+    },
+    {
+      "file_name": "AGENTS.md",
+      "mime_type": "text/markdown",
+      "description": "Directivas técnicas del agente, system prompts literales y salvaguardas periciales",
+      "relative_path": "./AGENTS.md"
+    },
+    {
+      "file_name": "INFORME_PROCESO_AUDITORIA.md",
+      "mime_type": "text/markdown",
+      "description": "Informe pericial y metodológico completo de la auditoría paso a paso",
+      "relative_path": "./INFORME_PROCESO_AUDITORIA.md"
+    },
+    {
+      "file_name": "BannerTransparencia.tsx",
+      "mime_type": "application/typescript",
+      "description": "Componente React 19 de transparencia activa preceptiva (Art. 50 RIA)",
+      "relative_path": "./BannerTransparencia.tsx"
+    },
+    {
+      "file_name": "auditLogger.ts",
+      "mime_type": "application/typescript",
+      "description": "Módulo criptográfico Node.js para registro de peticiones y hashes SHA-256 (CCN-STIC 884D)",
+      "relative_path": "./auditLogger.ts"
+    },
+    {
+      "file_name": ".env.example.hardened",
+      "mime_type": "text/plain",
+      "description": "Plantilla de variables de entorno blindadas para servidores on-premise",
+      "relative_path": "./.env.example.hardened"
+    }
+  ],
+  "dashboard_query_indices": {
+    "tags": [
+      "fondos-europeos",
+      "subvenciones",
+      "auxilio-instrumental",
+      "riesgo-transparencia",
+      "ens-basica",
+      "lugo",
+      "galicia",
+      "ria-50",
+      "byok",
+      "ollama"
+    ],
+    "compliance_score_percentage": 100,
+    "readiness_level": "PRODUCCION_APROBADA",
+    "next_review_date": "03/10/2027"
+  }
+}

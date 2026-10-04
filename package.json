@@ -1,0 +1,30 @@
+{
+  "name": "auditor-ia-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^1.49.0",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "docx": "^9.6.1",
+    "file-saver": "^2.0.5",
+    "lucide-react": "^1.7.0",
+    "marked": "^18.0.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4"
+  }
+}

@@ -1,0 +1,16 @@
+# Dependencias y artefactos de compilación
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Secretos y configuración local (nunca deben versionarse)
+.env
+.env.*
+!.env.example
+
+# Material de trabajo no versionado
+scratch/
+
+# Sistema
+.DS_Store
+Thumbs.db

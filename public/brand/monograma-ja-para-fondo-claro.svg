@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 112" role="img" aria-labelledby="title">
+  <title id="title">JA, Arias Lombardero</title>
+  <defs>
+    <clipPath id="a-left"><rect x="0" y="0" width="132" height="112"/></clipPath>
+    <clipPath id="a-right"><rect x="132" y="0" width="88" height="112"/></clipPath>
+  </defs>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="14">
+    <path d="M82 10v42c0 29-18 44-44 44C17 96 6 84 6 68" stroke="#ff3333"/>
+    <path d="M83 95 132 10" stroke="#ff3333" clip-path="url(#a-left)"/>
+    <path d="M132 10 184 94q6 8 20 8h10" stroke="#13243a" clip-path="url(#a-right)"/>
+  </g>
+  <path d="M113 53h41l8 14h-57z" fill="#13243a"/>
+</svg>
