@@ -40,5 +40,7 @@
 | Ley 15/2022 Art. 23 fomenta, no impone una auditoría previa | GPT Sol 6.1 | **Confirmado**: «favorecerán», «se promoverá» |
 | Multas a autoridades públicas según decida cada Estado | Claude | **Confirmado** (Art. 99.8) |
 | La CCN-STIC 884D no contiene medidas «IA-01…IA-12» | GPT Sol 6.1 | **No accesible** para cotejo propio. Decisión: retirar esas medidas porque su existencia no puede verificarse; se citan en su lugar medidas cotejadas del Anexo II del ENS |
-| Anexo III 5(a) limitado a prestaciones y servicios públicos esenciales | GPT Sol 6.1 | Considerando del RIA localizado («prestaciones y servicios esenciales de asistencia pública»); cotejo del Anexo III en Fase 2 |
+| Anexo III 5(a) limitado a prestaciones y servicios públicos esenciales | GPT Sol 6.1 | **Confirmado** en el Anexo III: «evaluar la admisibilidad de las personas físicas para beneficiarse de servicios y prestaciones esenciales de asistencia pública» |
+| Numeración del Anexo III: justicia es el punto 8 (no el 7, que es migración) | Claude (en Fase 1) | **Confirmado** en el Anexo III |
+| Art. 50.1 RIA (información de que se interactúa con una IA) | Claude (en Fase 1) | **Confirmado**: texto literal incorporado al consultor normativo |
 | Numeración de la lista AEPD (11 criterios) frente a WP248 (9) | GPT Sol 6.1 | pendiente (Fase 2) |

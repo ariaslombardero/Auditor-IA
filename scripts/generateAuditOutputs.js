@@ -1,3 +1,9 @@
+/**
+ * AVISO DE PROCEDENCIA: este script NO ejecuta el motor de la aplicación.
+ * Escribe textos fijos redactados a mano en "Resultados prueba app analizador ayudas/".
+ * Sus salidas no son resultados de auditoría y algunas contradicen los criterios actuales.
+ * Se sustituirá en la Fase 4 por un generador que llame al motor real (ver docs/auditoria/matriz-hallazgos.md, DOC-09).
+ */
 import fs from 'fs';
 import path from 'path';
 import {
