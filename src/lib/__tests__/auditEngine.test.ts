@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { evaluateRulesDeterministically } from '../auditEngine';
 import { computeExecutivePillars, computeExecutiveVerdict } from '../dashboardPillars';
 import { DEFAULT_ANSWERS } from '../auditDefaults';
-import { CASES, makeIngest, obligationStatus, runCase } from '../../test/fixtures';
+import { CASES, makeIngest, requirementResult, runCase } from '../../test/fixtures';
 
 /**
  * Pruebas de referencia del motor de clasificación.
@@ -63,7 +63,7 @@ describe('Exclusión del Art. 3.1 y coherencia interna', () => {
     );
     expect(['not_ai_system', 'requires_review']).toContain(r.riskClassification);
     expect(r.isHighRiskAnnexIII).toBe(false);
-    expect(r.obligations.map((o) => o.code)).not.toContain('RIA-ALTO-RIESGO-CE');
+    expect(r.requirements.map((req) => req.id)).not.toContain('RIA-ALTO-RIESGO-CE');
   });
 
   it('MOT-16 · respuestas contradictorias (evalúa ciudadanos y solo procesa documentos despersonalizados) exigen revisión', () => {
@@ -94,7 +94,7 @@ describe('Excepción del Art. 6.3 y justificación del Art. 6.4', () => {
   it('MOT-11 · la obligación del Art. 6.4 no figura como cumplida sin evidencia documental', () => {
     const states = [CASES.excepcionConPersonas(), CASES.asistenteRedaccion(), CASES.altoRiesgoEmpleo()];
     for (const s of states) {
-      expect(obligationStatus(s.diagnostic!, 'RIA-ART-6-4')).not.toBe('compliant');
+      expect(requirementResult(s.diagnostic!, 'RIA-ART-6-4')).not.toBe('acreditado');
     }
   });
 });
@@ -102,7 +102,7 @@ describe('Excepción del Art. 6.3 y justificación del Art. 6.4', () => {
 describe('Conformidades sin evidencia', () => {
   it('MOT-10 · la Ley 15/2022 (no discriminación) no se marca como cumplida sin evidencias', () => {
     const r = CASES.asistenteRedaccion().diagnostic!;
-    expect(obligationStatus(r, 'LEY-15-2022-ART-23')).not.toBe('compliant');
+    expect(requirementResult(r, 'LEY-15-2022-ART-23')).not.toBe('acreditado');
   });
 
   it('MOT-12 · no emite "Dictamen Favorable AGENTS.md" cuando el propio fichero declara autonomía sin supervisión', () => {

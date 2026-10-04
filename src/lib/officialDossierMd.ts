@@ -1,83 +1,88 @@
-import type { FullAuditState, AppIdioma } from '../types';
+import type { FullAuditState, AppIdioma, RequirementAssessment } from '../types';
+import { applicabilityLabel, normalizeDiagnostic, obligations, originLabel, prohibitedPractices, requirementsByPillar, resultLabel } from './assessmentModel';
+import { computeExecutivePillars, computeExecutiveVerdict } from './dashboardPillars';
+import { ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
+
+/** Escapa los separadores de tabla para que un texto no rompa la tabla Markdown. */
+function cell(text: string): string {
+  return text.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+}
+
+function requirementBlock(r: RequirementAssessment, idioma: AppIdioma): string {
+  const status = r.aplicabilidad === 'no_aplica' ? applicabilityLabel(r.aplicabilidad, idioma) : resultLabel(r.resultado, idioma);
+  const exigible = r.exigibleDesde ? ` · Exigible desde ${new Date(r.exigibleDesde).toLocaleDateString('es-ES')}` : '';
+  return `### ${r.title} — **${status}**
+*${r.norma} · ${r.precepto} · ${originLabel(r.origen, idioma)}${exigible}*
+
+${r.hechos}
+
+**Acción:** ${r.accionRequerida}
+`;
+}
 
 export function generateOfficialDossierMarkdown(
   state: FullAuditState,
   llmCritique?: string,
-  _idioma: AppIdioma = 'castellano'
+  _idioma: AppIdioma = 'castellano',
+  traceability?: DocumentTraceability
 ): string {
-  const { ingest, answers, diagnostic, metadata } = state;
+  const { ingest, answers, metadata } = state;
+  const diagnostic = normalizeDiagnostic(state.diagnostic);
   const dateStr = metadata.auditDate || new Date().toLocaleDateString('es-ES');
   const isGl = _idioma === 'galego';
+  const requirements = diagnostic?.requirements || [];
+  const pillars = diagnostic ? computeExecutivePillars(diagnostic) : null;
+  const verdict = diagnostic ? computeExecutiveVerdict(diagnostic) : null;
+  const engineVersion = traceability?.engineVersion || diagnostic?.engineVersion || ENGINE_VERSION;
 
-  return `# EXPEDIENTE TÉCNICO Y DICTAMEN DE CONFORMIDAD NORMATIVA DE SISTEMA DE INTELIGENCIA ARTIFICIAL
+  return `# INFORME TÉCNICO PRELIMINAR DE ADECUACIÓN NORMATIVA DE SISTEMA DE INTELIGENCIA ARTIFICIAL
 
-**Entidad Promotora:** ${metadata.entityName || 'Administración Pública'}  
-**Departamento / Servicio:** ${metadata.serviceDepartment || 'Servicio Técnico'}  
-**Software Evaluado:** "${ingest.appName}"  
-**Fecha de Emisión:** ${dateStr}  
-**Marco Normativo de Referencia:**  
-- Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (AI Act / RIA - DOUE L 2024/1689)
+**Entidad Promotora:** ${metadata.entityName || 'Administración Pública'}
+**Departamento / Servicio:** ${metadata.serviceDepartment || 'Servicio Técnico'}
+**Software Evaluado:** "${ingest.appName}"
+**Fecha de Emisión:** ${dateStr}
+**Marco Normativo de Referencia:**
+- Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (RIA), modificado por el Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)
 - Real Decreto 729/2023, de 22 de agosto (Estatuto de la Agencia Española de Supervisión de Inteligencia Artificial - AESIA)
-- Ley 15/2022, de 12 de julio, integral para la igualdad de trato y la no discriminación (Art. 23: IA en el Sector Público)
-- Reglamento Europeo Ómnibus Digital (UE 2026/1744)
+- Ley 15/2022, de 12 de julio, integral para la igualdad de trato y la no discriminación (Art. 23)
 - Esquema Nacional de Seguridad (Real Decreto 311/2022 - ENS)
-- Guía CCN-STIC 884D de Seguridad en Servicios de IA
-- Ley 40/2015 de Régimen Jurídico del Sector Público (Arts. 32 y 41)
+- Ley 40/2015 de Régimen Jurídico del Sector Público (Arts. 32, 36, 41 y 43)
 - Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)
 
-> **⚖️ CLÁUSULA DE SALVAGUARDA PERICIAL INSTITUCIONAL Y CALIFICACIÓN PRELIMINAR:**  
+> **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**
 > *${
     isGl
-      ? 'O presente informe pericial foi xerado mediante o motor automatizado de auditoría de conformidade normativa (v2.0). Constitúe unha avaliación técnica preliminar de auxilio ao procedemento administrativo. Conforme á Lei 40/2015 e ao Regulamento (UE) 2024/1689, a cualificación definitiva e a asunción de riscos corresponden ao órgano administrativo promotor, requiríndose a ratificación expresa do DPD e do CISO.'
-      : 'El presente informe pericial ha sido generado mediante el motor automatizado de auditoría de conformidad normativa (v2.0). Constituye una evaluación técnica preliminar de auxilio al procedimiento administrativo. Conforme a la Ley 40/2015 y al Reglamento (UE) 2024/1689, la calificación definitiva y la asunción de riesgos corresponden al órgano administrativo promotor, requiriéndose la ratificación expresa del DPD y del CISO.'
+      ? `O presente informe técnico foi xerado mediante unha ferramenta automatizada de diagnóstico (motor v${engineVersion}) a partir do declarado polo promotor. Non é un acto administrativo nin acredita o cumprimento: a cualificación definitiva e a asunción de riscos corresponden ao órgano competente, coa revisión expresa do DPD e do Responsable de Seguridade.`
+      : `El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v${engineVersion}) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.`
   }*
 
 ---
 
-## 1. RESUMEN EJECUTIVO Y CUADRO DE MANDO DE GOBERNANZA
+## 1. RESUMEN EJECUTIVO Y CUADRO DE MANDO
 
-- **Clasificación AI Act:** **${diagnostic?.riskLabel || 'Riesgo de Transparencia'}**
-${diagnostic?.isArticle63Derogation ? '- **Régimen Especial RIA:** **Excepción Art. 6.3 RIA (Derogación motivada de Alto Riesgo, Art. 6.4)**\n' : ''}- **Categorización ENS (RD 311/2022):** **Nivel ${diagnostic?.ensCategory || 'BÁSICA'}**
-- **Régimen de Operación (Ley 40/2015):** **${answers.administrativeNature === 'technical_auxiliary' ? 'Auxilio Técnico Instrumental (Borrador no resolutorio)' : 'Actuación Administrativa Automatizada (Art. 41)'}**
-- **Supervisión Humana:** **${answers.humanOversightLevel === 'pre_execution' ? 'Previa preceptiva (Human-in-the-Loop)' : 'Posterior o continua'}**
+- **Clasificación RIA (preliminar, según lo declarado):** **${diagnostic?.riskLabel || '—'}**
+${diagnostic?.isArticle63Derogation ? '- **Régimen declarado:** **Excepción del Art. 6.3 RIA, pendiente de documentar (Art. 6.4) y registrar (Art. 49.2)**\n' : ''}- **Categoría ENS orientativa (RD 311/2022):** **${diagnostic?.ensCategory || '—'}**
+- **Régimen de operación declarado (Ley 40/2015):** **${diagnostic?.isAutomatedAdministrativeAct ? 'Actuación administrativa automatizada (Art. 41)' : 'Apoyo técnico con intervención directa de un empleado público'}**
 
-### Cuadro de Mando Ejecutivo (4 Pilares de Conformidad)
+### Cuadro de mando (4 pilares)
 
-| Pilar Normativo | Fundamento Legal | Estado / Nivel | Veredicto Pericial |
+| Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
-| **I. AI Act (UE 2024/1689)** | Arts. 3.1, 5, 6.3, 50 RIA | ${diagnostic?.riskLabel || 'Riesgo de Transparencia'} | ${
-    diagnostic?.riskClassification === 'prohibited'
-      ? '🚨 **NO PROCEDE** (Práctica Prohibida Art. 5)'
-      : diagnostic?.riskClassification === 'high_risk'
-      ? '⚠️ **CONDICIONADO** (Exige Marcado CE y EIPD)'
-      : diagnostic?.isArticle63Derogation
-      ? '✅ **CONFORME** (Excepción Art. 6.3 Documentada)'
-      : '✅ **CONFORME** (Obligaciones Art. 50)'
-  } |
-| **II. Privacidad y RGPD** | Art. 6.1.e, 9 / LOPDGDD 3/2018 | ${answers.processesSpecialCategoryData ? 'Art. 9 (Datos Sensibles)' : 'Datos Ordinarios'} | ${
-    answers.processesSpecialCategoryData ? '⚠️ **CONDICIONADO** (EIPD previa y ENS Alto)' : '✅ **CONFORME** (Legitimación administrativa)'
-  } |
-| **III. Ciberseguridad ENS** | RD 311/2022 / CCN-STIC 884D | Nivel ${diagnostic?.ensCategory || 'BÁSICA'} | ${
-    diagnostic?.ensCategory === 'ALTA' ? '⚠️ **CONDICIONADO** (Auditoría Bienal Externa)' : '✅ **CONFORME** (Controles IA-01 a IA-08)'
-  } |
-| **IV. Gobernanza Pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | ${answers.administrativeNature === 'technical_auxiliary' ? 'Auxilio Instrumental' : 'Actuación Automatizada'} | ${
-    answers.administrativeNature === 'technical_auxiliary' ? '✅ **CONFORME** (Human-in-the-Loop preceptivo)' : '⚠️ **REQUIERE** Sede Electrónica y Regulación Formal'
-  } |
+| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | ${cell(diagnostic?.riskLabel || '—')} | ${cell(pillars?.ria.text || '—')} |
+| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | ${cell(pillars?.rgpd.label || '—')} | ${cell(pillars?.rgpd.text || '—')} |
+| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | ${cell(pillars?.ens.label || '—')} | ${cell(pillars?.ens.text || '—')} |
+| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | ${cell(pillars?.gobernanza.label || '—')} | ${cell(pillars?.gobernanza.text || '—')} |
 
 ${
   diagnostic?.pericialDissentAlert
-    ? `\n> ⚠️ **ADVERTENCIA PERICIAL DE DISCREPANCIA TÉCNICO-JURÍDICA:**  \n> *${diagnostic.pericialDissentAlert}*\n`
+    ? `\n> ⚠️ **POSIBLE DISCREPANCIA DE CLASIFICACIÓN (NO VERIFICADA):**  \n> *${diagnostic.pericialDissentAlert}*\n`
     : ''
 }
 
-### Conclusión Motivada
-${diagnostic?.executiveSummary || 'El sistema analizado cumple con los requisitos normativos del marco europeo y estatal para su puesta en producción bajo supervisión funcionarial.'}
+### Conclusión preliminar
+${diagnostic?.executiveSummary || 'Diagnóstico no disponible.'}
 
-El despliegue de **"${ingest.appName}"** resulta **${
-    diagnostic?.riskClassification === 'prohibited'
-      ? 'JURÍDICAMENTE IMPROCEDENTE al incurrir en prácticas prohibidas por el Art. 5 del RIA.'
-      : 'JURÍDICA Y TÉCNICAMENTE PROCEDENTE, condicionado al estricto cumplimiento de los controles de supervisión humana (Art. 14 RIA), la ratificación formal de los órganos responsables y la observancia de la Guía CCN-STIC 884D.'
-  }**
+**${verdict ? `${verdict.label.replace('VEREDICTO: ', '')}.** ${verdict.detail}` : 'Conclusión no disponible.**'}
 
 ---
 
@@ -86,129 +91,143 @@ El despliegue de **"${ingest.appName}"** resulta **${
 - **Denominación:** ${ingest.appName}
 - **Objeto funcional:** ${ingest.appDescription || 'No detallado'}
 - **Destinatarios principales:** ${ingest.targetAudience}
-- **Pila tecnológica declarada:** ${ingest.techStack || 'Web / API LLM'}
-- **Nivel de Cobertura Documental Pericial:** ${ingest.agentsMdContent?.trim()
-  ? '🛡️ **Cobertura Pericial Completa** (README.md funcional + AGENTS.md / CLAUDE.md directivas de agente, system prompts y soberanía técnica)'
-  : '📄 **Cobertura Documental Estándar** (README.md funcional y de usuario)'}
-- **Modelo de Inferencia y Soberanía:**  
+- **Pila tecnológica declarada:** ${ingest.techStack || 'No especificada'}
+- **Documentación aportada:** ${ingest.agentsMdContent?.trim()
+  ? 'README.md y AGENTS.md / CLAUDE.md (directivas del agente). Ambos son declaraciones del promotor.'
+  : 'README.md (documentación funcional y de usuario).'}
+- **Modelo de inferencia (declarado):**
   ${ingest.isAiSystem === false
-    ? '⚙️ **Software Determinista Tradicional:** Ejecución estática basada en reglas preprogramadas sin modelos de inferencia LLM ni consumo de APIs de IA.'
+    ? 'Software basado en reglas predefinidas, sin modelos de inferencia ni APIs de IA.'
     : answers.hostingModel === 'local_on_premise'
-    ? '✅ **Local On-Premise (Ollama / vLLM):** Inferencia en servidores propios sin salida a internet ni exposición de datos a terceros.'
+    ? 'Ejecución local en servidores propios (Ollama / vLLM). No se ha comprobado el proveedor efectivamente utilizado.'
     : answers.hostingModel === 'eu_cloud_dpa'
-    ? '⚠️ **Nube Europea con DPA:** Inferencia en centros de datos del Espacio Económico Europeo amparada por contrato de tratamiento.'
-    : '❌ **Nube Internacional (EE.UU.):** Transferencia internacional de datos sujeta a escrutinio reforzado y desaconsejada para datos clasificados.'}
+    ? 'Nube europea con contrato de encargo del tratamiento.'
+    : 'Nube internacional: transferencia internacional de datos sujeta a garantías reforzadas.'}
 ${ingest.agentsMdContent?.trim() ? `
-### 2.1. Síntesis de Directivas del Agente (AGENTS.md / CLAUDE.md)
-Se han auditado las directivas técnicas internas del modelo para verificar la ausencia de autonomía lesiva y la efectividad de las salvaguardas (Art. 14 RIA):
+### 2.1. Extracto de las directivas del agente (AGENTS.md / CLAUDE.md)
+Declaraciones del promotor; no se ha verificado que el sistema las cumpla en funcionamiento:
 \`\`\`markdown
-${ingest.agentsMdContent.slice(0, 1200)}${ingest.agentsMdContent.length > 1200 ? '\n... [Extracto pericial verificado]' : ''}
+${ingest.agentsMdContent.slice(0, 1200)}${ingest.agentsMdContent.length > 1200 ? '\n... [extracto]' : ''}
 \`\`\`
 ` : ''}
 
 ---
 
-## 3. CONTROL DE PRÁCTICAS PROHIBIDAS (ART. 5 RIA)
+## 3. PRÁCTICAS PROHIBIDAS (ART. 5 RIA)
 
-Se ha procedido a la verificación sistemática frente al catálogo de prohibiciones taxativas:
+«No evaluado» significa que la herramienta no ha examinado la práctica y que debe confirmarse en la revisión jurídica; «Pendiente» indica un indicio que requiere verificación.
 
-| Práctica Prohibida (Art. 5 RIA) | Detección | Observaciones |
+| Práctica (Art. 5 RIA) | Estado | Hechos |
 | :--- | :---: | :--- |
-${(diagnostic?.prohibitedChecks || [])
-  .map((p) => `| **${p.title}** (${p.legalArticle}) | ${p.detected ? '🚨 **DETECTADO**' : '✅ **CONFORME**'} | ${p.explanation} |`)
+${prohibitedPractices(requirements)
+  .map((r) => `| **${cell(r.title)}** (${cell(r.precepto)}) | ${resultLabel(r.resultado, _idioma)} | ${cell(r.hechos)} |`)
   .join('\n')}
 
 ---
 
-## 4. ANÁLISIS DE RIESGO: CASCADA DE 5 NIVELES (RIA Y ÓMNIBUS DIGITAL UE 2026/1744)
+## 4. CLASIFICACIÓN SEGÚN EL RIA (ANEXO III Y EXCEPCIÓN DEL ART. 6.3)
 
-- **Calificación en Cascada:** **${diagnostic?.riskLabel.toUpperCase()}**
+- **Clasificación preliminar, basada en lo declarado:** **${diagnostic?.riskLabel.toUpperCase() || '—'}**
 
-### 4.1. Fundamentación Técnica de Clasificación
+### 4.1. Fundamento
 ${
   ingest.isAiSystem === false
-    ? `**Nivel 0 - Exclusión del Ámbito del AI Act:** El sistema se encuentra formalmente **EXCLUIDO** del ámbito de aplicación del Reglamento (UE) 2024/1689. Conforme a la definición legal del **Artículo 3, apartado 1**, del RIA, los sistemas basados exclusivamente en reglas o lógica determinista predefinida por personas no constituyen sistemas de IA. La herramienta se rige por la normativa general de administración digital (Ley 39/2015, Ley 40/2015 Art. 41) y ciberseguridad ENS (RD 311/2022).`
+    ? `**Nivel 0 - Exclusión del ámbito del RIA:** según lo declarado, el sistema se basa exclusivamente en reglas predefinidas, sin capacidad de inferencia, por lo que no sería un sistema de IA (Art. 3.1 del Reglamento (UE) 2024/1689). En ese caso se rige por la normativa de administración electrónica (Ley 39/2015, Ley 40/2015) y por el ENS.`
     : diagnostic?.riskClassification === 'prohibited'
-    ? `**Nivel 1 - Riesgo Inadmisible (Art. 5 RIA):** El sistema incurre en prácticas prohibidas taxativamente por el legislador europeo.`
+    ? `**Nivel 1 - Indicio de práctica prohibida (Art. 5 RIA):** se han detectado en la documentación indicios de prácticas prohibidas. Deben verificarse jurídicamente; si se confirman, el sistema no puede ponerse en servicio.`
     : diagnostic?.riskClassification === 'high_risk'
-    ? `**Nivel 2 - Alto Riesgo (Art. 6.2 y Anexo III RIA):** El sistema interviene en procesos de evaluación o asignación directa con impacto material en derechos fundamentales. Requiere marcado CE, gestión de riesgos (Art. 9), gobernanza de datos (Art. 10), registro de eventos (Art. 12), supervisión humana (Art. 14) y registro en la base de datos de la Comisión Europea.`
+    ? `**Nivel 2 - Alto Riesgo (Art. 6.2 y Anexo III RIA):** según lo declarado, el sistema interviene en un ámbito del Anexo III. Como proveedor: gestión de riesgos (Art. 9), gobernanza de datos (Art. 10), registro de eventos (Art. 12), supervisión humana (Art. 14), evaluación de la conformidad por control interno sin organismo notificado (Art. 43.2 y Anexo VI), marcado CE y registro (Art. 49). Como responsable del despliegue: Art. 26 y evaluación de impacto en los derechos fundamentales (Art. 27). Exigibles para el Anexo III desde el 2 de diciembre de 2027 (Reglamento (UE) 2026/1744).`
     : diagnostic?.isArticle63Derogation
-    ? `**Nivel 3 - Excepción / Derogación de Alto Riesgo (Art. 6.3 RIA):** Si bien el software interviene en un ámbito formalmente afín al Anexo III, no califica, no barema ni evalúa autónomamente a personas. Realiza una tarea puramente preparatoria o auxiliar estrecha sin perfilado ni efectos vinculantes.`
+    ? `**Nivel 3 - Excepción del Art. 6.3 RIA:** según lo declarado, el sistema interviene en un ámbito del Anexo III pero se acogería a la excepción del Art. 6.3, que exige que concurra al menos una de sus condiciones a) a d), que no influya sustancialmente en el resultado de la decisión y que no haya perfilado de personas físicas.`
     : diagnostic?.riskClassification === 'minimal_risk'
-    ? `**Nivel 5 - Riesgo Mínimo (Art. 95 RIA):** El sistema no interactúa directamente con ciudadanos ni genera contenidos sintéticos, rigiéndose por códigos de conducta voluntarios.`
-    : `**Nivel 4 - Riesgo de Transparencia (Art. 50 RIA):** El sistema incorpora capacidades de IA generativa orientadas a funcionarios o ciudadanos, quedando sujeto a las obligaciones de transparencia activa y advertencia de contenido sintético.`
+    ? `**Nivel 5 - Riesgo Mínimo (Art. 95 RIA):** según lo declarado, el sistema no interactúa con personas ni genera contenido sintético; puede adherirse a códigos de conducta voluntarios.`
+    : `**Nivel 4 - Riesgo de Transparencia (Art. 50 RIA):** según lo declarado, el sistema interactúa con personas o genera contenido, por lo que debe informar de que se interactúa con una IA y marcar el contenido generado.`
 }
 
 ${
   diagnostic?.isArticle63Derogation
-    ? `### 4.2. Justificación Técnica Motivada de Derogación (Art. 6.3 y Art. 6.4 RIA)
-Conforme al Artículo 6, apartado 3 del RIA, los sistemas comprendidos en el Anexo III no se considerarán de alto riesgo si no entrañan un riesgo significativo de perjuicio para los derechos fundamentales ni influyen materialmente en el resultado del procedimiento decisorio.
+    ? `### 4.2. Fundamento declarado de la excepción (Art. 6.3 RIA)
 
-> **Motivación técnica registrada:**  
-> *${
-      diagnostic.article63Justification ||
-      'Se acredita formalmente que el sistema realiza una tarea preparatoria o instrumental estrecha de apoyo a empleados públicos. No realiza perfilado de personas físicas (Art. 6.3 párrafo 3). Todo contenido generado constituye un borrador auxiliar sujeto a supervisión humana preceptiva antes de surtir efecto administrativo alguno.'
-    }*
+> *${diagnostic.article63Justification || 'Sin fundamento declarado.'}*
 
-**Diligencia de Registro Previo (Art. 6.4 RIA):** En cumplimiento de la obligación formal impuesta por el Art. 6.4 del Reglamento (UE) 2024/1689, la entidad promotora documenta la presente evaluación técnica con anterioridad a la puesta en servicio del sistema, manteniéndola a disposición de la **Agencia Española de Supervisión de Inteligencia Artificial (AESIA)** previa solicitud.`
+**Pendiente (Arts. 6.4 y 49.2 RIA):** el proveedor debe documentar su evaluación antes de la puesta en servicio, facilitarla a las autoridades que la soliciten y registrar el sistema en la base de datos de la UE. Este informe recoge lo declarado, pero no sustituye esa documentación ni el registro.`
     : ''
 }
 
 ---
 
-## 5. SUPERVISIÓN HUMANA EFECTIVA Y MARCO ESTATAL DE GOBERNANZA
+## 5. SUPERVISIÓN HUMANA Y MARCO ESTATAL DE GOBERNANZA
 
-- **Nivel de Supervisión:** **${answers.humanOversightLevel === 'pre_execution' ? 'Previa preceptiva (Human-in-the-Loop)' : answers.humanOversightLevel}**
-- **Rol del Supervisor:** **${answers.supervisionRole || 'Personal funcionario competente'}**
-- **Deslinde con la Actuación Administrativa Automatizada (Ley 40/2015 Art. 41):**  
-  Conforme al Art. 41 de la Ley 40/2015, este software **NO** emite actos administrativos automatizados. Los borradores o materiales producidos carecen de fe pública per se; la decisión administrativa final es adoptada y suscrita con firma electrónica por el funcionario público responsable. La responsabilidad patrimonial de la Administración (Art. 32 Ley 40/2015) recae exclusivamente sobre la validación humana efectuada.
-- **Garantía de No Discriminación y Transparencia Algorítmica (Ley 15/2022, Art. 23):**  
-  En cumplimiento del régimen legal de igualdad de trato en el sector público, se certifica que los criterios o prompts del sistema no introducen sesgos directos ni indirectos por motivos de nacimiento, origen racial, sexo, religión o cualquier otra condición o circunstancia personal o social.
-
----
-
-## 6. SEGURIDAD CCN-STIC 884D Y ESQUEMA NACIONAL DE SEGURIDAD (ENS)
-
-- **Categoría ENS:** **Nivel ${diagnostic?.ensCategory}**
-- **Fundamentación:** ${diagnostic?.ensReasoning}
-
-### 6.1. Cumplimiento de Medidas Clave CCN-STIC 884D:
-1. **Medida IA-01 (Protección de Credenciales):** Las claves no deben figurar en el frontend.
-2. **Medida IA-04 (Sanitización):** Prohibición de inyectar datos clasificados o del Art. 9 del RGPD sin cifrado de extremo a extremo.
-3. **Medida IA-08 (Trazabilidad y Logs):** Registro de auditoría ${answers.auditLogsEnabled ? `HABILITADO con retención de ${answers.logRetentionMonths} meses` : 'PENDIENTE DE ACTIVACIÓN'}.
-
----
-
-## 7. PROTECCIÓN DE DATOS (RGPD / RAT)
-
-- **Base de Legitimación:** Art. 6.1.e) del RGPD (Cumplimiento de misión de interés público o ejercicio de potestades públicas: *${answers.publicCompetenceNorm || 'Normativa reguladora del procedimiento'}*).
-- **Ficha del Registro de Actividades de Tratamiento (RAT):** *${answers.ratActivityName || 'Pendiente de asignación formal por el DPD'}*.
-- **Categorías Especiales de Datos (Art. 9 RGPD):** ${answers.processesSpecialCategoryData ? 'SÍ se tratan (exige medidas ENS Nivel ALTO y EIPD previa).' : 'NO se tratan.'}
-
-${llmCritique ? `\n---\n\n## 8. DICTAMEN ADICIONAL DE AUDITORÍA ASISTIDA POR IA\n\n${llmCritique}\n` : ''}
+- **Supervisión humana (declarada):** ${
+    answers.humanOversightLevel === 'pre_execution'
+      ? 'previa; los resultados se presentan como borradores que revisa un empleado público antes de producir efectos. No se ha verificado el funcionamiento real del procedimiento.'
+      : answers.humanOversightLevel === 'post_execution'
+      ? 'posterior; debe verificarse si un empleado público interviene de forma directa antes de que el resultado produzca efectos.'
+      : 'sin intervención humana; puede quedar sujeta a la prohibición del Art. 22 RGPD y exige los requisitos del Art. 41 de la Ley 40/2015.'
+  }
+- **Rol del supervisor (declarado):** ${answers.supervisionRole || 'No indicado'}
+- **Deslinde con la actuación administrativa automatizada (Ley 40/2015, Art. 41):**
+  ${
+    diagnostic?.isAutomatedAdministrativeAct
+      ? 'Se ha declarado que el sistema realiza actuaciones administrativas automatizadas, es decir, sin intervención directa de un empleado público. Antes de su puesta en servicio deben establecerse los órganos competentes para la definición de especificaciones, programación, mantenimiento, supervisión, control de calidad y auditoría, y el órgano responsable a efectos de impugnación (Art. 41.2).'
+      : 'El promotor declara que un empleado público interviene de forma directa en cada actuación, por lo que no habría actuación administrativa automatizada. Esta afirmación no se ha verificado y debe contrastarse con el funcionamiento real del procedimiento.'
+  }
+- **Responsabilidad patrimonial:**
+  Los particulares exigen directamente a la Administración Pública correspondiente la indemnización de las lesiones causadas por el funcionamiento de los servicios públicos, también cuando intervenga este sistema (Arts. 32.1 y 36.1 de la Ley 40/2015). La Administración solo puede exigir responsabilidad a sus autoridades y personal cuando haya concurrido dolo, o culpa o negligencia graves (Art. 36.2).
+- **No discriminación algorítmica (Ley 15/2022, Art. 23):**
+  Las administraciones públicas favorecerán mecanismos de minimización de sesgos, transparencia y rendición de cuentas, y se promoverán evaluaciones del posible impacto discriminatorio. No se han aportado evaluaciones de sesgo, por lo que este extremo figura como no evaluado.
 
 ---
 
-## DILIGENCIA DE COTEJO NORMATIVO TELEMÁTICO (BOE Y DOUE CELLAR)
+## 6. MEDIDAS DE SEGURIDAD (ENS, RD 311/2022)
 
-Se hace constar mediante la presente diligencia técnica que los preceptos jurídicos invocados y auditados en este expediente han sido verificados telemáticamente en tiempo real frente a los repositorios normativos oficiales a fecha de emisión de este dictamen:
-- **Diario Oficial de la Unión Europea (DOUE / Repositorio Cellar REST API):** Reglamento (UE) 2024/1689 (AI Act) [CELEX 32024R1689 - Arts. 5, 12, 14, 50] y Reglamento (UE) 2016/679 (RGPD) [CELEX 32016R0679]. Estado: Vigente y consolidado telemáticamente.
-- **Boletín Oficial del Estado (BOE / Repositorio Legalize-ES):** Ley 40/2015 de Régimen Jurídico del Sector Público [BOE-A-2015-10566 - Art. 41 Actuación Administrativa Automatizada] y Real Decreto 311/2022 del Esquema Nacional de Seguridad (ENS) [BOE-A-2022-7191]. Estado: Vigente y consolidado telemáticamente.
+- **Categoría ENS orientativa:** **${diagnostic?.ensCategory || '—'}**
+- **Fundamentación:** ${diagnostic?.ensReasoning || '—'}
 
-*Conclusión del cotejo:* No se han detectado modificaciones derogatorias sobrevenidas ni alteraciones materiales en los preceptos aplicables que invaliden la presente calificación jurídica.
+### 6.1. Medidas del Anexo II relacionadas con el uso de servicios de IA
+${requirementsByPillar(requirements, 'ens')
+  .map((r, i) => `${i + 1}. **${r.precepto}** — ${resultLabel(r.resultado, _idioma)}: ${r.hechos}`)
+  .join('\n')}
 
 ---
 
-## DILIGENCIA DE FIRMA Y CONFORMIDAD
+## 7. OBLIGACIONES Y ESTADO DE ACREDITACIÓN
 
-> **NOTA DE SALVAGUARDA INSTITUCIONAL Y ASUNCIÓN DE RESPONSABILIDAD:**  
-> *El presente informe constituye auxilio técnico pericial instrumental preliminar conforme al Art. 41 de la Ley 40/2015 y al RIA (UE 2024/1689). La validez jurídica definitiva ante terceros y la asunción formal de riesgos operacionales queda ratificada mediante las siguientes rúbricas de los órganos administrativos competentes:*
+Solo «Acreditado» equivale a cumplimiento y exige validación humana con evidencia. «Declarado» recoge lo afirmado por el promotor sin comprobar.
 
-| EL RESPONSABLE FUNCIONAL | EL CISO / RESPONSABLE ENS | EL DELEGADO DE PROTECCIÓN DE DATOS |
+${obligations(requirements).map((r) => requirementBlock(r, _idioma)).join('\n')}
+
+### 7.1. Datos declarados en materia de protección de datos
+- **Norma competencial declarada:** *${answers.publicCompetenceNorm || 'No indicada'}*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
+- **Actividad del Registro de Actividades de Tratamiento (declarada):** *${answers.ratActivityName || 'No indicada'}*.
+- **Categorías especiales de datos (Art. 9 RGPD):** ${answers.processesSpecialCategoryData ? 'declarado que SÍ se tratan (exige EIPD previa y medidas reforzadas).' : 'declarado que NO se tratan.'}
+
+${llmCritique ? `\n---\n\n## 8. ANÁLISIS ASISTIDO POR IA (CONTENIDO NO VERIFICADO)\n\n> *Texto generado por un modelo de lenguaje. Es contenido no verificado: no modifica la clasificación ni acredita requisitos, y sus citas deben comprobarse antes de cualquier uso.*\n\n${llmCritique}\n` : ''}
+
+---
+
+## NOTA SOBRE LAS FUENTES Y TRAZABILIDAD DEL DOCUMENTO
+
+${
+  isGl
+    ? `Os preceptos citados proceden da base de coñecemento da ferramenta (${NORMATIVE_SNAPSHOT}). Non se verificou a súa vixencia no momento de emitir este documento: debe comprobarse no BOE e en EUR-Lex antes de calquera uso.`
+    : `Los preceptos citados proceden de la base de conocimiento de la herramienta (${NORMATIVE_SNAPSHOT}). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.`
+}
+
+- **Versión del motor:** ${engineVersion}
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED}
+- **Fecha de generación:** ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}
+
+---
+
+## REVISIÓN Y FIRMA
+
+> *El presente documento es un informe técnico preliminar generado con una herramienta automatizada. No es un acto administrativo ni una actuación administrativa automatizada. Solo adquiere valor cuando lo revisan y firman los responsables competentes, que pueden modificar o rechazar sus conclusiones (firma electrónica del personal, Art. 43 de la Ley 40/2015).*
+
+| EL RESPONSABLE FUNCIONAL | EL RESPONSABLE DE SEGURIDAD (ENS) | EL DELEGADO DE PROTECCIÓN DE DATOS |
 | :---: | :---: | :---: |
-| *(Firma electrónica y sello)* | *(Firma electrónica y sello)* | *(Firma electrónica y sello)* |
-| **${metadata.functionalResponsible || 'Dirección de Servicio'}** | **${metadata.cisoContact || 'Responsable Seguridad'}** | **${metadata.dpoContact || 'DPD / DPO'}** |
+| *(Firma electrónica)* | *(Firma electrónica)* | *(Firma electrónica)* |
+| **${metadata.functionalResponsible || 'Dirección de Servicio'}** | **${metadata.cisoContact || 'Responsable de Seguridad'}** | **${metadata.dpoContact || 'DPD'}** |
 | ${metadata.serviceDepartment} | Centro de Sistemas y Ciberseguridad | Oficina de Protección de Datos |
 `;
 }
-

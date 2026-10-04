@@ -1,6 +1,7 @@
 /**
- * Servicio de Sellado Criptográfico y Preparación para Firma Electrónica
- * Compatible con AutoFirma, la pasarela @firma y el Esquema Nacional de Seguridad (ENS).
+ * Servicio de huella criptográfica y preparación para firma electrónica.
+ * La huella SHA-256 no es una firma ni un sello de tiempo; la firma se realiza
+ * después con las herramientas corporativas (p. ej., AutoFirma).
  */
 
 export interface CryptographicReceipt {
@@ -8,7 +9,8 @@ export interface CryptographicReceipt {
   sha256Hex: string;
   timestampIso: string;
   timestampFormatted: string;
-  secureVerificationCode: string; // CSV
+  /** Identificador interno del documento. No es un Código Seguro de Verificación (CSV). */
+  internalDocumentId: string;
   hashAlgorithm: string;
   suggestedSignatureFormat: string;
   diligenceText: string;
@@ -34,26 +36,29 @@ export async function calculateSha256(data: string | ArrayBuffer | Blob): Promis
 }
 
 /**
- * Genera un Código Seguro de Verificación (CSV) reglamentario según el Art. 42 Ley 40/2015
+ * Genera un identificador interno para referenciar el documento dentro de la herramienta.
+ * No es un CSV: no está vinculado a ninguna sede electrónica ni permite comprobar el
+ * documento (los CSV de la Ley 40/2015 los emite la Administración en su sede).
  */
-export function generateSecureVerificationCode(appName: string): string {
+export function generateInternalDocumentId(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const prefix = 'CSV-IA';
   const segments: string[] = [];
+  const random = new Uint32Array(12);
+  crypto.getRandomValues(random);
 
   for (let s = 0; s < 3; s++) {
     let seg = '';
     for (let i = 0; i < 4; i++) {
-      seg += chars.charAt(Math.floor(Math.random() * chars.length));
+      seg += chars.charAt(random[s * 4 + i] % chars.length);
     }
     segments.push(seg);
   }
 
-  return `${prefix}-${segments.join('-')}`;
+  return `ID-INT-${segments.join('-')}`;
 }
 
 /**
- * Genera el recibo formal de sellado y diligencia técnica de firma
+ * Genera la nota técnica de huella e instrucciones para la firma electrónica
  */
 export async function generateCryptographicReceipt(
   documentName: string,
@@ -65,34 +70,35 @@ export async function generateCryptographicReceipt(
   const now = new Date();
   const timestampIso = now.toISOString();
   const timestampFormatted = now.toLocaleString('es-ES', { timeZoneName: 'short' });
-  const secureVerificationCode = generateSecureVerificationCode(documentName);
+  const internalDocumentId = generateInternalDocumentId();
   const hashAlgorithm = 'SHA-256 (NIST FIPS 180-4)';
   const suggestedSignatureFormat = documentName.endsWith('.pdf') ? 'PAdES-BES / PAdES-LTV (PDF Advanced Electronic Signatures)' : 'CAdES-BES (CMS Advanced Electronic Signatures)';
 
-  const diligenceText = `DILIGENCIA TÉCNICA DE INTEGRIDAD Y SELLADO CRIPTOGRÁFICO
+  const diligenceText = `NOTA TÉCNICA DE HUELLA DIGITAL DEL DOCUMENTO
 --------------------------------------------------------------------------------
 ADMINISTRACIÓN: ${entityName || 'Administración Pública de España'}
-EXPEDIENTE: Dictamen de Conformidad y Auditoría de IA
 DOCUMENTO: ${documentName}
-CÓDIGO SEGURO DE VERIFICACIÓN (CSV): ${secureVerificationCode}
+IDENTIFICADOR INTERNO: ${internalDocumentId}
+  (Identificador de la herramienta. No es un Código Seguro de Verificación ni
+  permite comprobar el documento en ninguna sede electrónica.)
 ALGORITMO DE RESUMEN: ${hashAlgorithm}
 HUELLA DIGITAL (HASH SHA-256):
 ${sha256Hex}
 
-FECHA Y HORA DE CÓMPUTO: ${timestampFormatted}
+FECHA Y HORA DE CÁLCULO (reloj del equipo): ${timestampFormatted}
 RESPONSABLE FUNCIONAL: ${functionalResponsible || 'Titular del Órgano Responsable'}
 
-CERTIFICACIÓN:
-Se certifica que el documento indicado posee la huella digital criptográfica
-anteriormente consignada. Cualquier alteración posterior de un solo bit en el
-archivo invalidará la concordancia matemática del hash y del CSV.
+ALCANCE:
+La huella permite detectar si el fichero cambia después de calcularla. No es
+una firma electrónica ni un sello de tiempo cualificado, y no acredita la
+autoría ni la fecha del documento.
 
-INSTRUCCIONES PARA LA FIRMA EN AUTOFIRMA (@FIRMA):
-1. Inicie la aplicación oficial "AutoFirma" en su puesto de trabajo.
+INSTRUCCIONES PARA LA FIRMA ELECTRÓNICA (Art. 43 Ley 40/2015):
+1. Abra la aplicación de firma corporativa (p. ej., AutoFirma).
 2. Seleccione el fichero generado: "${documentName}".
-3. Escoja su Certificado Digital Cualificado (DNIe o Certificado de Empleado Público FNMT-RCM).
+3. Escoja su certificado cualificado (DNIe o certificado de empleado público).
 4. Formato de firma recomendado: ${suggestedSignatureFormat}.
-5. Estampe la firma electrónica avanzada/cualificada y archive el justificante en el Gestor de Expedientes.
+5. Incorpore el documento firmado al gestor de expedientes de la entidad.
 --------------------------------------------------------------------------------`;
 
   return {
@@ -100,7 +106,7 @@ INSTRUCCIONES PARA LA FIRMA EN AUTOFIRMA (@FIRMA):
     sha256Hex,
     timestampIso,
     timestampFormatted,
-    secureVerificationCode,
+    internalDocumentId,
     hashAlgorithm,
     suggestedSignatureFormat,
     diligenceText,

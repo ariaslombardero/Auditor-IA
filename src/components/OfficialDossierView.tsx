@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FileDown,
   FileText,
@@ -18,6 +18,7 @@ import { generateOfficialDossierMarkdown } from '../lib/officialDossierMd';
 import { exportAuditManifestJson } from '../lib/auditManifestGenerator';
 import { exportEipdDocx } from '../lib/eipdGenerator';
 import { t } from '../lib/i18n';
+import { buildDocumentTraceability, type DocumentTraceability } from '../lib/traceability';
 
 interface OfficialDossierViewProps {
   state: FullAuditState;
@@ -73,7 +74,19 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
     }
   };
 
-  const mdContent = generateOfficialDossierMarkdown(state, llmCritique, idioma);
+  // Huella de las entradas para identificar el documento (versión del motor, corte normativo y fecha)
+  const [traceability, setTraceability] = useState<DocumentTraceability | undefined>(undefined);
+  useEffect(() => {
+    let cancelled = false;
+    buildDocumentTraceability(state).then((tr) => {
+      if (!cancelled) setTraceability(tr);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [state]);
+
+  const mdContent = generateOfficialDossierMarkdown(state, llmCritique, idioma, traceability);
 
   const handleDownloadMd = () => {
     const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });

@@ -4,6 +4,7 @@ import type { AppIngestData, DiagnosticResult, FullAuditState, LegalEnrichmentAn
 import { DEFAULT_ANSWERS, DEFAULT_INGEST, DEFAULT_METADATA } from '../lib/auditDefaults';
 import { evaluateRulesDeterministically } from '../lib/auditEngine';
 import { buildOfficialDossierDocument } from '../lib/officialDossierDocx';
+import type { DocumentTraceability } from '../lib/traceability';
 
 /**
  * Casos sintéticos de prueba. Ningún dato real ni credencial.
@@ -48,8 +49,9 @@ export function makeState(
   };
 }
 
-export function obligationStatus(diagnostic: DiagnosticResult, code: string): string | undefined {
-  return diagnostic.obligations.find((o) => o.code === code)?.status;
+/** Resultado de un requisito del modelo común (undefined si el motor no lo ha generado). */
+export function requirementResult(diagnostic: DiagnosticResult, id: string): string | undefined {
+  return diagnostic.requirements.find((r) => r.id === id)?.resultado;
 }
 
 /** Casos de referencia reutilizados por varias baterías. */
@@ -72,8 +74,12 @@ export const CASES = {
 };
 
 /** Extrae el texto plano de un DOCX generado por el exportador oficial. */
-export async function officialDossierText(state: FullAuditState, llmCritique?: string): Promise<string> {
-  const buffer = await Packer.toBuffer(buildOfficialDossierDocument(state, llmCritique));
+export async function officialDossierText(
+  state: FullAuditState,
+  llmCritique?: string,
+  traceability?: DocumentTraceability
+): Promise<string> {
+  const buffer = await Packer.toBuffer(buildOfficialDossierDocument(state, llmCritique, 'castellano', traceability));
   const zip = await JSZip.loadAsync(buffer);
   const xml = await zip.file('word/document.xml')!.async('string');
   return decodeXml(xml.replace(/<w:tab\/>/g, ' ').replace(/<\/w:p>/g, '\n').replace(/<[^>]+>/g, ''));

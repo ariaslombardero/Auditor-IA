@@ -40,7 +40,7 @@ export interface LegalEnrichmentAnswers {
   processesSpecialCategoryData: boolean; // Art. 9 RGPD
   ratActivityName: string; // Nombre actividad en Registro de Actividades de Tratamiento
 
-  // Q4: Trazabilidad y auditoría técnica (CCN-STIC 884D / Art. 12 RIA)
+  // Q4: Trazabilidad y registro de la actividad (ENS [op.exp.8] / Art. 12 RIA)
   auditLogsEnabled: boolean;
   logRetentionMonths: number;
   deterministicConfig: boolean; // Temp 0 / Seed fijada / Versión fija del LLM
@@ -51,21 +51,51 @@ export interface LegalEnrichmentAnswers {
   interactionAndGenerationType?: 'chatbot_or_generative' | 'internal_non_generative'; // ¿Chat o textos sintéticos (Art. 50) vs proceso interno (Riesgo Mínimo)?
 }
 
-export interface ProhibitedCheck {
-  id: string;
-  title: string;
-  legalArticle: string;
-  detected: boolean;
-  explanation: string;
-}
+/** ¿El requisito es aplicable al sistema evaluado? */
+export type RequirementApplicability = 'aplica' | 'no_aplica' | 'desconocida';
 
-export interface ObligationItem {
-  code: string;
+/**
+ * Estado del requisito. Solo `acreditado` equivale a cumplimiento y exige validación humana con evidencia.
+ * - declarado: lo afirma el promotor en la entrevista, sin comprobar.
+ * - no_verificado: la herramienta no puede comprobarlo con la información disponible.
+ * - pendiente: hay una actuación o documentación por realizar.
+ * - incumple: consta un incumplimiento.
+ * - no_evaluado: la herramienta no ha examinado este requisito.
+ */
+export type RequirementResult = 'acreditado' | 'declarado' | 'no_verificado' | 'pendiente' | 'incumple' | 'no_evaluado';
+
+/** De dónde procede la información que sostiene el resultado. */
+export type EvidenceOrigin = 'declaracion_promotor' | 'comprobacion_automatica' | 'validacion_humana';
+
+/** Pilar del cuadro de mando al que pertenece el requisito. */
+export type RequirementPillar = 'ria' | 'rgpd' | 'ens' | 'gobernanza';
+
+/** Categoría del requisito: práctica prohibida examinada (Art. 5 RIA) u obligación. */
+export type RequirementKind = 'practica_prohibida' | 'obligacion';
+
+/**
+ * Representación común de cada requisito. Es la única fuente que consumen
+ * el cuadro de mando, el expediente DOCX, el Markdown y el manifiesto.
+ */
+export interface RequirementAssessment {
+  id: string;
+  kind: RequirementKind;
+  pillar: RequirementPillar;
   title: string;
-  legalBasis: string;
-  status: 'compliant' | 'warning' | 'non_compliant';
-  description: string;
-  actionRequired: string;
+  norma: string;
+  precepto: string;
+  aplicabilidad: RequirementApplicability;
+  resultado: RequirementResult;
+  origen: EvidenceOrigin;
+  /** Hechos en los que se basa el resultado, separando lo declarado de lo comprobado. */
+  hechos: string;
+  accionRequerida: string;
+  evidencia?: string;
+  revisadoPor?: string;
+  /** Fecha ISO de la evaluación. */
+  fecha: string;
+  /** Fecha ISO desde la que la obligación es exigible, si está cotejada. */
+  exigibleDesde?: string;
 }
 
 export interface DiagnosticResult {
@@ -81,8 +111,10 @@ export interface DiagnosticResult {
   isAutomatedAdministrativeAct: boolean;
   ensCategory: 'BASICA' | 'MEDIA' | 'ALTA';
   ensReasoning: string;
-  prohibitedChecks: ProhibitedCheck[];
-  obligations: ObligationItem[];
+  /** Fuente única de requisitos: prácticas prohibidas examinadas y obligaciones. */
+  requirements: RequirementAssessment[];
+  /** Versión del motor que produjo este diagnóstico. */
+  engineVersion: string;
   redFlags: string[];
   recommendations: string[];
   executiveSummary: string;

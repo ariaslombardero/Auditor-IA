@@ -18,7 +18,10 @@ import {
 } from 'docx';
 import { saveAs } from 'file-saver';
 import { MONOGRAMA_JA_BASE64 } from './brandLogo';
-import type { FullAuditState, AppIdioma } from '../types';
+import type { FullAuditState, AppIdioma, RequirementAssessment, RequirementResult } from '../types';
+import { normalizeDiagnostic, obligations, prohibitedPractices, requirementsByPillar, resultLabel, originLabel, applicabilityLabel } from './assessmentModel';
+import { computeExecutivePillars, computeExecutiveVerdict, type PillarStatus } from './dashboardPillars';
+import { buildDocumentTraceability, ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 const FONT_BODY = 'Calibri';
 const FONT_HEADING = 'Arial';
@@ -32,7 +35,8 @@ export async function exportOfficialDossierDocx(
   llmCritique?: string,
   idioma: AppIdioma = 'castellano'
 ): Promise<void> {
-  const doc = buildOfficialDossierDocument(state, llmCritique, idioma);
+  const traceability = await buildDocumentTraceability(state);
+  const doc = buildOfficialDossierDocument(state, llmCritique, idioma, traceability);
   const blob = await Packer.toBlob(doc);
   const safeTitle = state.ingest.appName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
   saveAs(blob, `Expediente_Conformidad_IA_${safeTitle}_${Date.now()}.docx`);
@@ -44,10 +48,15 @@ export async function exportOfficialDossierDocx(
 export function buildOfficialDossierDocument(
   state: FullAuditState,
   llmCritique?: string,
-  idioma: AppIdioma = 'castellano'
+  idioma: AppIdioma = 'castellano',
+  traceability?: DocumentTraceability
 ): Document {
-  const { ingest, answers, diagnostic, metadata } = state;
+  const { ingest, answers, metadata } = state;
+  const diagnostic = normalizeDiagnostic(state.diagnostic);
   const isGl = idioma === 'galego';
+  const requirements = diagnostic?.requirements || [];
+  const pillars = diagnostic ? computeExecutivePillars(diagnostic) : null;
+  const verdict = diagnostic ? computeExecutiveVerdict(diagnostic) : null;
 
   return new Document({
     styles: {
@@ -103,8 +112,8 @@ export function buildOfficialDossierDocument(
                 children: [
                   new TextRun({
                     text: isGl
-                      ? 'Expediente Oficial de Conformidade RIA (Reg. UE 2024/1689) e ENS (RD 311/2022) · Páxina '
-                      : 'Expediente Oficial de Conformidad RIA (Reg. UE 2024/1689) y ENS (RD 311/2022) · Página ',
+                      ? 'Informe técnico preliminar RIA (Reg. UE 2024/1689) e ENS (RD 311/2022) · Páxina '
+                      : 'Informe técnico preliminar RIA (Reg. UE 2024/1689) y ENS (RD 311/2022) · Página ',
                     size: 16,
                     color: COLOR_MUTED,
                     italics: true,
@@ -152,8 +161,8 @@ export function buildOfficialDossierDocument(
             children: [
               new TextRun({
                 text: isGl
-                  ? 'EXPEDIENTE TÉCNICO E DICTAME DE CONFORMIDADE NORMATIVA DE SISTEMA DE INTELIXENCIA ARTIFICIAL'
-                  : 'EXPEDIENTE TÉCNICO Y DICTAMEN DE CONFORMIDAD NORMATIVA DE SISTEMA DE INTELIGENCIA ARTIFICIAL',
+                  ? 'INFORME TÉCNICO PRELIMINAR DE ADECUACIÓN NORMATIVA DE SISTEMA DE INTELIXENCIA ARTIFICIAL'
+                  : 'INFORME TÉCNICO PRELIMINAR DE ADECUACIÓN NORMATIVA DE SISTEMA DE INTELIGENCIA ARTIFICIAL',
                 size: 34,
                 bold: true,
                 color: COLOR_PRIMARY,
@@ -207,8 +216,8 @@ export function buildOfficialDossierDocument(
                         children: [
                           new TextRun({
                             text: isGl
-                              ? '⚖️ CLÁUSULA DE SALVAGUARDA PERICIAL INSTITUCIONAL E CUALIFICACIÓN PRELIMINAR:'
-                              : '⚖️ CLÁUSULA DE SALVAGUARDA PERICIAL INSTITUCIONAL Y CALIFICACIÓN PRELIMINAR:',
+                              ? '⚖️ CLÁUSULA DE SALVAGARDA E CUALIFICACIÓN PRELIMINAR:'
+                              : '⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:',
                             bold: true,
                             size: 18,
                             color: COLOR_PRIMARY,
@@ -220,8 +229,8 @@ export function buildOfficialDossierDocument(
                         children: [
                           new TextRun({
                             text: isGl
-                              ? 'O presente informe pericial foi xerado mediante o motor automatizado de auditoría de conformidade normativa (v2.0). Constitúe unha avaliación técnica preliminar de auxilio ao procedemento administrativo. Conforme á Lei 40/2015 e ao Regulamento (UE) 2024/1689, a cualificación definitiva e a asunción de riscos corresponden ao órgano administrativo promotor, requiríndose a ratificación expresa do DPD e do CISO.'
-                              : 'El presente informe pericial ha sido generado mediante el motor automatizado de auditoría de conformidad normativa (v2.0). Constituye una evaluación técnica preliminar de auxilio al procedimiento administrativo. Conforme a la Ley 40/2015 y al Reglamento (UE) 2024/1689, la calificación definitiva y la asunción de riesgos corresponden al órgano administrativo promotor, requiriéndose la ratificación expresa del DPD y del CISO.',
+                              ? `O presente informe técnico foi xerado mediante unha ferramenta automatizada de diagnóstico (motor v${diagnostic?.engineVersion || ENGINE_VERSION}) a partir do declarado polo promotor. Non é un acto administrativo nin acredita o cumprimento: a cualificación definitiva e a asunción de riscos corresponden ao órgano competente, coa revisión expresa do DPD e do Responsable de Seguridade.`
+                              : `El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v${diagnostic?.engineVersion || ENGINE_VERSION}) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.`,
                             size: 16,
                             italics: true,
                             color: COLOR_DARK,
@@ -247,8 +256,8 @@ export function buildOfficialDossierDocument(
             children: [
               new TextRun({
                 text: isGl
-                  ? 'MARCO XURÍDICO APLICABLE: Regulamento (UE) 2024/1689 (AI Act), Real Decreto 729/2023 (Estatuto AESIA), Lei 15/2022 (Art. 23 Igualdade e Non Discriminación Algorítmica), Real Decreto 311/2022 (ENS), Guía CCN-STIC 884D, Lei 40/2015 de Réxime Xurídico do Sector Público (Arts. 32 e 41), Regulamento (UE) 2016/679 (RGPD) e Lei Orgánica 3/2018 (LOPDGDD).'
-                  : 'MARCO JURÍDICO APLICABLE: Reglamento (UE) 2024/1689 (AI Act), Real Decreto 729/2023 (Estatuto AESIA), Ley 15/2022 (Art. 23 Igualdad y No Discriminación Algorítmica), Real Decreto 311/2022 (ENS), Guía CCN-STIC 884D, Ley 40/2015 de Régimen Jurídico del Sector Público (Arts. 32 y 41), Reglamento (UE) 2016/679 (RGPD) y Ley Orgánica 3/2018 (LOPDGDD).',
+                  ? 'MARCO XURÍDICO APLICABLE: Regulamento (UE) 2024/1689 (AI Act), Real Decreto 729/2023 (Estatuto AESIA), Lei 15/2022 (Art. 23 Igualdade e Non Discriminación Algorítmica), Real Decreto 311/2022 (ENS), Regulamento (UE) 2026/1744 (Ómnibus dixital sobre IA), Lei 40/2015 de Réxime Xurídico do Sector Público (Arts. 32, 36, 41 e 43), Regulamento (UE) 2016/679 (RGPD) e Lei Orgánica 3/2018 (LOPDGDD).'
+                  : 'MARCO JURÍDICO APLICABLE: Reglamento (UE) 2024/1689 (AI Act), Real Decreto 729/2023 (Estatuto AESIA), Ley 15/2022 (Art. 23 Igualdad y No Discriminación Algorítmica), Real Decreto 311/2022 (ENS), Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA), Ley 40/2015 de Régimen Jurídico del Sector Público (Arts. 32, 36, 41 y 43), Reglamento (UE) 2016/679 (RGPD) y Ley Orgánica 3/2018 (LOPDGDD).',
                 size: 17,
                 color: COLOR_MUTED,
                 italics: true,
@@ -262,7 +271,7 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: diagnostic?.executiveSummary || 'El sistema ha sido evaluado favorablemente bajo las condiciones técnicas y operativas especificadas.',
+                text: diagnostic?.executiveSummary || 'Diagnóstico no disponible.',
               }),
             ],
             spacing: { after: 200 },
@@ -282,7 +291,7 @@ export function buildOfficialDossierDocument(
                             new Paragraph({
                               children: [
                                 new TextRun({
-                                  text: '⚠️ ADVERTENCIA PERICIAL DE DISCREPANCIA TÉCNICO-JURÍDICA:',
+                                  text: '⚠️ POSIBLE DISCREPANCIA DE CLASIFICACIÓN (NO VERIFICADA):',
                                   bold: true,
                                   size: 18,
                                   color: 'DC2626',
@@ -325,43 +334,13 @@ export function buildOfficialDossierDocument(
                   makeScorecardHeaderCell('Pilar Normativo'),
                   makeScorecardHeaderCell('Fundamento Legal'),
                   makeScorecardHeaderCell('Estado / Nivel'),
-                  makeScorecardHeaderCell('Veredicto Pericial'),
+                  makeScorecardHeaderCell('Estado de acreditación'),
                 ],
               }),
-              makeScorecardRow(
-                'I. AI Act (UE 2024/1689)',
-                'Arts. 3.1, 5, 6.3, 50 RIA',
-                diagnostic?.riskLabel || 'Riesgo de Transparencia',
-                diagnostic?.riskClassification === 'prohibited'
-                  ? 'NO PROCEDE (Práctica Prohibida Art. 5)'
-                  : diagnostic?.riskClassification === 'high_risk'
-                  ? 'CONDICIONADO (Exige Marcado CE y EIPD)'
-                  : diagnostic?.isArticle63Derogation
-                  ? 'CONFORME (Excepción Art. 6.3 Documentada)'
-                  : 'CONFORME (Obligaciones Art. 50)'
-              ),
-              makeScorecardRow(
-                'II. Privacidad y RGPD',
-                'RGPD Art. 6.1.e, 9 / LOPDGDD 3/2018',
-                answers.processesSpecialCategoryData ? 'Art. 9 (Datos Sensibles)' : 'Datos Ordinarios',
-                answers.processesSpecialCategoryData ? 'CONDICIONADO (EIPD previa y ENS Alto)' : 'CONFORME (Legitimación administrativa)'
-              ),
-              makeScorecardRow(
-                'III. Ciberseguridad ENS',
-                'RD 311/2022 / CCN-STIC 884D',
-                `ENS Nivel ${diagnostic?.ensCategory || 'BÁSICA'}`,
-                diagnostic?.ensCategory === 'ALTA'
-                  ? 'CONDICIONADO (Auditoría Bienal Externa)'
-                  : 'CONFORME (Controles IA-01 a IA-08 implantados)'
-              ),
-              makeScorecardRow(
-                'IV. Gobernanza Pública',
-                'Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23',
-                answers.administrativeNature === 'technical_auxiliary' ? 'Auxilio Instrumental' : 'Actuación Automatizada',
-                answers.administrativeNature === 'technical_auxiliary'
-                  ? 'CONFORME (Human-in-the-Loop preceptivo)'
-                  : 'REQUIERE Sede Electrónica y Regulación Formal'
-              ),
+              makeScorecardRow('I. RIA (UE 2024/1689)', 'Arts. 3.1, 5, 6 y 50 RIA', diagnostic?.riskLabel || '—', pillars?.ria.text || '—', pillars?.ria.status || 'neutral'),
+              makeScorecardRow('II. Privacidad y RGPD', 'RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD', pillars?.rgpd.label || '—', pillars?.rgpd.text || '—', pillars?.rgpd.status || 'neutral'),
+              makeScorecardRow('III. Ciberseguridad ENS', 'RD 311/2022, Anexo II', pillars?.ens.label || '—', pillars?.ens.text || '—', pillars?.ens.status || 'neutral'),
+              makeScorecardRow('IV. Gobernanza pública', 'Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23', pillars?.gobernanza.label || '—', pillars?.gobernanza.text || '—', pillars?.gobernanza.status || 'neutral'),
             ],
           }),
 
@@ -369,13 +348,9 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: `Conclusión del Dictamen: El despliegue de "${ingest.appName}" en el ámbito de ${metadata.entityName} resulta ${
-                  diagnostic?.riskClassification === 'prohibited'
-                    ? 'JURÍDICAMENTE IMPROCEDENTE al incurrir en prácticas prohibidas por el Art. 5 del RIA.'
-                    : 'JURÍDICA Y TÉCNICAMENTE PROCEDENTE, condicionado al estricto cumplimiento de los controles de supervisión humana (Art. 14 RIA), la ratificación formal de los órganos responsables y la observancia de la Guía CCN-STIC 884D.'
-                }`,
+                text: verdict ? `Conclusión preliminar: ${verdict.label.replace('VEREDICTO: ', '')}. ${verdict.detail}` : 'Conclusión no disponible.',
                 bold: true,
-                color: diagnostic?.riskClassification === 'prohibited' ? 'DC2626' : COLOR_PRIMARY,
+                color: verdict?.level === 'blocked' ? 'DC2626' : verdict?.level === 'conditioned' ? 'D97706' : COLOR_PRIMARY,
               }),
             ],
             spacing: { after: 400 },
@@ -397,21 +372,21 @@ export function buildOfficialDossierDocument(
                 text: ingest.isAiSystem === false
                   ? 'Software Determinista Tradicional. Sin modelos de inferencia LLM ni agentes autónomos. Ejecución basada en reglas estáticas en servidor/cliente web institucional.'
                   : answers.hostingModel === 'local_on_premise'
-                  ? 'Ejecución Local On-Premise (Ollama / vLLM) en servidores propios. Máximo nivel de soberanía del dato y confidencialidad.'
+                  ? 'Declarado: ejecución local en servidores propios (Ollama / vLLM). No se ha comprobado el proveedor efectivamente utilizado.'
                   : answers.hostingModel === 'eu_cloud_dpa'
-                  ? 'Alojamiento en Nube Europea con Acuerdo de Encargo de Tratamiento (DPA).'
-                  : 'Alojamiento externo en proveedor internacional sujeto a cláusulas contractuales.',
+                  ? 'Declarado: alojamiento en nube europea con contrato de encargo del tratamiento.'
+                  : 'Declarado: alojamiento en proveedor internacional sujeto a cláusulas contractuales.',
               }),
             ],
             spacing: { after: 150 },
           }),
           new Paragraph({
             children: [
-              new TextRun({ text: 'Nivel de Cobertura Documental: ', bold: true }),
+              new TextRun({ text: 'Documentación aportada: ', bold: true }),
               new TextRun({
                 text: ingest.agentsMdContent?.trim()
-                  ? '🛡️ Cobertura Pericial Completa (README.md funcional + AGENTS.md directivas del agente y salvaguardas éticas).'
-                  : '📄 Cobertura Documental Estándar (README.md funcional y de usuario).',
+                  ? 'README.md y AGENTS.md (directivas del agente). Ambos son declaraciones del promotor.'
+                  : 'README.md (documentación funcional y de usuario).',
               }),
             ],
             spacing: { after: 150 },
@@ -427,9 +402,9 @@ export function buildOfficialDossierDocument(
             ? [
                 new Paragraph({
                   children: [
-                    new TextRun({ text: 'Verificación de Directivas del Agente (AGENTS.md): ', bold: true }),
+                    new TextRun({ text: 'Directivas del agente (AGENTS.md): ', bold: true }),
                     new TextRun({
-                      text: 'Se han auditado las directivas internas del modelo declaradas en AGENTS.md, acreditándose la delimitación del agente a funciones instrumentales y la ausencia de potestades resolutorias o toma autónoma de decisiones administrativas.',
+                      text: 'Se han tenido en cuenta como declaraciones del promotor. No se ha verificado que el sistema las cumpla en funcionamiento.',
                       italics: true,
                     }),
                   ],
@@ -443,19 +418,19 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Se ha verificado individualmente que el sistema no incurre en ninguna de las tipologías proscritas por el Artículo 5 del Reglamento (UE) 2024/1689:',
+                text: 'Estado de cada práctica del Artículo 5 del Reglamento (UE) 2024/1689. «No evaluado» significa que la herramienta no la ha examinado y que debe confirmarse en la revisión jurídica; «Pendiente» indica un indicio que requiere verificación:',
               }),
             ],
             spacing: { after: 200 },
           }),
-          ...buildProhibitedChecksList(diagnostic?.prohibitedChecks || []),
+          ...buildProhibitedChecksList(prohibitedPractices(requirements)),
 
           // SECCIÓN 4: CALIFICACIÓN DE ALTO RIESGO Y ÓMNIBUS DIGITAL
-          makeSectionHeading('4. ANÁLISIS DE RIESGO: ANEXO III RIA Y ÓMNIBUS DIGITAL'),
+          makeSectionHeading('4. CLASIFICACIÓN SEGÚN EL RIA (ANEXO III Y EXCEPCIÓN DEL ART. 6.3)'),
           new Paragraph({
             children: [
               new TextRun({
-                text: `Clasificación adoptada en la cascada pericial de 5 niveles: ${diagnostic?.riskLabel.toUpperCase()}.`,
+                text: `Clasificación preliminar, basada en lo declarado: ${diagnostic?.riskLabel.toUpperCase()}.`,
                 bold: true,
                 color: COLOR_PRIMARY,
               }),
@@ -466,16 +441,16 @@ export function buildOfficialDossierDocument(
             children: [
               new TextRun({
                 text: ingest.isAiSystem === false
-                  ? 'Nivel 0 - Exclusión del Ámbito del AI Act: Conforme al Artículo 3, apartado 1, del Reglamento (UE) 2024/1689, los sistemas basados exclusivamente en reglas o lógica determinista predefinida por personas no constituyen sistemas de IA. La herramienta queda formalmente EXCLUIDA de las obligaciones del AI Act, rigiéndose por la normativa ordinaria de administración digital (Ley 39/2015, Ley 40/2015 Art. 41) y ciberseguridad ENS.'
+                  ? 'Nivel 0 - Exclusión del ámbito del RIA: según lo declarado, el sistema se basa exclusivamente en reglas predefinidas, sin capacidad de inferencia, por lo que no sería un sistema de IA (Art. 3.1 del Reglamento (UE) 2024/1689). En ese caso se rige por la normativa de administración electrónica (Ley 39/2015, Ley 40/2015) y por el ENS.'
                   : diagnostic?.riskClassification === 'prohibited'
-                  ? 'Nivel 1 - Riesgo Inadmisible: El sistema incurre en supuestos proscritos del Artículo 5 del RIA y no puede ser puesto en servicio en la Unión Europea.'
+                  ? 'Nivel 1 - Indicio de práctica prohibida: se han detectado en la documentación indicios de prácticas del Artículo 5 del RIA. Deben verificarse jurídicamente; si se confirman, el sistema no puede ponerse en servicio.'
                   : diagnostic?.riskClassification === 'high_risk'
-                  ? 'Nivel 2 - Alto Riesgo (Art. 6.2 y Anexo III): El sistema evalúa o perfila personas o adopta decisiones con impacto material en derechos fundamentales en procedimientos públicos. Requiere sistema de gestión de riesgos (Art. 9), gobernanza de datos (Art. 10), documentación técnica exhaustiva (Art. 11), registro de eventos (Art. 12), transparencia (Art. 13), supervisión humana (Art. 14), ciberseguridad y precisión (Art. 15), marcado CE e inscripción previa en la base de datos de la Comisión Europea (Art. 49/71).'
+                  ? 'Nivel 2 - Alto Riesgo (Art. 6.2 y Anexo III): según lo declarado, el sistema interviene en un ámbito del Anexo III. Como proveedor: gestión de riesgos (Art. 9), gobernanza de datos (Art. 10), documentación técnica (Art. 11), registro de eventos (Art. 12), transparencia (Art. 13), supervisión humana (Art. 14), precisión y ciberseguridad (Art. 15), evaluación de la conformidad por control interno sin organismo notificado (Art. 43.2 y Anexo VI), marcado CE y registro (Arts. 49 y 71). Como responsable del despliegue: Art. 26 y evaluación de impacto en los derechos fundamentales (Art. 27). Exigibles para el Anexo III desde el 2 de diciembre de 2027 (Reglamento (UE) 2026/1744).'
                   : diagnostic?.isArticle63Derogation
-                  ? 'Nivel 3 - Excepción / Derogación de Alto Riesgo (Art. 6.3 RIA): El sistema interviene en un ámbito formalmente afín al Anexo III pero cumple taxativamente las condiciones del Art. 6.3 (tarea estrecha/instrumental preparatoria sin impacto material autónomo y sin perfilado de personas).'
+                  ? 'Nivel 3 - Excepción del Art. 6.3 RIA: según lo declarado, el sistema interviene en un ámbito del Anexo III pero se acogería a la excepción del Art. 6.3, que exige que concurra al menos una de sus condiciones a) a d), que no influya sustancialmente en el resultado de la decisión y que no haya perfilado de personas físicas. Debe documentarse (Art. 6.4) y registrarse (Art. 49.2).'
                   : diagnostic?.riskClassification === 'minimal_risk'
-                  ? 'Nivel 5 - Riesgo Mínimo: Conforme al Artículo 95 del RIA, el sistema carece de componentes generativos hacia el público o manipulación sintética, rigiéndose por códigos de conducta voluntarios.'
-                  : 'Nivel 4 - Riesgo de Transparencia (Art. 50 RIA): Sujeto a las obligaciones de transparencia activa, información a los usuarios de que interactúan con una IA y etiquetado preceptivo de contenidos generados.',
+                  ? 'Nivel 5 - Riesgo Mínimo: según lo declarado, el sistema no interactúa con personas ni genera contenido sintético; puede adherirse a códigos de conducta voluntarios (Art. 95 RIA).'
+                  : 'Nivel 4 - Riesgo de Transparencia (Art. 50 RIA): según lo declarado, el sistema interactúa con personas o genera contenido, por lo que debe informar de que se interactúa con una IA y marcar el contenido generado.',
               }),
             ],
             spacing: { after: 200 },
@@ -485,7 +460,7 @@ export function buildOfficialDossierDocument(
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: '4.2. JUSTIFICACIÓN TÉCNICA MOTIVADA DE DEROGACIÓN (ART. 6.3 Y ART. 6.4 RIA):',
+                      text: '4.2. FUNDAMENTO DECLARADO DE LA EXCEPCIÓN (ART. 6.3 RIA):',
                       bold: true,
                       size: 20,
                       color: COLOR_SECONDARY,
@@ -496,8 +471,7 @@ export function buildOfficialDossierDocument(
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: diagnostic.article63Justification ||
-                        'Se acredita formalmente que el sistema realiza una tarea preparatoria o instrumental estrecha de apoyo a empleados públicos. No realiza perfilado de personas físicas (Art. 6.3 párrafo 3). Todo contenido o resultado constituye un borrador auxiliar sometido a revisión humana preceptiva antes de surtir efecto administrativo alguno.',
+                      text: diagnostic.article63Justification || 'Sin fundamento declarado.',
                       italics: true,
                     }),
                   ],
@@ -506,7 +480,7 @@ export function buildOfficialDossierDocument(
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: 'Diligencia de Registro Previo (Art. 6.4 RIA): Conforme al Artículo 6, apartado 4 del RIA, el promotor documenta mediante el presente expediente la evaluación técnica previa que justifica la no consideración como alto riesgo, quedando registrada con anterioridad a su puesta en servicio y a disposición de la Agencia Española de Supervisión de Inteligencia Artificial (AESIA).',
+                      text: 'Pendiente (Arts. 6.4 y 49.2 RIA): el proveedor debe documentar su evaluación antes de la puesta en servicio, facilitarla a las autoridades que la soliciten y registrar el sistema en la base de datos de la UE. Este informe recoge lo declarado, pero no sustituye esa documentación ni el registro.',
                       size: 18,
                       color: COLOR_MUTED,
                     }),
@@ -523,8 +497,10 @@ export function buildOfficialDossierDocument(
               new TextRun({ text: 'Nivel de Control Humano: ', bold: true }),
               new TextRun({
                 text: answers.humanOversightLevel === 'pre_execution'
-                  ? 'Supervisión Humana Previa Preceptiva (Human-in-the-Loop). Todo resultado generado es un borrador no vinculante que requiere revisión y validación funcionarial humana antes de tener validez.'
-                  : 'Supervisión en ejecución o posterior con capacidad de intervención y detención (Human-on-the-Loop).',
+                  ? 'Declarada supervisión humana previa: los resultados se presentan como borradores que revisa un empleado público antes de producir efectos. No se ha verificado el funcionamiento real del procedimiento.'
+                  : answers.humanOversightLevel === 'post_execution'
+                  ? 'Declarada supervisión humana posterior: debe verificarse si un empleado público interviene de forma directa antes de que el resultado produzca efectos.'
+                  : 'Declarada actuación sin intervención humana: puede quedar sujeta a la prohibición del Art. 22 RGPD y exige los requisitos del Art. 41 de la Ley 40/2015.',
               }),
             ],
             spacing: { after: 150 },
@@ -539,7 +515,9 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Deslinde con el Artículo 41 de la Ley 40/2015: Se hace constar que el software NO constituye una "actuación administrativa automatizada" en sentido formal, dado que no suscribe resoluciones ni emite actos de trámite vinculantes. Los actos administrativos y la responsabilidad patrimonial (Art. 32 Ley 40/2015) se imputan única y exclusivamente a los funcionarios públicos que firman y validan los documentos finales.',
+                text: diagnostic?.isAutomatedAdministrativeAct
+                  ? 'Deslinde con el Artículo 41 de la Ley 40/2015: se ha declarado que el sistema realiza actuaciones administrativas automatizadas, es decir, sin intervención directa de un empleado público. Antes de su puesta en servicio deben establecerse los órganos competentes para la definición de especificaciones, programación, mantenimiento, supervisión, control de calidad y auditoría, y el órgano responsable a efectos de impugnación (Art. 41.2).'
+                  : 'Deslinde con el Artículo 41 de la Ley 40/2015: el promotor declara que un empleado público interviene de forma directa en cada actuación, por lo que no habría actuación administrativa automatizada. Esta afirmación no se ha verificado y debe contrastarse con el funcionamiento real del procedimiento.',
               }),
             ],
             spacing: { after: 200 },
@@ -547,17 +525,25 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Garantía de No Discriminación y Transparencia Algorítmica (Ley 15/2022, Art. 23): En cumplimiento del régimen exigible a las Administraciones Públicas, se certifica que los criterios o prompts del sistema no introducen sesgos directos ni indirectos por motivos de nacimiento, origen racial, sexo, religión o cualquier otra condición o circunstancia personal o social.',
+                text: 'Responsabilidad patrimonial: los particulares exigen directamente a la Administración Pública correspondiente la indemnización de las lesiones causadas por el funcionamiento de los servicios públicos, también cuando intervenga este sistema (Arts. 32.1 y 36.1 de la Ley 40/2015). La Administración solo puede exigir responsabilidad a sus autoridades y personal cuando haya concurrido dolo, o culpa o negligencia graves (Art. 36.2).',
+              }),
+            ],
+            spacing: { after: 200 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: 'No discriminación algorítmica (Ley 15/2022, Art. 23): las administraciones públicas favorecerán mecanismos de minimización de sesgos, transparencia y rendición de cuentas, y se promoverán evaluaciones del posible impacto discriminatorio. No se han aportado evaluaciones de sesgo, por lo que este extremo figura como no evaluado.',
               }),
             ],
             spacing: { after: 400 },
           }),
 
-          // SECCIÓN 6: SEGURIDAD CCN-STIC 884D Y ENS
-          makeSectionHeading('6. MEDIDAS DE SEGURIDAD (ENS RD 311/2022 Y CCN-STIC 884D)'),
+          // SECCIÓN 6: SEGURIDAD ENS
+          makeSectionHeading('6. MEDIDAS DE SEGURIDAD (ENS, RD 311/2022)'),
           new Paragraph({
             children: [
-              new TextRun({ text: `Categoría ENS asignada: Nivel ${diagnostic?.ensCategory}. `, bold: true }),
+              new TextRun({ text: `Categoría ENS orientativa: ${diagnostic?.ensCategory}. `, bold: true }),
               new TextRun({ text: diagnostic?.ensReasoning || '' }),
             ],
             spacing: { after: 200 },
@@ -565,74 +551,77 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Directrices técnicas de obligado cumplimiento implantadas:',
+                text: 'Medidas del Anexo II del ENS relacionadas con el uso de servicios de IA y su estado:',
                 bold: true,
               }),
             ],
             spacing: { after: 100 },
           }),
-          makeBulletPoint('CCN-STIC 884D (IA-01): Prohibición de exposición de credenciales y claves de API en navegadores o clientes.'),
-          makeBulletPoint(`CCN-STIC 884D (IA-08): Módulo de registro de peticiones, respuestas y marcas de tiempo habilitado (${answers.auditLogsEnabled ? 'CONFORME' : 'REQUIERE ACTIVACIÓN'}).`),
-          makeBulletPoint('CCN-STIC 884D (IA-04): Sanitización de entradas y prohibición de inyección de datos de carácter personal sin amparo legal.'),
+          ...requirementsByPillar(requirements, 'ens').map((r) =>
+            makeBulletPoint(`${r.precepto} — ${resultLabel(r.resultado)}: ${r.hechos}`)
+          ),
           new Paragraph({ text: '', spacing: { before: 200 } }),
 
-          // SECCIÓN 7: ANÁLISIS CUALITATIVO / AUDITORÍA DE IA (si hay LLM)
-          ...(llmCritique
-            ? [
-                makeSectionHeading('7. DICTAMEN ADICIONAL DE AUDITORÍA ASISTIDA'),
-                ...parseMarkdownToDocx(llmCritique),
-              ]
-            : []),
-
-          // DILIGENCIA DE COTEJO NORMATIVO TELEMÁTICO (BOE Y DOUE CELLAR)
-          makeSectionHeading(
-            isGl
-              ? 'DILIXENCIA DE COTEXO NORMATIVO TELEMÁTICO (BOE E DOUE CELLAR)'
-              : 'DILIGENCIA DE COTEJO NORMATIVO TELEMÁTICO (BOE Y DOUE CELLAR)'
-          ),
+          // SECCIÓN 7: OBLIGACIONES Y ESTADO DE ACREDITACIÓN (modelo común)
+          makeSectionHeading('7. OBLIGACIONES Y ESTADO DE ACREDITACIÓN'),
           new Paragraph({
             children: [
               new TextRun({
-                text: isGl
-                  ? 'Faise constar mediante a presente dilixencia técnica que os preceptos xurídicos invocados e auditados neste expediente foron verificados telematicamente en tempo real fronte aos repositorios normativos oficiais á data de emisión deste dictame:'
-                  : 'Se hace constar mediante la presente diligencia técnica que los preceptos jurídicos invocados y auditados en este expediente han sido verificados telemáticamente en tiempo real frente a los repositorios normativos oficiales a la fecha de emisión de este dictamen:',
-                size: 20,
-              }),
-            ],
-            spacing: { after: 150 },
-          }),
-          makeBulletPoint(
-            isGl
-              ? 'Diario Oficial da Unión Europea (DOUE / Repositorio Cellar REST API): Regulamento (UE) 2024/1689 (AI Act) [CELEX 32024R1689 - Arts. 5, 12, 14, 50] e Regulamento (UE) 2016/679 (RGPD) [CELEX 32016R0679]. Estado: Vixente e consolidado telematicamente.'
-              : 'Diario Oficial de la Unión Europea (DOUE / Repositorio Cellar REST API): Reglamento (UE) 2024/1689 (AI Act) [CELEX 32024R1689 - Arts. 5, 12, 14, 50] y Reglamento (UE) 2016/679 (RGPD) [CELEX 32016R0679]. Estado: Vigente y consolidado telemáticamente.'
-          ),
-          makeBulletPoint(
-            isGl
-              ? 'Boletín Oficial del Estado (BOE / Repositorio Legalize-ES): Lei 40/2015 de Réxime Xurídico do Sector Público [BOE-A-2015-10566 - Art. 41 Actuación Administrativa Automatizada] e Real Decreto 311/2022 do Esquema Nacional de Seguridade (ENS) [BOE-A-2022-7191]. Estado: Vixente e consolidado telematicamente.'
-              : 'Boletín Oficial del Estado (BOE / Repositorio Legalize-ES): Ley 40/2015 de Régimen Jurídico del Sector Público [BOE-A-2015-10566 - Art. 41 Actuación Administrativa Automatizada] y Real Decreto 311/2022 del Esquema Nacional de Seguridad (ENS) [BOE-A-2022-7191]. Estado: Vigente y consolidado telemáticamente.'
-          ),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: isGl
-                  ? 'Conclusión do cotexo: Non se detectaron modificacións derrogatorias sobrevidas nin alteracións materiais nos preceptos aplicables que invaliden a presente cualificación xurídica.'
-                  : 'Conclusión del cotejo: No se han detectado modificaciones derogatorias sobrevenidas ni alteraciones materiales en los preceptos aplicables que invaliden la presente calificación jurídica.',
+                text: 'Solo «Acreditado» equivale a cumplimiento y exige validación humana con evidencia. «Declarado» recoge lo afirmado por el promotor sin comprobar.',
                 italics: true,
                 size: 18,
                 color: COLOR_MUTED,
               }),
             ],
-            spacing: { before: 100, after: 400 },
+            spacing: { after: 150 },
           }),
+          ...obligations(requirements).flatMap((r) => buildRequirementParagraphs(r, idioma)),
 
-          // DILIGENCIA DE FIRMAS
-          makeSectionHeading(isGl ? 'DILIXENCIA FORMAL DE CONFORMIDADE E RÚBRICAS' : 'DILIGENCIA FORMAL DE CONFORMIDAD Y RUBRICAS'),
+          // SECCIÓN 7: ANÁLISIS CUALITATIVO / AUDITORÍA DE IA (si hay LLM)
+          ...(llmCritique
+            ? [
+                makeSectionHeading('8. ANÁLISIS ASISTIDO POR IA (CONTENIDO NO VERIFICADO)'),
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Texto generado por un modelo de lenguaje. Es contenido no verificado: no modifica la clasificación ni acredita requisitos, y sus citas deben comprobarse antes de cualquier uso.',
+                      italics: true,
+                      size: 18,
+                      color: 'D97706',
+                    }),
+                  ],
+                  spacing: { after: 150 },
+                }),
+                ...parseMarkdownToDocx(llmCritique),
+              ]
+            : []),
+
+          // NOTA SOBRE LAS FUENTES Y TRAZABILIDAD DEL DOCUMENTO
+          makeSectionHeading(isGl ? 'NOTA SOBRE AS FONTES E TRAZABILIDADE DO DOCUMENTO' : 'NOTA SOBRE LAS FUENTES Y TRAZABILIDAD DEL DOCUMENTO'),
           new Paragraph({
             children: [
               new TextRun({
                 text: isGl
-                  ? 'NOTA DE SALVAGUARDA INSTITUCIONAL E ASUNCIÓN DE RESPONSABILIDADE:\nO presente informe constitúe auxilio técnico pericial instrumental preliminar conforme ao Art. 41 da Lei 40/2015 e ao RIA (UE 2024/1689). A validez xurídica definitiva ante terceiros e a asunción formal de riscos operacionais queda ratificada mediante as seguintes rúbricas dos órganos administrativos competentes:'
-                  : 'NOTA DE SALVAGUARDA INSTITUCIONAL Y ASUNCIÓN DE RESPONSABILIDAD:\nEl presente informe constituye auxilio técnico pericial instrumental preliminar conforme al Art. 41 de la Ley 40/2015 y al RIA (UE 2024/1689). La validez jurídica definitiva ante terceros y la asunción formal de riesgos operacionales queda ratificada mediante las siguientes rúbricas de los órganos administrativos competentes:',
+                  ? `Os preceptos citados proceden da base de coñecemento da ferramenta (${NORMATIVE_SNAPSHOT}). Non se verificou a súa vixencia no momento de emitir este documento: debe comprobarse no BOE e en EUR-Lex antes de calquera uso.`
+                  : `Los preceptos citados proceden de la base de conocimiento de la herramienta (${NORMATIVE_SNAPSHOT}). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.`,
+                size: 20,
+              }),
+            ],
+            spacing: { after: 150 },
+          }),
+          makeBulletPoint(`${isGl ? 'Versión do motor' : 'Versión del motor'}: ${traceability?.engineVersion || diagnostic?.engineVersion || ENGINE_VERSION}`),
+          makeBulletPoint(`${isGl ? 'Pegada SHA-256 das entradas (inxesta e entrevista)' : 'Huella SHA-256 de las entradas (ingesta y entrevista)'}: ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED}`),
+          makeBulletPoint(`${isGl ? 'Data de xeración' : 'Fecha de generación'}: ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}`),
+          new Paragraph({ text: '', spacing: { before: 200 } }),
+
+          // DILIGENCIA DE FIRMAS
+          makeSectionHeading(isGl ? 'REVISIÓN E SINATURA' : 'REVISIÓN Y FIRMA'),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: isGl
+                  ? 'NOTA: O presente documento é un informe técnico preliminar xerado cunha ferramenta automatizada. Non é un acto administrativo nin unha actuación administrativa automatizada. Só adquire valor cando o revisan e asinan os responsables competentes, que poden modificar ou rexeitar as súas conclusións (sinatura electrónica do persoal, Art. 43 da Lei 40/2015):'
+                  : 'NOTA: El presente documento es un informe técnico preliminar generado con una herramienta automatizada. No es un acto administrativo ni una actuación administrativa automatizada. Solo adquiere valor cuando lo revisan y firman los responsables competentes, que pueden modificar o rechazar sus conclusiones (firma electrónica del personal, Art. 43 de la Ley 40/2015):',
                 italics: true,
                 size: 18,
                 color: COLOR_MUTED,
@@ -716,18 +705,52 @@ function makeBulletPoint(text: string): Paragraph {
   });
 }
 
-function buildProhibitedChecksList(checks: any[]): Paragraph[] {
-  return checks.map((c) => {
+const RESULT_COLORS: Record<RequirementResult, string> = {
+  acreditado: '16A34A',
+  declarado: '2563EB',
+  no_verificado: '64748B',
+  no_evaluado: '64748B',
+  pendiente: 'D97706',
+  incumple: 'DC2626',
+};
+
+function buildProhibitedChecksList(practices: RequirementAssessment[]): Paragraph[] {
+  return practices.map((r) => {
     return new Paragraph({
       bullet: { level: 0 },
       children: [
-        new TextRun({ text: `${c.legalArticle} (${c.title}): `, bold: true }),
-        new TextRun({ text: c.detected ? 'ALERTA: Práctica detectada' : 'CONFORME (No detectado)', bold: true, color: c.detected ? 'DC2626' : '16A34A' }),
-        new TextRun({ text: ` — ${c.explanation}` }),
+        new TextRun({ text: `${r.precepto} (${r.title}): `, bold: true }),
+        new TextRun({ text: resultLabel(r.resultado), bold: true, color: RESULT_COLORS[r.resultado] }),
+        new TextRun({ text: ` — ${r.hechos}` }),
       ],
       spacing: { after: 100 },
     });
   });
+}
+
+function buildRequirementParagraphs(r: RequirementAssessment, idioma: AppIdioma): Paragraph[] {
+  const status = r.aplicabilidad === 'no_aplica' ? applicabilityLabel(r.aplicabilidad, idioma) : resultLabel(r.resultado, idioma);
+  return [
+    new Paragraph({
+      children: [
+        new TextRun({ text: `${r.title}: `, bold: true }),
+        new TextRun({ text: status, bold: true, color: r.aplicabilidad === 'no_aplica' ? COLOR_MUTED : RESULT_COLORS[r.resultado] }),
+      ],
+      spacing: { before: 120, after: 40 },
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: `${r.norma} · ${r.precepto} · ${originLabel(r.origen, idioma)}${r.exigibleDesde ? ` · Exigible desde ${new Date(r.exigibleDesde).toLocaleDateString('es-ES')}` : ''}`,
+          size: 16,
+          color: COLOR_MUTED,
+        }),
+      ],
+      spacing: { after: 40 },
+    }),
+    new Paragraph({ children: [new TextRun({ text: r.hechos, size: 19 })], spacing: { after: 40 } }),
+    new Paragraph({ children: [new TextRun({ text: `Acción: ${r.accionRequerida}`, size: 19, italics: true })], spacing: { after: 80 } }),
+  ];
 }
 
 function makeSignatureCell(roleTitle: string, name: string, unit: string): TableCell {
@@ -741,7 +764,7 @@ function makeSignatureCell(roleTitle: string, name: string, unit: string): Table
       }),
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        children: [new TextRun({ text: '[ Firma Electrónica / CSV ]', italics: true, size: 14, color: COLOR_MUTED })],
+        children: [new TextRun({ text: '[ Firma electrónica ]', italics: true, size: 14, color: COLOR_MUTED })],
         spacing: { after: 200 },
       }),
       new Paragraph({
@@ -882,7 +905,15 @@ function makeScorecardHeaderCell(title: string): TableCell {
   });
 }
 
-function makeScorecardRow(pillar: string, norm: string, level: string, verdict: string): TableRow {
+const PILLAR_COLORS: Record<PillarStatus, string> = {
+  danger: 'DC2626',
+  warning: 'D97706',
+  info: '2563EB',
+  neutral: '64748B',
+  success: '16A34A',
+};
+
+function makeScorecardRow(pillar: string, norm: string, level: string, verdict: string, status: PillarStatus): TableRow {
   return new TableRow({
     children: [
       new TableCell({
@@ -902,7 +933,7 @@ function makeScorecardRow(pillar: string, norm: string, level: string, verdict: 
       }),
       new TableCell({
         width: { size: 25, type: WidthType.PERCENTAGE },
-        children: [new Paragraph({ children: [new TextRun({ text: verdict, bold: true, size: 15, color: verdict.includes('NO PROCEDE') ? 'DC2626' : verdict.includes('CONDICIONADO') ? 'D97706' : '16A34A' })] })],
+        children: [new Paragraph({ children: [new TextRun({ text: verdict, bold: true, size: 15, color: PILLAR_COLORS[status] })] })],
         margins: { top: convertMillimetersToTwip(2), bottom: convertMillimetersToTwip(2), left: convertMillimetersToTwip(2), right: convertMillimetersToTwip(2) },
       }),
     ],

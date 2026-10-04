@@ -12,9 +12,29 @@ import {
   Scale,
   BookOpen,
 } from 'lucide-react';
-import type { DiagnosticResult, AppIdioma, RoleViewMode } from '../types';
+import type { DiagnosticResult, AppIdioma, RoleViewMode, RequirementResult } from '../types';
 import { RichDictamenView } from './RichDictamenView';
 import { computeExecutivePillars, computeExecutiveVerdict } from '../lib/dashboardPillars';
+import {
+  applicabilityLabel,
+  obligations,
+  originLabel,
+  prohibitedPractices,
+  resultLabel,
+} from '../lib/assessmentModel';
+
+const RESULT_STYLE: Record<RequirementResult, { badge: string; background: string; border: string }> = {
+  acreditado: { badge: 'badge-success', background: 'var(--color-success-bg)', border: '#bbf7d0' },
+  declarado: { badge: 'badge-info', background: '#eff6ff', border: '#bfdbfe' },
+  no_verificado: { badge: 'badge-neutral', background: '#f8fafc', border: 'var(--color-border)' },
+  no_evaluado: { badge: 'badge-neutral', background: '#f8fafc', border: 'var(--color-border)' },
+  pendiente: { badge: 'badge-warning', background: 'var(--color-warning-bg)', border: '#fde68a' },
+  incumple: { badge: 'badge-danger', background: 'var(--color-danger-bg)', border: '#fecaca' },
+};
+
+const resultBadgeClass = (r: RequirementResult) => RESULT_STYLE[r].badge;
+const resultBackground = (r: RequirementResult) => RESULT_STYLE[r].background;
+const resultBorder = (r: RequirementResult) => RESULT_STYLE[r].border;
 
 interface DiagnosticDashboardProps {
   diagnostic: DiagnosticResult;
@@ -54,23 +74,30 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
     }
   };
 
-  const getNormTarget = (code: string): { normId: string; article: string; label: string } => {
-    if (code.includes('HUMAN') || code.includes('OVERSIGHT')) {
+  // Precepto que puede consultarse en el visor de legislación para cada requisito (null si no está disponible)
+  const getNormTarget = (code: string): { normId: string; article: string; label: string } | null => {
+    if (code === 'SUPERVISION-HUMANA') {
       return { normId: 'AI-ACT', article: '14', label: 'Ver Art. 14 RIA (DOUE)' };
     }
-    if (code.includes('DOC') || code.includes('LOG')) {
-      return { normId: 'AI-ACT', article: '12', label: 'Ver Art. 12 RIA (DOUE)' };
-    }
-    if (code.includes('LRJSP') || code.includes('40/2015') || code.includes('AUTOMAT')) {
-      return { normId: 'LRJSP', article: '41', label: 'Ver Art. 41 Ley 40/2015 (BOE)' };
-    }
-    if (code.includes('ENS')) {
+    if (code === 'ENS-REGISTRO-ACTIVIDAD' || code === 'ENS-CREDENCIALES') {
       return { normId: 'ENS', article: '13', label: 'Ver ENS RD 311/2022 (BOE)' };
     }
-    if (code.includes('RGPD') || code.includes('DPIA') || code.includes('RAT')) {
-      return { normId: 'RGPD', article: '35', label: 'Ver Art. 35 RGPD (DOUE)' };
+    if (code === 'LEY-40-2015-ART-41') {
+      return { normId: 'LRJSP', article: '41', label: 'Ver Art. 41 Ley 40/2015 (BOE)' };
     }
-    return { normId: 'AI-ACT', article: '50', label: 'Ver Art. 50 RIA (DOUE)' };
+    if (code === 'RGPD-ART-30') {
+      return { normId: 'RGPD', article: '30', label: 'Ver Art. 30 RGPD (DOUE)' };
+    }
+    if (code === 'RIA-ART-50') {
+      return { normId: 'AI-ACT', article: '50', label: 'Ver Art. 50 RIA (DOUE)' };
+    }
+    if (code === 'RIA-ART-6-4') {
+      return { normId: 'AI-ACT', article: '6', label: 'Ver Art. 6 RIA (DOUE)' };
+    }
+    if (code === 'RIA-ALTO-RIESGO-CE') {
+      return { normId: 'AI-ACT', article: '43', label: 'Ver Art. 43 RIA (DOUE)' };
+    }
+    return null;
   };
 
   const [roleView, setRoleView] = React.useState<RoleViewMode>('completo');
@@ -161,7 +188,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
 
         <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
           {roleView === 'juridico' && 'Mostrando dictamen, EIPD, RAT y fundamentación legal.'}
-          {roleView === 'tecnico' && 'Mostrando directivas de ciberseguridad, CCN-STIC y defensas de código.'}
+          {roleView === 'tecnico' && 'Mostrando medidas de ciberseguridad del ENS y defensas de código.'}
           {roleView === 'completo' && 'Mostrando informe pericial exhaustivo multidimensional.'}
         </div>
       </div>
@@ -450,28 +477,24 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
             </h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-            {diagnostic.prohibitedChecks.map((check) => (
+            {prohibitedPractices(diagnostic.requirements).map((req) => (
               <div
-                key={check.id}
+                key={req.id}
                 style={{
                   padding: '0.625rem 0.75rem',
                   borderRadius: 'var(--radius-md)',
-                  background: check.detected ? 'var(--color-danger-bg)' : '#f8fafc',
-                  border: `1px solid ${check.detected ? '#fecaca' : 'var(--color-border)'}`,
+                  background: resultBackground(req.resultado),
+                  border: `1px solid ${resultBorder(req.resultado)}`,
                   fontSize: '0.8125rem',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                  <span style={{ fontWeight: 600, color: check.detected ? 'var(--color-danger)' : 'var(--color-text)' }}>
-                    {check.title}
-                  </span>
-                  <span className={`badge ${check.detected ? 'badge-danger' : 'badge-success'}`}>
-                    {check.detected ? 'DETECTADO' : 'CONFORME'}
-                  </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem', gap: '0.5rem' }}>
+                  <span style={{ fontWeight: 600 }}>{req.title}</span>
+                  <span className={`badge ${resultBadgeClass(req.resultado)}`}>{resultLabel(req.resultado, idioma)}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                    {check.legalArticle} — {check.explanation}
+                    {req.precepto} — {req.hechos}
                   </span>
                   {onInspectNorm && (
                     <button
@@ -506,35 +529,39 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
           <div className="card-header">
             <h3 style={{ fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <CheckCircle style={{ width: 18, height: 18, color: 'var(--color-primary)' }} />
-              Obligaciones Legales Preceptivas
+              Obligaciones y su estado de acreditación
             </h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-            {diagnostic.obligations.map((ob) => {
-              const normTarget = getNormTarget(ob.code);
+            {obligations(diagnostic.requirements).map((req) => {
+              const normTarget = getNormTarget(req.id);
               return (
                 <div
-                  key={ob.code}
+                  key={req.id}
                   style={{
                     padding: '0.625rem 0.75rem',
                     borderRadius: 'var(--radius-md)',
-                    background: ob.status === 'compliant' ? 'var(--color-success-bg)' : ob.status === 'warning' ? 'var(--color-warning-bg)' : 'var(--color-danger-bg)',
-                    border: `1px solid ${ob.status === 'compliant' ? '#bbf7d0' : ob.status === 'warning' ? '#fde68a' : '#fecaca'}`,
+                    background: req.aplicabilidad === 'no_aplica' ? '#f8fafc' : resultBackground(req.resultado),
+                    border: `1px solid ${req.aplicabilidad === 'no_aplica' ? 'var(--color-border)' : resultBorder(req.resultado)}`,
                     fontSize: '0.8125rem',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                    <span style={{ fontWeight: 600 }}>{ob.title}</span>
-                    <span className={`badge ${ob.status === 'compliant' ? 'badge-success' : ob.status === 'warning' ? 'badge-warning' : 'badge-danger'}`}>
-                      {ob.code}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem', gap: '0.5rem' }}>
+                    <span style={{ fontWeight: 600 }}>{req.title}</span>
+                    <span className={`badge ${req.aplicabilidad === 'no_aplica' ? 'badge-neutral' : resultBadgeClass(req.resultado)}`}>
+                      {req.aplicabilidad === 'no_aplica' ? applicabilityLabel(req.aplicabilidad, idioma) : resultLabel(req.resultado, idioma)}
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.75rem', color: '#334155', marginBottom: '0.25rem' }}>{ob.description}</p>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }}>
+                    {req.norma} · {req.precepto} · {originLabel(req.origen, idioma)}
+                    {req.exigibleDesde ? ` · Exigible desde ${new Date(req.exigibleDesde).toLocaleDateString('es-ES')}` : ''}
+                  </p>
+                  <p style={{ fontSize: '0.75rem', color: '#334155', marginBottom: '0.25rem' }}>{req.hechos}</p>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-primary)' }}>
-                      Acción: {ob.actionRequired}
+                      Acción: {req.accionRequerida}
                     </span>
-                    {onInspectNorm && (
+                    {onInspectNorm && normTarget && (
                       <button
                         type="button"
                         onClick={() => onInspectNorm(normTarget.normId, normTarget.article)}
@@ -564,9 +591,23 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
         </div>
       </div>
 
+      {/* Discrepancia señalada por el análisis asistido */}
+      {diagnostic.pericialDissentAlert && (
+        <div className="card" style={{ border: '1px solid #fcd34d', background: '#fffbeb', marginTop: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#92400e' }}>
+            <AlertTriangle style={{ width: 18, height: 18 }} />
+            <strong style={{ fontSize: '0.9rem' }}>Posible discrepancia de clasificación (no verificada)</strong>
+          </div>
+          <p style={{ fontSize: '0.8125rem', color: '#78350f', marginTop: '0.5rem' }}>{diagnostic.pericialDissentAlert}</p>
+        </div>
+      )}
+
       {/* AI Qualitative Critique (if generated) */}
       {llmCritique && (
         <div className="card" style={{ padding: '1.25rem', marginTop: '1.5rem' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#92400e', marginBottom: '0.75rem' }}>
+            Análisis asistido por IA — contenido no verificado. No modifica la clasificación ni acredita requisitos.
+          </p>
           <RichDictamenView content={llmCritique} />
         </div>
       )}

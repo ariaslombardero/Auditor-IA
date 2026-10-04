@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { getStoredAudits, importHistoryJson, saveAuditRecord } from '../auditHistoryService';
 import { MemoryStorage } from '../../test/memoryStorage';
 import { CASES } from '../../test/fixtures';
+import { normalizeDiagnostic } from '../assessmentModel';
+import { computeExecutivePillars } from '../dashboardPillars';
+import type { DiagnosticResult } from '../../types';
 
 /**
  * Custodia local del historial de auditorías.
@@ -31,6 +34,25 @@ describe('Historial local de auditorías', () => {
       audits: [{ id: 'x-1', appName: 'Malformado', createdAt: new Date().toISOString(), state: {} }],
     });
     expect(importHistoryJson(malformed).importedCount).toBe(0);
+  });
+
+  it('ALM-06 · un diagnóstico guardado por el motor anterior no se reinterpreta como acreditado', () => {
+    const legacy = {
+      ...CASES.asistenteRedaccion().diagnostic!,
+      requirements: undefined,
+      engineVersion: undefined,
+      obligations: [{ code: 'LEY-15-2022-ART-23', title: 'Sesgos', legalBasis: 'Ley 15/2022', status: 'compliant', description: '', actionRequired: '' }],
+      prohibitedChecks: [{ id: 'social_scoring', title: 'Puntuación social', legalArticle: 'Art. 5.1.c RIA', detected: false, explanation: '' }],
+    } as unknown as DiagnosticResult;
+    const normalized = normalizeDiagnostic(legacy)!;
+    expect(normalized.requirements.length).toBe(2);
+    expect(normalized.requirements.every((r) => r.resultado !== 'acreditado')).toBe(true);
+    expect(normalized.engineVersion).toMatch(/no recalculado/);
+    // Ningún pilar puede presentar como acreditado lo que no se ha evaluado
+    for (const pillar of Object.values(computeExecutivePillars(normalized))) {
+      expect(pillar.text).not.toBe('Requisitos acreditados');
+      expect(pillar.status).not.toBe('success');
+    }
   });
 
   it('ALM-04 · rechaza importaciones con una clasificación de riesgo inexistente', () => {

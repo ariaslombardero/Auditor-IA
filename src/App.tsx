@@ -20,7 +20,8 @@ import { OfficialDossierView } from './components/OfficialDossierView';
 import { PreProductionHardeningView } from './components/PreProductionHardeningView';
 import { AuditHistoryModal } from './components/AuditHistoryModal';
 import { useApiConfig } from './context/ApiConfigContext';
-import { evaluateRulesDeterministically, analyzeWithLLM } from './lib/auditEngine';
+import { evaluateRulesDeterministically, analyzeWithLLM, LLM_DISSENT_NOTICE } from './lib/auditEngine';
+import { normalizeDiagnostic } from './lib/assessmentModel';
 import { generateCodeKit } from './lib/codeKitGenerator';
 import { getStoredAudits, saveAuditRecord } from './lib/auditHistoryService';
 import type {
@@ -84,12 +85,14 @@ export const App: React.FC = () => {
     const codeKit = generateCodeKit(state.ingest, state.answers, baselineDiagnostic);
 
     let critiqueText: string | undefined = undefined;
+    let dissentDetected = false;
 
-    // 2. AI enrichment if configured
+    // 2. AI enrichment if configured (no altera la clasificación; solo puede señalar una discrepancia)
     if (isConfigured && config) {
       try {
         const llmResult = await analyzeWithLLM(config, state.ingest, state.answers, baselineDiagnostic);
         critiqueText = llmResult.enrichedSummary;
+        dissentDetected = llmResult.dissentDetected;
       } catch (err: any) {
         console.warn('Fallo en análisis opcional de IA:', err?.message || err);
       }
@@ -97,7 +100,9 @@ export const App: React.FC = () => {
 
     const updatedFullState: FullAuditState = {
       ...state,
-      diagnostic: baselineDiagnostic,
+      diagnostic: dissentDetected
+        ? { ...baselineDiagnostic, pericialDissentAlert: LLM_DISSENT_NOTICE }
+        : baselineDiagnostic,
       codeKit,
     };
 
@@ -117,7 +122,7 @@ export const App: React.FC = () => {
   };
 
   const handleLoadAuditFromHistory = (record: StoredAuditRecord) => {
-    setState(record.state);
+    setState({ ...record.state, diagnostic: normalizeDiagnostic(record.state.diagnostic) });
     setLlmCritique(record.llmCritique);
     setCurrentStep('diagnostico');
     setShowHistoryModal(false);
@@ -203,7 +208,7 @@ export const App: React.FC = () => {
 
         {currentStep === 'diagnostico' && state.diagnostic && (
           <DiagnosticDashboard
-            diagnostic={state.diagnostic}
+            diagnostic={normalizeDiagnostic(state.diagnostic)!}
             appName={state.ingest.appName}
             llmCritique={llmCritique}
             onGoToCodeKit={() => setCurrentStep('codigo')}
@@ -262,7 +267,7 @@ export const App: React.FC = () => {
           <span>Auditor IA · Sector Público España</span>
         </div>
         <div style={{ color: '#94a3b8', fontSize: '0.6875rem' }}>
-          Marco Normativo: AI Act (Reglamento UE 2024/1689) · Ómnibus Digital (UE 2026/1744) · ENS (RD 311/2022) · RGPD y CCN-STIC 884D
+          Marco Normativo: RIA (Reglamento UE 2024/1689, modificado por el Reglamento UE 2026/1744) · ENS (RD 311/2022) · RGPD · Ley 40/2015
         </div>
       </footer>
 

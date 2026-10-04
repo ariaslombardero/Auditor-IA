@@ -1,5 +1,6 @@
 /**
- * Base de Conocimiento Normativo: RIA, Digital Omnibus, ENS, CCN-STIC, RGPD, Ley 40/2015
+ * Base de Conocimiento Normativo: RIA (modificado por el Reglamento 2026/1744), ENS, RGPD, Ley 40/2015, Ley 15/2022, Estatuto AESIA.
+ * Cada precepto está cotejado en docs/auditoria/registro-fuentes.md.
  */
 
 export interface RegulatoryFrameworkItem {
@@ -18,23 +19,28 @@ export const REGULATORY_FRAMEWORK: RegulatoryFrameworkItem[] = [
     shortName: 'Reglamento UE 2024/1689',
     scope: 'Directamente aplicable en todos los Estados miembros de la UE, incluyendo Administraciones Públicas.',
     keyArticles: [
-      'Art. 5: Prácticas prohibidas de IA (manipulación, puntuación social, evaluación biométrica indiscriminada).',
-      'Art. 6 y Anexo III: Sistemas de Alto Riesgo (Punto 4.a: Empleo, reclutamiento y evaluación de candidatos; Punto 5: Acceso a servicios públicos esenciales y prestaciones; Punto 7: Justicia y procesos democráticos).',
-      'Art. 14: Supervisión humana efectiva (Human-in-the-loop / Human-on-the-loop).',
+      'Art. 5: Prácticas prohibidas de IA (manipulación, explotación de vulnerabilidades, puntuación social, identificación biométrica remota en tiempo real con fines policiales, entre otras).',
+      'Art. 6 y Anexo III: Sistemas de alto riesgo (punto 4: empleo; punto 5: servicios y prestaciones esenciales; punto 8: administración de justicia y procesos democráticos, entre otros). Art. 6.3: excepción si concurre cualquiera de las condiciones a) a d) y no hay perfilado; Art. 6.4: documentación previa y registro (Art. 49.2).',
+      'Art. 14: Supervisión humana de los sistemas de alto riesgo.',
+      'Art. 27: Evaluación de impacto en los derechos fundamentales por responsables del despliegue que sean organismos de Derecho público (sistemas de alto riesgo).',
+      'Art. 43.2: Anexo III, puntos 2 a 8: evaluación de la conformidad por control interno (Anexo VI), sin organismo notificado.',
       'Art. 50: Obligaciones de transparencia para sistemas que interactúan con personas o generan contenido sintético.',
+      'Art. 99.8: Cada Estado miembro determina en qué medida pueden imponerse multas a autoridades y organismos públicos.',
     ],
-    summary: 'Establece el marco de riesgos y gobernanza para el despliegue de sistemas de IA, con especial rigor en el sector público.',
+    summary: 'Establece el marco de riesgos y gobernanza para la introducción en el mercado, la puesta en servicio y la utilización de sistemas de IA.',
   },
   {
     id: 'digital-omnibus',
-    name: 'Reglamento Europeo Ómnibus Digital (UE 2026/1744)',
-    shortName: 'Ómnibus Digital UE 2026/1744',
-    scope: 'Simplificación administrativa, estándares técnicos armonizados e interoperabilidad en servicios digitales públicos.',
+    name: 'Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)',
+    shortName: 'Reglamento (UE) 2026/1744',
+    scope: 'Modifica el Reglamento (UE) 2024/1689 para simplificar su aplicación (DOUE de 24/07/2026).',
     keyArticles: [
-      'Art. 18: Mecanismos simplificados de cumplimiento para herramientas técnicas auxiliares en administraciones públicas.',
-      'Art. 24: Fomento de arquitecturas locales y federadas para soberanía de datos del sector público.',
+      'Art. 5.1, letras b bis) y b ter): nuevas prácticas prohibidas (imágenes íntimas realistas de personas identificables y material de abuso sexual infantil), aplicables desde el 2 de diciembre de 2026.',
+      'Art. 113: obligaciones de alto riesgo (capítulo III, secciones 1 a 3) aplicables desde el 2 de diciembre de 2027 para el Anexo III y desde el 2 de agosto de 2028 para el Anexo I.',
+      'Registro del Art. 49.2 para sistemas acogidos al Art. 6.3: se mantiene, con un contenido simplificado del Anexo VIII.',
+      'Art. 4: la alfabetización en IA pasa a formularse como obligación de adoptar medidas para apoyarla.',
     ],
-    summary: 'Armoniza la aplicación coordinada de normativas digitales (RIA, Data Act, DSA) reduciendo burocracia desproporcionada en herramientas que no adopten decisiones autónomas.',
+    summary: 'Aplaza las obligaciones de alto riesgo, añade dos prácticas prohibidas y simplifica determinadas cargas, manteniendo el registro de los sistemas exceptuados.',
   },
   {
     id: 'ens',
@@ -42,35 +48,27 @@ export const REGULATORY_FRAMEWORK: RegulatoryFrameworkItem[] = [
     shortName: 'ENS (RD 311/2022)',
     scope: 'De obligado cumplimiento para toda la Administración Pública española (AGE, CC.AA., Entidades Locales).',
     keyArticles: [
-      'Art. 13: Principio de seguridad integral y gestión de riesgos.',
-      'Art. 41: Categorización de los sistemas de información (BÁSICA, MEDIA, ALTA) en función del impacto en D-A-I-C-T.',
-      'Anexo II: Medidas de seguridad operacionales y de protección.',
+      'Arts. 40 y 41 y Anexo I: categorización de los sistemas (BÁSICA, MEDIA, ALTA) según el impacto en cada dimensión de seguridad.',
+      'Anexo II [op.acc.5] y [op.acc.6]: mecanismos de autenticación; credenciales bajo control exclusivo del usuario.',
+      'Anexo II [op.exp.8]: registro de la actividad.',
+      'Anexo II [op.nub.1]: protección de servicios en la nube.',
+      'Anexo II [mp.sw.1] y [mp.s.2]: desarrollo de aplicaciones y protección de servicios y aplicaciones web.',
     ],
     summary: 'Garantiza la seguridad de los sistemas, los datos de los ciudadanos y la continuidad de los servicios públicos digitales.',
-  },
-  {
-    id: 'ccn-stic',
-    name: 'Guía CCN-STIC 884D — Seguridad en Servicios de Inteligencia Artificial',
-    shortName: 'CCN-STIC 884D',
-    scope: 'Directrices del Centro Criptológico Nacional (CCN-CNI) para la integración de IA en el sector público.',
-    keyArticles: [
-      'Medida IA-01: Prohibición de exposición de credenciales (API keys) en clientes web o frontend.',
-      'Medida IA-04: Sanitización previa de prompts para evitar filtración de secretos oficiales o datos personales.',
-      'Medida IA-08: Trazabilidad, sellado de tiempo y retención segura de peticiones y respuestas para auditoría.',
-      'Medida IA-12: Prioridad a modelos locales on-premise cuando se maneje información sensible o reservada.',
-    ],
-    summary: 'Manual de buenas prácticas y directrices de ciberseguridad específicas para soluciones con modelos de lenguaje y visión en la AAPP.',
   },
   {
     id: 'ley-40-2015',
     name: 'Ley 40/2015 de Régimen Jurídico del Sector Público',
     shortName: 'Ley 40/2015',
-    scope: 'Procedimiento y funcionamiento de los órganos administrativos españoles.',
+    scope: 'Régimen jurídico de las Administraciones Públicas españolas.',
     keyArticles: [
-      'Art. 41: Actuación administrativa automatizada. Requiere determinación previa del órgano competente y órganos de supervisión del algoritmo.',
-      'Art. 42: Sistemas de firma para la actuación administrativa automatizada.',
+      'Art. 32: Principios de la responsabilidad patrimonial de las Administraciones Públicas.',
+      'Art. 36: Los particulares exigen la responsabilidad directamente a la Administración; esta repite contra su personal solo por dolo, o culpa o negligencia graves.',
+      'Art. 41: Actuación administrativa automatizada (sin intervención directa de un empleado público). Exige establecer previamente los órganos competentes y el órgano responsable a efectos de impugnación.',
+      'Art. 42: Sistemas de firma para la actuación administrativa automatizada (sello electrónico y código seguro de verificación comprobable en la sede electrónica).',
+      'Art. 43: Firma electrónica del personal al servicio de las Administraciones Públicas.',
     ],
-    summary: 'Diferencia de forma tajante entre una herramienta de asistencia o auxilio técnico a funcionarios y un acto administrativo 100% automatizado.',
+    summary: 'Distingue la actuación administrativa automatizada de la que realiza directamente un empleado público y regula la responsabilidad patrimonial.',
   },
   {
     id: 'rgpd',
@@ -78,40 +76,48 @@ export const REGULATORY_FRAMEWORK: RegulatoryFrameworkItem[] = [
     shortName: 'RGPD / LOPDGDD',
     scope: 'Tratamiento de datos personales en el Espacio Económico Europeo.',
     keyArticles: [
-      'Art. 6.1.e: Base jurídica de cumplimiento de misión de interés público o ejercicio de poderes públicos.',
-      'Art. 9: Tratamiento prohibido por defecto de categorías especiales de datos.',
-      'Art. 22: Derecho a no ser objeto de decisiones individuales basadas únicamente en tratamiento automatizado.',
+      'Art. 6.1: Bases jurídicas del tratamiento.',
+      'Art. 9: Tratamiento de categorías especiales de datos personales.',
+      'Art. 10: Tratamiento de datos personales relativos a condenas e infracciones penales.',
+      'Art. 22: Decisiones individuales basadas únicamente en el tratamiento automatizado.',
       'Art. 30: Registro de Actividades de Tratamiento (RAT).',
       'Art. 35: Evaluación de Impacto en Protección de Datos (EIPD).',
     ],
-    summary: 'Exige garantías estrictas de confidencialidad, minimización y prohibición de perfiles sin intervención humana cualificada.',
+    summary: 'Exige base jurídica, minimización, registro de actividades y, cuando procede, evaluación de impacto.',
   },
   {
     id: 'aesia',
     name: 'Estatuto de la Agencia Española de Supervisión de la Inteligencia Artificial (Real Decreto 729/2023)',
     shortName: 'AESIA (RD 729/2023)',
-    scope: 'Autoridad nacional de supervisión del RIA en España con potestad sancionadora e inspectora en el sector público.',
+    scope: 'Organización y funciones de la Agencia Española de Supervisión de la Inteligencia Artificial.',
     keyArticles: [
-      'Art. 4: Funciones de supervisión, inspección y régimen sancionador sobre sistemas de IA en Administraciones Públicas.',
-      'Art. 8: Protocolo de comunicación obligatoria de incidentes graves de IA ante la autoridad nacional.',
-      'RD 817/2023: Entorno controlado de pruebas (Sandbox Regulatorio) para sistemas de alto riesgo.',
+      'Art. 8: Principios de actuación de la Agencia (autonomía, independencia técnica, transparencia, eficacia, eficiencia, cooperación e igualdad).',
+      'RD 817/2023: Entorno controlado de pruebas (sandbox regulatorio) para sistemas de IA.',
     ],
-    summary: 'Órgano estatal competente para verificar la conformidad con el RIA, recibir notificaciones de fallos algorítmicos graves y coordinar la supervisión con la Comisión Europea.',
+    summary: 'Regula la Agencia encargada de la supervisión de la inteligencia artificial en España.',
   },
   {
     id: 'ley-15-2022',
     name: 'Ley 15/2022 integral para la igualdad de trato y la no discriminación',
     shortName: 'Ley 15/2022 (Art. 23)',
-    scope: 'De aplicación transversal a cualquier algoritmo o sistema de IA utilizado por las Administraciones Públicas españolas.',
+    scope: 'Uso de algoritmos en la toma de decisiones por las Administraciones Públicas.',
     keyArticles: [
-      'Art. 23.1: Obligación de las AAPP de garantizar que los algoritmos no introduzcan sesgos discriminatorios directos o indirectos.',
-      'Art. 23.2: Transparencia algorítmica, minimización de sesgos y deber de auditoría previa de impacto en igualdad.',
+      'Art. 23.1: Las administraciones públicas favorecerán mecanismos para que los algoritmos tengan en cuenta criterios de minimización de sesgos, transparencia y rendición de cuentas; se promoverán evaluaciones de impacto que determinen el posible sesgo discriminatorio.',
+      'Art. 23.2: Se priorizará la transparencia en el diseño y la implementación y la capacidad de interpretación de las decisiones.',
     ],
-    summary: 'Impone a las administraciones públicas el deber activo de prevenir sesgos de género, origen o discapacidad en cualquier toma de decisión asistida por IA.',
+    summary: 'Promueve la minimización de sesgos y la transparencia de los algoritmos utilizados por las administraciones públicas.',
   },
 ];
 
-export const PROHIBITED_SYSTEMS_CATALOG = [
+export interface ProhibitedPracticeItem {
+  id: string;
+  title: string;
+  legalArticle: string;
+  /** Fecha ISO de aplicación cuando difiere de la general del Art. 5 (2 de febrero de 2025). */
+  applicableFrom?: string;
+}
+
+export const PROHIBITED_SYSTEMS_CATALOG: ProhibitedPracticeItem[] = [
   {
     id: 'subliminal_manipulation',
     title: 'Manipulación subliminal o engañosa que cause perjuicio',
@@ -121,6 +127,18 @@ export const PROHIBITED_SYSTEMS_CATALOG = [
     id: 'vulnerability_exploitation',
     title: 'Explotación de vulnerabilidades por edad, discapacidad o situación socioeconómica',
     legalArticle: 'Art. 5.1.b RIA',
+  },
+  {
+    id: 'intimate_imagery_generation',
+    title: 'Generación o manipulación de imágenes, vídeos o audios íntimos realistas de personas identificables sin su consentimiento',
+    legalArticle: 'Art. 5.1.b bis RIA (Reglamento (UE) 2026/1744)',
+    applicableFrom: '2026-12-02',
+  },
+  {
+    id: 'child_sexual_abuse_material',
+    title: 'Generación o manipulación de material de abuso sexual infantil (Directiva 2011/93/UE)',
+    legalArticle: 'Art. 5.1.b ter RIA (Reglamento (UE) 2026/1744)',
+    applicableFrom: '2026-12-02',
   },
   {
     id: 'social_scoring',
@@ -146,5 +164,10 @@ export const PROHIBITED_SYSTEMS_CATALOG = [
     id: 'biometric_categorization_sensitive',
     title: 'Categorización biométrica para deducir raza, opiniones políticas, creencias religiosas u orientación sexual',
     legalArticle: 'Art. 5.1.g RIA',
+  },
+  {
+    id: 'realtime_remote_biometric_identification',
+    title: 'Identificación biométrica remota en tiempo real en espacios de acceso público con fines de garantía del cumplimiento del Derecho',
+    legalArticle: 'Art. 5.1.h RIA',
   },
 ];

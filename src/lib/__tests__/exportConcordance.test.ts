@@ -4,6 +4,9 @@ import { buildAuditManifest } from '../auditManifestGenerator';
 import { buildEipdCriteria } from '../eipdGenerator';
 import { generateCryptographicReceipt } from '../signatureService';
 import { CASES, makeState, officialDossierText } from '../../test/fixtures';
+import { computeExecutiveVerdict } from '../dashboardPillars';
+import { unaccreditedRequirements } from '../assessmentModel';
+import { buildDocumentTraceability, NORMATIVE_SNAPSHOT } from '../traceability';
 
 /**
  * Concordancia entre diagnóstico y documentos exportados (DOCX, Markdown, manifiesto, EIPD).
@@ -24,10 +27,12 @@ describe('Expediente oficial (DOCX)', () => {
   });
 
   it('DOC-03 · no certifica verificación normativa "en tiempo real" sin consulta efectiva registrada', async () => {
+    // Afirmación de verificación telemática (no confundir con la práctica del Art. 5.1.h «en tiempo real»)
+    const claim = /verificad[oa]s? telem[áa]ticamente|telem[áa]ticamente en tiempo real|cotejo normativo telem[áa]tico/i;
     for (const [, build] of ALL_CASES) {
       const state = build();
-      expect(await officialDossierText(state)).not.toMatch(/en tiempo real/i);
-      expect(generateOfficialDossierMarkdown(state)).not.toMatch(/en tiempo real/i);
+      expect(await officialDossierText(state)).not.toMatch(claim);
+      expect(generateOfficialDossierMarkdown(state)).not.toMatch(claim);
     }
   });
 
@@ -53,6 +58,36 @@ describe('Expediente oficial (DOCX)', () => {
   });
 });
 
+describe('Identificación y concordancia del documento', () => {
+  it('DOC-11 · el DOCX y el Markdown identifican versión del motor, corte normativo y huella de las entradas', async () => {
+    const state = CASES.asistenteRedaccion();
+    const tr = await buildDocumentTraceability(state);
+    expect(tr.inputFingerprint).toMatch(/^[0-9a-f]{64}$/);
+    const docx = await officialDossierText(state, undefined, tr);
+    const md = generateOfficialDossierMarkdown(state, undefined, 'castellano', tr);
+    for (const text of [docx, md]) {
+      expect(text).toContain(tr.inputFingerprint);
+      expect(text).toContain(tr.engineVersion);
+      expect(text).toContain(NORMATIVE_SNAPSHOT);
+    }
+  });
+
+  it('DOC-12 · cuadro de mando, DOCX, Markdown y manifiesto expresan el mismo veredicto y el mismo número de requisitos sin acreditar', async () => {
+    for (const [, build] of ALL_CASES) {
+      const state = build();
+      const verdict = computeExecutiveVerdict(state.diagnostic!);
+      const pending = unaccreditedRequirements(state.diagnostic!.requirements).length;
+      const manifest = buildAuditManifest(state);
+      expect(manifest.governance_and_compliance.summary.verdict).toBe(verdict.label);
+      expect(manifest.governance_and_compliance.summary.unaccredited_requirements).toBe(pending);
+      const shortLabel = verdict.label.replace('VEREDICTO: ', '');
+      expect(await officialDossierText(state)).toContain(shortLabel);
+      expect(generateOfficialDossierMarkdown(state)).toContain(shortLabel);
+      expect(state.diagnostic!.executiveSummary).toContain(`Quedan ${pending} requisitos sin acreditar`);
+    }
+  });
+});
+
 describe('Manifiesto JSON', () => {
   it('DOC-05 · no contiene estados "FAVORABLE" ni "vigente_consolidado" fijados sin comprobación', () => {
     for (const [, build] of ALL_CASES) {
@@ -66,7 +101,8 @@ describe('Manifiesto JSON', () => {
 describe('Diligencia de integridad', () => {
   it('DOC-07 · el identificador interno no se presenta como CSV ni el software "certifica"', async () => {
     const receipt = await generateCryptographicReceipt('expediente.docx', 'contenido sintético', 'Entidad', 'Responsable');
-    expect(receipt.diligenceText).not.toMatch(/C[ÓO]DIGO SEGURO DE VERIFICACI[ÓO]N/i);
+    // Puede aclarar que no es un CSV, pero no rotular el identificador como tal
+    expect(receipt.diligenceText).not.toMatch(/C[ÓO]DIGO SEGURO DE VERIFICACI[ÓO]N \(CSV\):/i);
     expect(receipt.diligenceText).not.toMatch(/se certifica/i);
   });
 });

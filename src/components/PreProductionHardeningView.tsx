@@ -67,7 +67,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
   const [categoryFilter, setCategoryFilter] = useState<AttackCategory | 'ALL'>('ALL');
   const [copiedReport, setCopiedReport] = useState(false);
 
-  // Escáner de secretos CCN-STIC 884D IA-01
+  // Escáner de secretos (credenciales expuestas, ENS [op.acc.5])
   const rawContentToScan = `${state.ingest.readmeContent} ${state.ingest.agentsMdContent || ''} ${state.ingest.techStack || ''}`;
   const secretsScan = scanForExposedSecrets(rawContentToScan);
 
@@ -342,7 +342,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                   Evaluación Heurística de Resiliencia del Modelo y Salvaguardas Éticas
                 </h3>
                 <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-                  Simulación de penetración ética alineada con OWASP Top 10 for LLM (2025/2026), AI Act (Art. 14) y Guía CCN-STIC 884D.
+                  Simulación de penetración ética alineada con OWASP Top 10 for LLM (2025/2026), RIA (Art. 14) y ENS (RD 311/2022).
                 </p>
               </div>
 
@@ -438,12 +438,12 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
               </div>
             </div>
 
-            {/* Escáner de Secretos CCN-STIC 884D IA-01 Banner */}
+            {/* Escáner de secretos (credenciales expuestas) */}
             {secretsScan.found ? (
               <div style={{ background: '#fef2f2', border: '1.5px solid #f87171', padding: '0.75rem 1rem', borderRadius: 8, marginBottom: '1rem', color: '#991b1b', fontSize: '0.8125rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '0.875rem' }}>
                   <ShieldAlert style={{ width: 18, height: 18, color: '#dc2626' }} />
-                  <span>ALERTA DE SEGURIDAD CCN-STIC 884D (Medida IA-01): Claves API Detectadas en Código</span>
+                  <span>ALERTA DE SEGURIDAD: posibles claves de API en la documentación analizada</span>
                 </div>
                 <p style={{ marginTop: '0.25rem', lineHeight: 1.4 }}>
                   Se han detectado posibles credenciales de modelos de lenguaje en el repositorio o documentación analizada:
@@ -460,14 +460,14 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             ) : (
               <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.65rem 1rem', borderRadius: 8, marginBottom: '1rem', color: '#166534', fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <CheckCircle2 style={{ width: 16, height: 16, color: '#16a34a' }} />
-                <span><strong>CCN-STIC 884D IA-01 Conforme:</strong> No se aprecian credenciales ni tokens de API expuestos en la documentación del repositorio.</span>
+                <span><strong>Sin coincidencias:</strong> no se han encontrado patrones de claves en el README ni en el AGENTS.md. El código del repositorio no se ha analizado.</span>
               </div>
             )}
 
             {/* Provider info alert */}
             <div style={{ padding: '0.65rem 0.85rem', background: '#f8fafc', borderRadius: 6, border: '1px solid #e2e8f0', fontSize: '0.75rem', color: '#475569', marginBottom: '1.25rem' }}>
               <strong>Proveedor activo para el test:</strong>{' '}
-              {isConfigured ? `${config?.provider.toUpperCase()} (${config?.model})` : 'Modo Determinista CCN-STIC (Sin credencial en nube)'}
+              {isConfigured ? `${config?.provider.toUpperCase()} (${config?.model})` : 'Modo demostración (sin proveedor configurado)'}
             </div>
 
             {/* Progress bar when running */}
@@ -915,7 +915,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                   Consultor RAG Normativo Offline (BOE & DOUE al Instante)
                 </h3>
                 <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
-                  Base jurídica consolidada en memoria local: AI Act (Reg. 2024/1689), ENS (RD 311/2022), CCN-STIC 884D, Leyes 39/40 y RGPD.
+                  Base normativa en memoria local: RIA (Reg. 2024/1689 y 2026/1744), ENS (RD 311/2022), Leyes 39/2015, 40/2015 y 15/2022, y RGPD. Extractos literales cotejados o resúmenes, con enlace a la fuente oficial.
                   Sin alucinaciones ni fugas a internet.
                 </p>
               </div>
@@ -951,10 +951,10 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                 [
                   { key: 'ALL', label: 'Todo el Marco Legal' },
                   { key: 'AI_ACT', label: 'AI Act (UE 2024/1689)' },
-                  { key: 'ENS', label: 'ENS (RD 311/2022 / CCN)' },
+                  { key: 'ENS', label: 'ENS (RD 311/2022)' },
                   { key: 'PROCEDIMIENTO_ADM', label: 'Procedimiento Adm. (Ley 39/40)' },
                   { key: 'RGPD', label: 'RGPD / EIPD' },
-                  { key: 'OMNIBUS', label: 'Ómnibus Digital 2026' },
+                  { key: 'OMNIBUS', label: 'Reglamento (UE) 2026/1744' },
                 ] as const
               ).map((cat) => (
                 <button
@@ -1011,14 +1011,17 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                       </div>
                     </div>
 
-                    {/* Texto literal */}
+                    {/* Extracto literal cotejado o resumen, con su fuente oficial */}
                     <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: 6, border: '1px solid #e2e8f0', margin: '0.75rem 0' }}>
                       <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>
-                        Texto Consolidado Oficial (BOE / DOUE):
+                        {doc.isLiteral ? 'Extracto literal del texto oficial:' : 'Resumen no literal (consulte el texto oficial):'}
                       </span>
                       <p style={{ fontSize: '0.8125rem', color: '#334155', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
-                        {doc.literalText}
+                        {doc.text}
                       </p>
+                      <a href={doc.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 600 }}>
+                        Fuente oficial
+                      </a>
                     </div>
 
                     {/* Interpretación práctica y sector público */}
@@ -1048,7 +1051,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
               Sellado Criptográfico SHA-256 y Hoja de Diligencia para AutoFirma (@firma)
             </h3>
             <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
-              Calcula la huella digital matemática inmutable del expediente generado y prepara la certificación electrónica para ser suscrita por el Responsable del Servicio, el CISO y el DPD mediante DNIe o certificado FNMT.
+              Calcula la huella digital (SHA-256) del documento generado y prepara las instrucciones para que lo firmen electrónicamente el Responsable del Servicio, el Responsable de Seguridad y el DPD. La huella no es una firma ni un sello de tiempo.
             </p>
 
             {!receipt ? (
@@ -1098,10 +1101,10 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', marginTop: '0.75rem', fontSize: '0.75rem', color: '#475569' }}>
                     <div>
-                      <strong>Código Seguro (CSV):</strong> <span style={{ fontFamily: 'monospace', color: '#0369a1' }}>{receipt.secureVerificationCode}</span>
+                      <strong>Identificador interno (no es CSV):</strong> <span style={{ fontFamily: 'monospace', color: '#0369a1' }}>{receipt.internalDocumentId}</span>
                     </div>
                     <div>
-                      <strong>Fecha de sellado:</strong> {receipt.timestampFormatted}
+                      <strong>Fecha de cálculo de la huella:</strong> {receipt.timestampFormatted}
                     </div>
                     <div>
                       <strong>Formato de firma:</strong> {receipt.suggestedSignatureFormat}
