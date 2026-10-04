@@ -297,7 +297,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({
                 style={{ width: 'auto', marginTop: '3px' }}
               />
               <div>
-                <strong>Local On-Premise (Ollama / vLLM):</strong> Servidores e infraestructura propios de la Administración. Los datos nunca salen de la red corporativa. Máxima conformidad con CCN-STIC 884D.
+                <strong>Local On-Premise (Ollama / vLLM):</strong> Servidores e infraestructura propios de la Administración. Si el proveedor configurado es realmente local, los datos no salen de la red corporativa.
               </div>
             </label>
 
@@ -361,7 +361,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({
             <History style={{ width: 18, height: 18 }} />
           </div>
           <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--color-text)' }}>
-            4. Trazabilidad, Auditoría Técnica y Sellado de Tiempo (CCN-STIC 884D)
+            4. Trazabilidad y registro de la actividad (ENS)
           </h3>
         </div>
 
@@ -377,7 +377,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({
               <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>Registro de Logs de Peticiones y Respuestas Habilitado</span>
             </label>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'block', marginTop: '4px' }}>
-              Exigido por la Guía CCN-STIC 884D (Medida IA-08) y Art. 12 del RIA.
+              Medida [op.exp.8] del ENS (RD 311/2022) y Art. 12 del RIA para sistemas de alto riesgo.
             </span>
           </div>
 

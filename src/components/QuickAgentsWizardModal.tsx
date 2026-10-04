@@ -68,7 +68,7 @@ export const QuickAgentsWizardModal: React.FC<QuickAgentsWizardModalProps> = ({
 
 ## 1. Naturaleza Jurídica y Delimitación Funcional
 - **Nombre del Sistema:** ${resolvedAppName}
-- **Naturaleza Administrativa:** Herramienta de auxilio técnico instrumental (Art. 41 Ley 40/2015 de Régimen Jurídico del Sector Público y Reglamento Ómnibus Digital UE 2026/1744).
+- **Naturaleza Administrativa:** Herramienta de apoyo técnico con intervención directa de un empleado público; no es una actuación administrativa automatizada (Art. 41 Ley 40/2015 de Régimen Jurídico del Sector Público).
 - **Prohibición de Actuación Automatizada:** ${forbidAutomatedActs ? 'El sistema tiene taxativamente prohibido dictar actos administrativos, resolver procedimientos, calificar aspirantes o imponer sanciones de forma desatendida.' : 'Sujeto a resolución habilitante previa.'}
 - **Pila Tecnológica:** ${techStack || 'Web Application / TypeScript / Modelos LLM'}
 
@@ -88,8 +88,8 @@ ${agencyDesc}
 
 ## 5. Trazabilidad, Seguridad y Esquema Nacional de Seguridad (RD 311/2022)
 - **Sellado de Trazabilidad:** Registro estructurado de logs con marca de tiempo, usuario tramitador y hash criptográfico SHA-256 de peticiones y respuestas.
-- **Periodo de Retención:** ${logRetentionMonths} meses según las directrices de la Guía CCN-STIC 884D de Seguridad en Servicios de IA.
-- **Seguridad en Front-End (CCN-STIC 884D IA-01):** Las credenciales y claves de API no viajan al cliente web; la inferencia se canaliza mediante proxy autenticado en la intranet del organismo.`;
+- **Periodo de Retención:** ${logRetentionMonths} meses según la documentación de seguridad del sistema (ENS, [op.exp.8]).
+- **Seguridad en Front-End (ENS, [op.acc.5]):** Las credenciales y claves de API no viajan al cliente web; la inferencia se canaliza mediante proxy autenticado en la intranet del organismo.`;
   };
 
   const handleApply = () => {
@@ -339,7 +339,7 @@ ${agencyDesc}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
               <Lock style={{ width: 16, height: 16, color: 'var(--brand-blue)' }} />
               <label style={{ margin: 0, fontWeight: 700, fontSize: '0.875rem', color: 'var(--brand-ink)' }}>
-                4. Trazabilidad, Auditoría y ENS (CCN-STIC 884D / RD 311/2022)
+                4. Trazabilidad, Auditoría y ENS (RD 311/2022)
               </label>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>

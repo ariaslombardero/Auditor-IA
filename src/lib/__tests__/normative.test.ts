@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PROHIBITED_SYSTEMS_CATALOG, REGULATORY_FRAMEWORK } from '../legalKnowledgeBase';
+import { NORMATIVE_CORPUS } from '../localRagEngine';
 import { CASES, runCase } from '../../test/fixtures';
 
 /**
@@ -29,6 +30,16 @@ describe('Citas normativas de la base de conocimiento', () => {
 
   it('NOR-05 · el catálogo del Art. 5 incluye la identificación biométrica remota en tiempo real (Art. 5.1.h)', () => {
     expect(PROHIBITED_SYSTEMS_CATALOG.map((p) => p.legalArticle).join(' ')).toMatch(/5\.1\.h/);
+  });
+
+  it('NOR-10 · el consultor normativo distingue extractos literales de resúmenes y enlaza siempre la fuente oficial', () => {
+    for (const doc of NORMATIVE_CORPUS) {
+      expect(doc.sourceUrl).toMatch(/^https:\/\/(www\.boe\.es|eur-lex\.europa\.eu)\//);
+      if (!doc.isLiteral) {
+        expect(doc.text).toMatch(/^Resumen/);
+      }
+    }
+    expect(JSON.stringify(NORMATIVE_CORPUS)).not.toMatch(/IA-\d{2}|CCN-STIC 884D/);
   });
 
   it('NOR-08 · describe el Art. 23 de la Ley 15/2022 como fomento ("promoverá"), no como auditoría previa obligatoria', () => {

@@ -165,7 +165,7 @@ export const RichDictamenView: React.FC<RichDictamenViewProps> = ({ content }) =
               Dictamen Especializado de Auditoría Asistida
             </h4>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-              Evaluación pericial emitida conforme a AI Act, RGPD, ENS (CCN-STIC 884D) y Ley 40/2015
+              Análisis asistido por IA, no verificado (RIA, RGPD, ENS y Ley 40/2015)
             </span>
           </div>
         </div>

@@ -172,7 +172,7 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
                   <strong style={{ fontSize: '0.875rem', color: '#6d28d9' }}>4. Esquema Nacional de Seguridad (ENS)</strong>
                 </div>
                 <p style={{ fontSize: '0.8125rem', color: '#4c1d95', lineHeight: 1.5, margin: 0 }}>
-                  La Guía <strong>CCN-STIC 884D</strong> prohíbe exponer claves de API en el navegador, exige registrar auditoría de cada prompt y garantizar la soberanía del dato frente a fugas internacionales.
+                  El <strong>ENS (RD 311/2022)</strong> exige proteger las credenciales ([op.acc.5]), registrar la actividad ([op.exp.8]) y proteger los servicios en la nube ([op.nub.1]): las claves de API no deben exponerse en el navegador.
                 </p>
               </div>
 

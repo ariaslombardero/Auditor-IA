@@ -3,7 +3,7 @@ import type { AppIdioma } from '../types';
 export const translations = {
   castellano: {
     app_title: 'Auditor IA · Sector Público',
-    app_subtitle: 'Gobernanza, AI Act (UE 2024/1689), Ómnibus Digital (2026/1744) y ENS',
+    app_subtitle: 'Gobernanza, RIA (UE 2024/1689, modificado por 2026/1744) y ENS',
     step_1: '1. Ingesta de la App',
     step_2: '2. Entrevista Jurídica',
     step_3: '3. Diagnóstico y Dictamen',
@@ -49,7 +49,7 @@ export const translations = {
   },
   galego: {
     app_title: 'Auditor IA · Sector Público',
-    app_subtitle: 'Gobernanza, AI Act (UE 2024/1689), Ómnibus Dixital (2026/1744) e ENS',
+    app_subtitle: 'Gobernanza, RIA (UE 2024/1689, modificado por 2026/1744) e ENS',
     step_1: '1. Inxesta da App',
     step_2: '2. Entrevista Xurídica',
     step_3: '3. Diagnóstico e Dictame',

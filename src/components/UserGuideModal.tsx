@@ -49,7 +49,7 @@ El archivo AGENTS.md debe documentar con el máximo detalle y rigor técnico los
    - ¿El sistema procesa datos personales o de categorías especiales (salud, discapacidad, religión, sindical) del Art. 9 del RGPD?
    - Flujo de datos: dónde se reciben, cómo se transmiten y cuándo se purgan.
 
-6. TRAZABILIDAD Y REGISTRO DE LOGS (CCN-STIC 884D / ENS RD 311/2022):
+6. TRAZABILIDAD Y REGISTRO DE LOGS (ENS RD 311/2022, [op.exp.8]):
    - ¿Existe un registro de auditoría con fecha, hora, usuario e identificación de peticiones y respuestas mediante hash SHA-256?
    - Periodo de conservación previsto de los logs (mínimo 24 meses en sistemas medios/altos).
 
@@ -279,7 +279,7 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({
                     🛡️ Esquema Nacional de Seguridade (RD 311/2022)
                   </div>
                   <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    Categorías de seguridade (BÁSICA, MEDIA, ALTA) e directrices CCN-STIC 884D: trazabilidade con hash SHA-256, custodia de logs durante 24 meses e prohibición de expoñer claves de API en cliente.
+                    Categorías de seguridade (BÁSICA, MEDIA, ALTA) e medidas do Anexo II: rexistro da actividade ([op.exp.8]), protección de credenciais ([op.acc.5]) e prohibición de expoñer claves de API no cliente.
                   </p>
                 </div>
 

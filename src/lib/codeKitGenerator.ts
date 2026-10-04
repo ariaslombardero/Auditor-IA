@@ -105,11 +105,11 @@ export function makeAiTransparencyFooter(): Footer {
 // }]
 `;
 
-  const envSecurityGuide = `# GUÍA DE SEGURIDAD Y VARIABLES DE ENTORNO (CCN-STIC 884D / ENS RD 311/2022)
+  const envSecurityGuide = `# GUÍA DE SEGURIDAD Y VARIABLES DE ENTORNO (ENS RD 311/2022)
 # Aplicación auditada: ${appTitle}
 # Categoría ENS aplicable: ${diagnostic.ensCategory}
 
-## 1. Regla de Oro CCN-STIC 884D (Medida IA-01)
+## 1. Regla de oro: credenciales fuera del cliente (ENS, [op.acc.5])
 NUNCA expongas claves de API (como GEMINI_API_KEY u OPENROUTER_API_KEY) en el cliente o navegador.
 En aplicaciones frontend (como Vite o React), las variables con prefijo 'VITE_' son visibles en el código compilado para cualquier usuario.
 
@@ -127,7 +127,7 @@ Si el software requiere claves, asegúrate de añadir '.env.local' y '.env' a tu
 Para cumplir con la directriz de soberanía de datos del sector público español:
 - Servidor local intranet: http://127.0.0.1:11434 (o IP de la red corporativa).
 - Sin necesidad de API keys externas.
-- Ningún dato de los ciudadanos ni expedientes sale de la red de la Administración.
+- Si el modelo se ejecuta realmente en servidores propios, los datos no salen de la red de la Administración.
 
 \`\`\`bash
 # Ejemplo de configuración para backend seguro:
@@ -138,7 +138,7 @@ AI_TEMPERATURE=0.1
 AI_AUDIT_LOG_PATH=/var/log/ai-audit/${appTitle.toLowerCase().replace(/\\s+/g, '-')}.log
 \`\`\`
 
-## 4. Sellado de tiempo y Logs de auditoría (Medida IA-08)
+## 4. Registro de la actividad (ENS, [op.exp.8])
 Registra en base de datos o archivo protegido:
 - Timestamp (ISO 8601 UTC)
 - Usuario / DNI / Certificado electrónico del funcionario que solicita la generación

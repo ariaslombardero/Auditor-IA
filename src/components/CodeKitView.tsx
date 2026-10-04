@@ -33,7 +33,7 @@ export const CodeKitView: React.FC<CodeKitViewProps> = ({
           Paso 4: Kit de Código y Adaptación Técnica Inmediata
         </h2>
         <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-          Copia y pega estos componentes directamente en el repositorio de la aplicación auditada para subsanar los requerimientos de <strong>transparencia (Art. 50 RIA)</strong> y <strong>seguridad en variables de entorno (CCN-STIC 884D)</strong>.
+          Copia y pega estos componentes directamente en el repositorio de la aplicación auditada para subsanar los requerimientos de <strong>transparencia (Art. 50 RIA)</strong> y <strong>seguridad de credenciales (ENS, RD 311/2022)</strong>.
         </p>
       </div>
 
@@ -72,7 +72,7 @@ export const CodeKitView: React.FC<CodeKitViewProps> = ({
           className={activeTab === 'env' ? 'btn-primary' : 'btn-secondary'}
           style={{ fontSize: '0.8125rem' }}
         >
-          <ShieldAlert style={{ width: 14, height: 14 }} /> Guía .env (CCN-STIC 884D)
+          <ShieldAlert style={{ width: 14, height: 14 }} /> Guía .env (ENS)
         </button>
       </div>
 
@@ -92,7 +92,7 @@ export const CodeKitView: React.FC<CodeKitViewProps> = ({
             {activeTab === 'react' && 'AiTransparencyBanner.tsx'}
             {activeTab === 'html' && 'transparency-banner.html'}
             {activeTab === 'docx' && 'docxExporterFooter.ts'}
-            {activeTab === 'env' && 'CCN-STIC-884D-Security-Guide.md'}
+            {activeTab === 'env' && 'Guia-Seguridad-Credenciales-ENS.md'}
           </span>
 
           <button

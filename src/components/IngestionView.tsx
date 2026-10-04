@@ -184,7 +184,7 @@ Los borradores requieren siempre la lectura crítica y validación humana del as
         agentsMdContent: `# AGENTS.MD - Arquitectura y Directivas de Inferencia de Opositor Transparente
 
 ## 1. Naturaleza y Propósito
-Herramienta de auxilio técnico instrumental (Art. 41 Ley 40/2015 y Ómnibus Digital UE 2026/1744).
+Herramienta de apoyo técnico: un empleado público interviene de forma directa en cada actuación, por lo que no se pretende una actuación administrativa automatizada (Art. 41 Ley 40/2015).
 Prohibición taxativa de actos administrativos automatizados o calificación autónoma de opositores.
 
 ## 2. Inferencia y Soberanía del Dato
@@ -199,7 +199,7 @@ Prohibición taxativa de actos administrativos automatizados o calificación aut
 
 ## 4. Trazabilidad y Logs
 - Logs estructurados con sellado hash SHA-256 de peticiones y respuestas.
-- Retención auditada de 24 meses conforme a directrices ENS RD 311/2022 y CCN-STIC 884D.`,
+- Registro de la actividad conforme al ENS (RD 311/2022, [op.exp.8]), con el periodo de conservación fijado en la documentación de seguridad.`,
         techStack: 'React 19, TypeScript, Vite, docx, Ollama Local / Gemini API',
         targetAudience: 'public_employees',
       });
@@ -524,7 +524,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#c084fc', fontWeight: 700, fontSize: '0.75rem', marginBottom: '2px' }}>
                 <Lock style={{ width: 13, height: 13 }} />
-                <span>4. ENS (CCN-STIC 884D)</span>
+                <span>4. ENS (RD 311/2022)</span>
               </div>
               <div style={{ fontSize: '0.72rem', color: '#cbd5e1', lineHeight: 1.4 }}>
                 Custodia estricta de API keys, trazabilidad de logs y soberanía del dato.

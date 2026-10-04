@@ -165,7 +165,7 @@ export function generateHardenedSystemPrompt(
   baseDescription: string,
   humanSupervisorRole: string
 ): string {
-  return `### DIRECTIVA DE SEGURIDAD INSTITUCIONAL (NIVEL ENS ALTO / CCN-STIC 884D)
+  return `### DIRECTIVA DE SEGURIDAD INSTITUCIONAL (ENS, RD 311/2022)
 # SISTEMA: ${appName || 'Asistente de Administración Pública'}
 # NATURALEZA JURÍDICA: Herramienta de auxilio técnico instrumental (Art. 41 Ley 40/2015).
 # SUPERVISIÓN HUMANA PRECEPTIVA: ${humanSupervisorRole || 'Funcionario tramitador competente'}.
