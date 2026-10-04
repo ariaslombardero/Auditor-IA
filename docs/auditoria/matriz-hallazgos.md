@@ -1,4 +1,4 @@
-| 🔴 || 🔴 || 🔴 || 🔴 || 🔴 || 🔴 |# Matriz de hallazgos y trazabilidad de correcciones
+# Matriz de hallazgos y trazabilidad de correcciones
 
 > Relaciona cada hallazgo de las auditorías independientes (Claude Opus 5.5 y GPT Sol 6.1) con su reproducción, el comportamiento esperado, la fase que lo corrige y la prueba que lo verifica.
 > **Línea base:** commit `48956a6` · `npm test` el 05/10/2026: **50 pruebas, 49 en rojo, 1 en verde** (DOC-06). Los hallazgos ⚪ dependen de decisiones de diseño de su fase (modelo de requisitos, papeles, calendario, ADR 001) y su prueba se escribirá al inicio de esa fase, antes de corregir.
@@ -25,7 +25,7 @@
 | MOT-14 | Pilar RGPD «Base legítima acreditada» sin preguntar la base jurídica | C+G | Base jurídica preguntada; si falta, pendiente | 1–2 | 🔴 |
 | MOT-15 | Veredicto «APTO PARA DESPLIEGUE EN PRODUCCIÓN» | G | Veredicto derivado de requisitos pendientes, sin aptitud para producción | 1 | 🔴 |
 | MOT-16 | Respuestas contradictorias (evalúa ciudadanos + solo documentos despersonalizados) se resuelven a favor de la excepción | C (en Fase 0) | «Requiere revisión» | 2 | 🔴 |
-| MOT-17 | Cobertura del Anexo III limitada a 4(a) y 5(a); sin vía Art. 6.1/Anexo I | C+G | Cubrir o declarar «no soportado» | 2 | ⚪ |
+| MOT-17 | Cobertura del Anexo III limitada a 4(a) y 5(a); sin vía Art. 6.1/Anexo I | C+G | Cubrir o declarar «no soportado» | 2 | 🔴 |
 | MOT-18 | Faltan obligaciones del responsable del despliegue (Arts. 4, 26, 27 solo alto riesgo, 49.3, 86) y el doble papel por caso | C (+G matiz) | Obligaciones por papel y clasificación | 2 | ⚪ |
 | MOT-19 | Calendario normativo ausente (Ómnibus: Anexo III 2/12/2027, Anexo I 2/8/2028) | C+G | Clasificación separada de exigibilidad | 2 | ⚪ |
 | MOT-20 | Categoría ENS por atajos (alojamiento), sin valoración D-A-I-C-T | C+G | Valoración por dimensiones o etiqueta «orientativa» | 2 | ⚪ |
@@ -43,8 +43,8 @@
 | NOR-05 | Catálogo del Art. 5 sin 5.1.h ni las prohibiciones nuevas del Ómnibus | C | Catálogo completo con fechas | 1–2 | 🔴 |
 | NOR-06 | Marcado CE remitido a la AESIA / entidad notificada | C | Control interno (Anexo VI, Art. 43.2 RIA) | 1 | 🔴 |
 | NOR-07 | Antecedentes penales tratados como Art. 9 RGPD | G | Art. 10 RGPD | 1 | 🔴 |
-| NOR-08 | Ley 15/2022 Art. 23 descrita como auditoría obligatoria | G | «Promoverá» evaluaciones de impacto | 1 | ⚪ |
-| NOR-09 | «Infracción muy grave sancionable por la AESIA» sin matiz | C | Remisión a la norma nacional y Art. 99.8 RIA | 1 | ⚪ |
+| NOR-08 | Ley 15/2022 Art. 23 descrita como auditoría obligatoria | G | «Promoverá» evaluaciones de impacto | 1 | 🔴 |
+| NOR-09 | «Infracción muy grave sancionable por la AESIA» sin matiz | C | Remisión a la norma nacional y Art. 99.8 RIA | 1 | 🔴 |
 
 ## C. Documentos exportados (DOCX, Markdown, manifiesto)
 
@@ -57,8 +57,8 @@
 | DOC-05 | Manifiesto con `FAVORABLE` y `vigente_consolidado` fijos | C | Estados derivados | 1 | 🔴 |
 | DOC-06 | Las tres salidas expresan la misma etiqueta de clasificación | C | Se mantiene | 1 | 🟢 |
 | DOC-07 | «CSV» aleatorio no verificable y diligencia que «certifica» | C+G | «Identificador interno», sin certificación | 1 | 🔴 |
-| DOC-08 | Texto del LLM incrustado en el DOCX sin marca de procedencia | C | Rotulado como análisis asistido no verificado | 1 | ⚪ |
-| DOC-09 | Carpeta `Resultados prueba…` generada por script con textos fijos (incluye IA-01 «CONFORME» para claves en cliente) | C | Rotular procedencia; regenerar con el motor | 1 y 4 | ⚪ |
+| DOC-08 | Texto del LLM incrustado en el DOCX sin marca de procedencia | C | Rotulado como análisis asistido no verificado | 1 | 🔴 |
+| DOC-09 | Carpeta `Resultados prueba…` generada por script con textos fijos (incluye IA-01 «CONFORME» para claves en cliente) | C | Rotular procedencia; regenerar con el motor | 1 y 4 | 🔴 |
 | DOC-10 | Formato, firma y metadatos sin ajustar a la política institucional (NTI) | C (+G matiz) | Decisión de interoperabilidad documentada | 4 | ⚪ |
 
 ## D. EIPD (`src/lib/eipdGenerator.ts`)
@@ -89,7 +89,7 @@
 | SEG-04 | Claves persistidas en claro en `localStorage` | C+G | Según ADR 001 | 3 | ⚪ |
 | SEG-05 | El alojamiento declarado no se vincula al proveedor efectivo | G | Registrar proveedor efectivo; contradicción → revisión | 3 | ⚪ |
 | SEG-06 | El escáner solo analiza README/AGENTS.md, no código | C+G | Alcance declarado y ficheros de código aportados | 3 | ⚪ |
-| SEG-07 | Conexiones a Google Fonts y sin CSP | G | Fuentes autoalojadas; CSP | 3 | ⚪ |
+| SEG-07 | Conexiones a Google Fonts y sin CSP | G | Fuentes autoalojadas; CSP | 3 | 🔴 |
 | SEG-08 | Consulta de legislación dependiente del proxy de desarrollo de Vite | C | Funcionar en producción o declararlo | 3 | ⚪ |
 
 ## G. Ensayos adversarios (`src/lib/adversarialSimulator.ts`)
