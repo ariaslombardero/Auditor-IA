@@ -111,7 +111,7 @@ function legacyPillar(code: string): RequirementPillar {
  */
 export function normalizeDiagnostic(diagnostic: DiagnosticResult | null | undefined): DiagnosticResult | null {
   if (!diagnostic) return null;
-  if (Array.isArray(diagnostic.requirements)) return diagnostic;
+  if (Array.isArray(diagnostic.requirements)) return withCurrentFields(diagnostic);
 
   const legacy = diagnostic as unknown as {
     obligations?: Array<{ code: string; title: string; legalBasis: string; status: string; description: string; actionRequired: string }>;
@@ -152,9 +152,36 @@ export function normalizeDiagnostic(diagnostic: DiagnosticResult | null | undefi
   ];
 
   const { obligations: _o, prohibitedChecks: _p, ...rest } = diagnostic as unknown as Record<string, unknown>;
-  return {
+  return withCurrentFields({
     ...(rest as unknown as DiagnosticResult),
     requirements,
     engineVersion: '2.0.0 (registro anterior, no recalculado)',
+  });
+}
+
+/**
+ * Completa los campos que no existían en versiones anteriores del motor (traza, motivos de revisión,
+ * papel y carácter orientativo del ENS) sin recalcular ni presumir conclusiones.
+ */
+function withCurrentFields(d: DiagnosticResult): DiagnosticResult {
+  if (Array.isArray(d.classificationTrace) && Array.isArray(d.reviewReasons)) return d;
+  return {
+    ...d,
+    reviewReasons: d.reviewReasons || [],
+    classificationTrace: d.classificationTrace || [
+      {
+        id: 'REGISTRO-ANTERIOR',
+        pregunta: 'Diagnóstico guardado por una versión anterior del motor',
+        respuesta: d.riskLabel,
+        conclusion: 'No recalculado con la versión actual.',
+        regla: 'Las versiones anteriores no registraban la traza de la clasificación.',
+        fuente: 'Historial local',
+        limites: 'Debe repetirse la entrevista con la versión actual para obtener una clasificación trazable.',
+      },
+    ],
+    normativeVersion: d.normativeVersion || 'Desconocido (registro anterior)',
+    institutionalRole: d.institutionalRole || 'desconocido',
+    ensCategoryIsOrientative: d.ensCategoryIsOrientative ?? true,
+    engineVersion: /no recalculado/.test(d.engineVersion || '') ? d.engineVersion : `${d.engineVersion || 'anterior'} (registro anterior, no recalculado)`,
   };
 }

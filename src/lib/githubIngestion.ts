@@ -17,6 +17,18 @@ export interface GithubScanResult {
   isAiSystemDetected: boolean;
 }
 
+// Regex con límites de palabra para evitar falsos positivos (ej. "drag" o "fragment" que antes disparaban "rag")
+const AI_README_REGEX = /\b(llm|lms|gpt-?[34]?|gemini|ollama|openai|langchain|anthropic|mistral|hugging\s*face|modelos?\s+de\s+lenguaje|inteligencia\s+artificial|machine\s+learning|deep\s+learning|redes?\s+neuronales?|asistente\s+de\s+ia|prompt\s+(?:engineering|injection|template)|vector\s+(?:database|store)|embeddings?|\brag\b|sistema\s+de\s+ia)\b/i;
+
+/**
+ * Indicio de que el repositorio usa IA: un SDK de IA entre las dependencias o una mención en el README.
+ * La existencia de un AGENTS.md o CLAUDE.md no es indicio: son instrucciones para agentes de programación
+ * y aparecen también en software sin IA. El resultado solo orienta la pregunta del Art. 3.1 RIA.
+ */
+export function detectAiSignals(input: { detectedAiSdk: string[]; agentsMdContent?: string | null; readmeContent?: string | null }): boolean {
+  return input.detectedAiSdk.length > 0 || AI_README_REGEX.test(input.readmeContent || '');
+}
+
 export function parseGithubUrl(rawUrl: string): { owner: string; repo: string } | null {
   const cleaned = rawUrl.trim().replace(/\.git\/?$/, '').replace(/\/+$/, '');
   
@@ -196,10 +208,7 @@ export async function scanGithubRepository(rawUrl: string): Promise<GithubScanRe
     ? stackElements.join(', ')
     : 'Web Application / Desarrollo de Software';
 
-  // Regex con límites de palabra para evitar falsos positivos (ej. "drag" o "fragment" que antes disparaban "rag")
-  const aiRegex = /\b(llm|lms|gpt-?[34]?|gemini|claude|ollama|openai|langchain|anthropic|mistral|hugging\s*face|modelos?\s+de\s+lenguaje|inteligencia\s+artificial|machine\s+learning|deep\s+learning|redes?\s+neuronales?|asistente\s+de\s+ia|prompt\s+(?:engineering|injection|template)|vector\s+(?:database|store)|embeddings?|\brag\b|sistema\s+de\s+ia)\b/i;
-  const readmeMentionsAi = aiRegex.test(readmeContent || '');
-  const isAiSystemDetected = detectedAiSdk.length > 0 || Boolean(agentsMdContent && agentsMdContent.trim().length > 0) || readmeMentionsAi;
+  const isAiSystemDetected = detectAiSignals({ detectedAiSdk, agentsMdContent, readmeContent });
 
   return {
     appName,

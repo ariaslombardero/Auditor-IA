@@ -14,7 +14,7 @@ describe('Historial local de auditorías', () => {
   it('ALM-01 · dos auditorías de la misma aplicación en menos de 30 minutos se conservan ambas', () => {
     const state = CASES.asistenteRedaccion();
     saveAuditRecord(state);
-    saveAuditRecord({ ...state, answers: { ...state.answers, auditLogsEnabled: false } });
+    saveAuditRecord({ ...state, answers: { ...state.answers, auditLogsEnabled: 'no' } });
     expect(getStoredAudits()).toHaveLength(2);
   });
 

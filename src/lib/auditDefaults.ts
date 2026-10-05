@@ -1,4 +1,5 @@
 import type { AppIngestData, LegalEnrichmentAnswers, OfficialDossierMetadata } from '../types';
+import { createDefaultAnswers } from './answersModel';
 
 /**
  * Valores iniciales del asistente (ingesta, entrevista y metadatos del expediente).
@@ -11,21 +12,8 @@ export const DEFAULT_INGEST: AppIngestData = {
   targetAudience: 'public_employees',
 };
 
-export const DEFAULT_ANSWERS: LegalEnrichmentAnswers = {
-  humanOversightLevel: 'pre_execution',
-  supervisionRole: 'Funcionario tramitador / Órgano competente',
-  administrativeNature: 'technical_auxiliary',
-  publicCompetenceNorm: 'Ley 39/2015 del Procedimiento Administrativo Común',
-  hostingModel: 'local_on_premise',
-  processesSpecialCategoryData: false,
-  ratActivityName: 'Apoyo a la Gestión y Elaboración Documental Administrativa',
-  auditLogsEnabled: true,
-  logRetentionMonths: 24,
-  deterministicConfig: true,
-  evaluatedSubjectType: 'normative_or_unpersonalized_docs',
-  performsProfilingOrScoring: false,
-  interactionAndGenerationType: 'chatbot_or_generative',
-};
+/** Entrevista sin contestar: todas las respuestas parten de «desconocido». */
+export const DEFAULT_ANSWERS: LegalEnrichmentAnswers = createDefaultAnswers();
 
 export const DEFAULT_METADATA: OfficialDossierMetadata = {
   entityName: 'Administración Pública Promotora',

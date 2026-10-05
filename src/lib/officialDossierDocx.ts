@@ -19,8 +19,9 @@ import {
 import { saveAs } from 'file-saver';
 import { MONOGRAMA_JA_BASE64 } from './brandLogo';
 import type { FullAuditState, AppIdioma, RequirementAssessment, RequirementResult } from '../types';
-import { normalizeDiagnostic, obligations, prohibitedPractices, requirementsByPillar, resultLabel, originLabel, applicabilityLabel } from './assessmentModel';
+import { obligations, prohibitedPractices, requirementsByPillar, resultLabel, originLabel, applicabilityLabel } from './assessmentModel';
 import { computeExecutivePillars, computeExecutiveVerdict, type PillarStatus } from './dashboardPillars';
+import { effectiveDiagnostic } from './validations';
 import { buildDocumentTraceability, ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 const FONT_BODY = 'Calibri';
@@ -52,7 +53,7 @@ export function buildOfficialDossierDocument(
   traceability?: DocumentTraceability
 ): Document {
   const { ingest, answers, metadata } = state;
-  const diagnostic = normalizeDiagnostic(state.diagnostic);
+  const diagnostic = effectiveDiagnostic(state);
   const isGl = idioma === 'galego';
   const requirements = diagnostic?.requirements || [];
   const pillars = diagnostic ? computeExecutivePillars(diagnostic) : null;
@@ -195,7 +196,7 @@ export function buildOfficialDossierDocument(
                 ? [makeMetadataRow('Régimen Especial AI Act', 'Excepción Art. 6.3 RIA (Derogación de Alto Riesgo documentada Art. 6.4)')]
                 : []),
               makeMetadataRow('Categoría ENS (RD 311/2022)', `Nivel ${diagnostic?.ensCategory || 'BÁSICA'}`),
-              makeMetadataRow('Régimen Jurídico (Ley 40/2015)', answers.administrativeNature === 'technical_auxiliary' ? 'Auxilio Técnico Instrumental (No emite actos resolutorios)' : 'Actuación Administrativa Automatizada (Art. 41)'),
+              makeMetadataRow('Régimen Jurídico (Ley 40/2015)', answers.directHumanIntervention === 'no' ? 'Actuación administrativa automatizada declarada (Art. 41)' : answers.directHumanIntervention === 'si' ? 'Intervención directa de un empleado público (declarada)' : 'No consta'),
               makeMetadataRow('Responsable Funcional', metadata.functionalResponsible || 'Jefatura de Servicio'),
               makeMetadataRow('Responsable Técnico / CISO', metadata.technicalResponsible || 'Dirección de TI'),
               makeMetadataRow('Supervisión Pública y DPD', metadata.dpoContact || 'Delegado de Protección de Datos'),
@@ -369,7 +370,7 @@ export function buildOfficialDossierDocument(
             children: [
               new TextRun({ text: 'Modelo de Inferencia y Soberanía: ', bold: true }),
               new TextRun({
-                text: ingest.isAiSystem === false
+                text: diagnostic?.riskClassification === 'not_ai_system'
                   ? 'Software Determinista Tradicional. Sin modelos de inferencia LLM ni agentes autónomos. Ejecución basada en reglas estáticas en servidor/cliente web institucional.'
                   : answers.hostingModel === 'local_on_premise'
                   ? 'Declarado: ejecución local en servidores propios (Ollama / vLLM). No se ha comprobado el proveedor efectivamente utilizado.'
@@ -440,10 +441,12 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: ingest.isAiSystem === false
+                text: diagnostic?.riskClassification === 'requires_review'
+                  ? `Clasificación no concluyente: ${diagnostic.reviewReasons.join(' ')}`
+                  : diagnostic?.riskClassification === 'not_ai_system'
                   ? 'Nivel 0 - Exclusión del ámbito del RIA: según lo declarado, el sistema se basa exclusivamente en reglas predefinidas, sin capacidad de inferencia, por lo que no sería un sistema de IA (Art. 3.1 del Reglamento (UE) 2024/1689). En ese caso se rige por la normativa de administración electrónica (Ley 39/2015, Ley 40/2015) y por el ENS.'
                   : diagnostic?.riskClassification === 'prohibited'
-                  ? 'Nivel 1 - Indicio de práctica prohibida: se han detectado en la documentación indicios de prácticas del Artículo 5 del RIA. Deben verificarse jurídicamente; si se confirman, el sistema no puede ponerse en servicio.'
+                  ? 'Nivel 1 - Práctica prohibida declarada: se ha declarado que el sistema incurre en una práctica del Artículo 5 del RIA. No puede introducirse en el mercado, ponerse en servicio ni utilizarse; requiere revisión jurídica.'
                   : diagnostic?.riskClassification === 'high_risk'
                   ? 'Nivel 2 - Alto Riesgo (Art. 6.2 y Anexo III): según lo declarado, el sistema interviene en un ámbito del Anexo III. Como proveedor: gestión de riesgos (Art. 9), gobernanza de datos (Art. 10), documentación técnica (Art. 11), registro de eventos (Art. 12), transparencia (Art. 13), supervisión humana (Art. 14), precisión y ciberseguridad (Art. 15), evaluación de la conformidad por control interno sin organismo notificado (Art. 43.2 y Anexo VI), marcado CE y registro (Arts. 49 y 71). Como responsable del despliegue: Art. 26 y evaluación de impacto en los derechos fundamentales (Art. 27). Exigibles para el Anexo III desde el 2 de diciembre de 2027 (Reglamento (UE) 2026/1744).'
                   : diagnostic?.isArticle63Derogation
@@ -489,6 +492,40 @@ export function buildOfficialDossierDocument(
                 }),
               ]
             : []),
+
+          // 4.3. TRAZA DE LA CLASIFICACIÓN
+          new Paragraph({
+            children: [new TextRun({ text: '4.3. TRAZA DE LA CLASIFICACIÓN', bold: true, size: 20, color: COLOR_SECONDARY })],
+            spacing: { before: 200, after: 100 },
+          }),
+          new Paragraph({
+            children: [new TextRun({ text: `Corte normativo: ${diagnostic?.normativeVersion || '—'}. Cada paso indica la pregunta, la respuesta declarada, la regla aplicada, la fuente y sus límites.`, italics: true, size: 18, color: COLOR_MUTED })],
+            spacing: { after: 100 },
+          }),
+          ...(diagnostic?.classificationTrace || []).flatMap((step) => [
+            new Paragraph({
+              children: [
+                new TextRun({ text: `${step.id} · ${step.pregunta}`, bold: true, size: 19 }),
+              ],
+              spacing: { before: 80, after: 20 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: 'Respuesta: ', bold: true, size: 18 }),
+                new TextRun({ text: step.respuesta, size: 18 }),
+                new TextRun({ text: ' · Conclusión: ', bold: true, size: 18 }),
+                new TextRun({ text: step.conclusion, size: 18 }),
+              ],
+              spacing: { after: 20 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Regla: ${step.regla} Fuente: ${step.fuente}.${step.limites ? ` Límites: ${step.limites}` : ''}`, size: 16, color: COLOR_MUTED }),
+              ],
+              spacing: { after: 60 },
+            }),
+          ]),
+          new Paragraph({ text: '', spacing: { before: 200 } }),
 
           // SECCIÓN 5: SUPERVISIÓN HUMANA Y ART. 41 LEY 40/2015
           makeSectionHeading('5. SUPERVISIÓN HUMANA EFECTIVA Y MARCO ESTATAL DE GOBERNANZA'),
@@ -749,6 +786,9 @@ function buildRequirementParagraphs(r: RequirementAssessment, idioma: AppIdioma)
       spacing: { after: 40 },
     }),
     new Paragraph({ children: [new TextRun({ text: r.hechos, size: 19 })], spacing: { after: 40 } }),
+    ...(r.resultado === 'acreditado' && r.evidencia
+      ? [new Paragraph({ children: [new TextRun({ text: `Validación: ${r.revisadoPor} · Evidencia: ${r.evidencia}`, size: 19, bold: true, color: '16A34A' })], spacing: { after: 40 } })]
+      : []),
     new Paragraph({ children: [new TextRun({ text: `Acción: ${r.accionRequerida}`, size: 19, italics: true })], spacing: { after: 80 } }),
   ];
 }

@@ -114,6 +114,14 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
   );
 
   const getRiskBadge = (record: StoredAuditRecord) => {
+    if (record.riskClassification === 'requires_review') {
+      return {
+        bg: '#fffbeb',
+        color: '#92400e',
+        border: '#fcd34d',
+        label: isGl ? 'Require revisión (non concluínte)' : 'Requiere revisión (no concluyente)',
+      };
+    }
     if (record.riskClassification === 'not_ai_system') {
       return {
         bg: '#f1f5f9',

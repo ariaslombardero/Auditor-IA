@@ -27,7 +27,7 @@ import {
   type AdversarialSuiteReport,
   type AttackCategory,
 } from '../lib/adversarialSimulator';
-import { exportEipdDocx } from '../lib/eipdGenerator';
+import { exportEipdDocx, buildEipdCriteria, buildAepdCriteria, eipdScreening } from '../lib/eipdGenerator';
 import {
   scanPromptSecurity,
   generateHardenedSystemPrompt,
@@ -111,6 +111,9 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
   };
 
   // --- 2. EIPD State ---
+  const wp248Criteria = buildEipdCriteria(state);
+  const aepdCriteria = buildAepdCriteria(state);
+  const eipdStatus = eipdScreening(state);
   const [downloadingEipd, setDownloadingEipd] = useState(false);
   const handleDownloadEipd = async () => {
     setDownloadingEipd(true);
@@ -661,106 +664,59 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
               </button>
             </div>
 
-            {/* Resumen de necesidad */}
+            {/* Resumen de necesidad (cribado preliminar, mismo criterio que el documento) */}
             <div style={{ padding: '1rem', background: '#ecfdf5', borderRadius: 8, border: '1px solid #a7f3d0', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
                 <CheckCircle2 style={{ width: 18, height: 18, color: '#059669' }} />
                 <h4 style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#065f46' }}>
-                  Evaluación de Preceptividad Legal AEPD
+                  Cribado preliminar de necesidad de EIPD
                 </h4>
               </div>
               <p style={{ fontSize: '0.8125rem', color: '#047857' }}>
-                Para el sistema <strong>{state.ingest.appName || 'Aplicación analizada'}</strong>, la realización de esta EIPD es{' '}
+                Para el sistema <strong>{state.ingest.appName || 'Aplicación analizada'}</strong>, según lo declarado la EIPD es:{' '}
                 <strong>
-                  {state.answers.processesSpecialCategoryData || state.answers.humanOversightLevel === 'fully_automated'
-                    ? 'PRECEPTIVA Y EXIGIBLE POR LEY (Art. 35.1 RGPD)'
-                    : 'RECOMENDADA COMO SALVAGUARDA DE RESPONSABILIDAD PROACTIVA (Art. 24 RGPD)'}
+                  {eipdStatus === 'necesaria'
+                    ? 'NECESARIA EN LA MAYORÍA DE LOS CASOS (dos o más criterios de WP248 o de la lista de la AEPD)'
+                    : eipdStatus === 'por_determinar'
+                    ? 'POR DETERMINAR (hay criterios sin contestar en la entrevista)'
+                    : 'NO INDICADA POR LOS CRITERIOS DECLARADOS'}
                 </strong>
-                .
+                . La decisión final corresponde al responsable del tratamiento con el asesoramiento del DPD.
               </p>
             </div>
 
-            {/* Los 9 Criterios WP248 */}
-            <h4 style={{ fontSize: '0.9375rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-              Matriz de los 9 Criterios del Grupo del Art. 29 (AEPD / WP248)
-            </h4>
-
-            <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem' }}>
-                <thead style={{ background: '#065f46', color: '#ffffff' }}>
-                  <tr>
-                    <th style={{ padding: '0.65rem 0.85rem', textAlign: 'left' }}>Criterio WP248</th>
-                    <th style={{ padding: '0.65rem 0.85rem', textAlign: 'center', width: 90 }}>Aplica</th>
-                    <th style={{ padding: '0.65rem 0.85rem', textAlign: 'left' }}>Motivación y Diagnóstico</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600 }}>1. Evaluación o puntuación (Scoring/Profiling)</td>
-                    <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
-                      <span style={{ fontWeight: 700, color: state.answers.administrativeNature === 'citizen_assessment' ? '#b91c1c' : '#047857' }}>
-                        {state.answers.administrativeNature === 'citizen_assessment' ? 'SÍ' : 'NO'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                      {state.answers.administrativeNature === 'citizen_assessment'
-                        ? 'Se evalúan méritos o baremos de personas físicas.'
-                        : 'Auxilio técnico instrumental sin perfilado.'}
-                    </td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600 }}>2. Toma de decisiones automatizadas (Art. 22)</td>
-                    <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
-                      <span style={{ fontWeight: 700, color: state.answers.humanOversightLevel === 'fully_automated' ? '#b91c1c' : '#047857' }}>
-                        {state.answers.humanOversightLevel === 'fully_automated' ? 'SÍ' : 'NO'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                      {state.answers.humanOversightLevel === 'fully_automated'
-                        ? 'Riesgo de actuación automatizada pura sin funcionario.'
-                        : 'Supervisión humana preceptiva en el bucle.'}
-                    </td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600 }}>4. Datos sensibles / Art. 9 RGPD</td>
-                    <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
-                      <span style={{ fontWeight: 700, color: state.answers.processesSpecialCategoryData ? '#b91c1c' : '#047857' }}>
-                        {state.answers.processesSpecialCategoryData ? 'SÍ' : 'NO'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                      {state.answers.processesSpecialCategoryData
-                        ? 'Se declaran datos de salud, discapacidad o categorías especiales.'
-                        : 'No se declaran datos de categoría especial.'}
-                    </td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600 }}>8. Nuevas tecnologías / Modelos de IA</td>
-                    <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
-                      <span style={{ fontWeight: 700, color: '#047857' }}>SÍ</span>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                      Uso de Inteligencia Artificial Generativa y LLMs.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600 }}>9. Soberanía / Transferencia Internacional</td>
-                    <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
-                      <span style={{ fontWeight: 700, color: state.answers.hostingModel === 'us_hyperscaler' ? '#b91c1c' : '#047857' }}>
-                        {state.answers.hostingModel === 'us_hyperscaler' ? 'SÍ' : 'NO'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                      {state.answers.hostingModel === 'local_on_premise'
-                        ? 'Inferencia local soberana en CPD propio (Ollama).'
-                        : state.answers.hostingModel === 'eu_cloud_dpa'
-                        ? 'Nube comunitaria europea con DPA.'
-                        : 'Nube bajo jurisdicción extracomunitaria (Riesgo CLOUD Act).'}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            {[
+              { title: 'Criterios de las directrices WP248 (Grupo de Trabajo del Art. 29)', list: wp248Criteria },
+              { title: 'Lista de la AEPD de tratamientos que requieren EIPD (Art. 35.4 RGPD)', list: aepdCriteria },
+            ].map(({ title, list }) => (
+              <div key={title} style={{ marginBottom: '1.25rem' }}>
+                <h4 style={{ fontSize: '0.9375rem', fontWeight: 700, marginBottom: '0.75rem' }}>{title}</h4>
+                <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem' }}>
+                    <thead style={{ background: '#065f46', color: '#ffffff' }}>
+                      <tr>
+                        <th style={{ padding: '0.65rem 0.85rem', textAlign: 'left' }}>Criterio</th>
+                        <th style={{ padding: '0.65rem 0.85rem', textAlign: 'center', width: 110 }}>Concurre</th>
+                        <th style={{ padding: '0.65rem 0.85rem', textAlign: 'left' }}>Justificación</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {list.map((c) => (
+                        <tr key={c.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                          <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600 }}>{c.title}</td>
+                          <td style={{ padding: '0.65rem 0.85rem', textAlign: 'center' }}>
+                            <span style={{ fontWeight: 700, color: c.estado === 'si' ? '#b91c1c' : c.estado === 'no' ? '#047857' : '#b45309' }}>
+                              {c.estado === 'si' ? 'SÍ' : c.estado === 'no' ? 'NO' : 'POR VALORAR'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>{c.justification}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
 
             <div style={{ marginTop: '1.25rem', textAlign: 'right' }}>
               <button

@@ -26,29 +26,113 @@ export interface AppIngestData {
   isAiSystem?: boolean; // true si usa IA/LLMs, false si es software determinista tradicional
 }
 
+/** Respuesta de la entrevista. «desconocido» nunca se interpreta como ausencia de riesgo. */
+export type TriState = 'si' | 'no' | 'desconocido';
+
+/** Ámbitos del Anexo III del RIA (puntos 1 a 8). */
+export type AnnexIIIArea =
+  | 'ninguno'
+  | 'biometria'
+  | 'infraestructuras_criticas'
+  | 'educacion'
+  | 'empleo'
+  | 'servicios_esenciales'
+  | 'garantia_derecho'
+  | 'migracion'
+  | 'justicia_democracia'
+  | 'desconocido';
+
+/** Condición del Art. 6.3 RIA que se invoca para la excepción (son alternativas). */
+export type Article63Condition = 'a' | 'b' | 'c' | 'd' | 'ninguna' | 'desconocido';
+
+/** Papel de la entidad respecto del sistema (Art. 3, puntos 3 y 4, RIA). */
+export type InstitutionalRole = 'proveedor' | 'responsable_despliegue' | 'ambos' | 'desconocido';
+
+export type EnsLevel = 'bajo' | 'medio' | 'alto' | 'no_afectada' | 'desconocido';
+export type EnsDimension = 'C' | 'I' | 'T' | 'A' | 'D';
+
+/**
+ * Entrevista jurídica (versión 2). Cada respuesta parte de «desconocido».
+ */
 export interface LegalEnrichmentAnswers {
-  // Q1: Supervisión humana y control (Art. 14 RIA)
-  humanOversightLevel: 'pre_execution' | 'post_execution' | 'fully_automated';
-  supervisionRole: string; // Ej: "Funcionario tramitador / Tribunal calificador"
+  schemaVersion: 2;
 
-  // Q2: Función pública y naturaleza del acto (Art. 41 Ley 40/2015 & Anexo III RIA)
-  administrativeNature: 'technical_auxiliary' | 'automated_administrative_act' | 'citizen_assessment';
-  publicCompetenceNorm: string; // Ej: "Ley 39/2015 / Convocatoria OEP 2024"
+  // A. Definición de sistema de IA (Art. 3.1 RIA)
+  /** ¿Infiere, a partir de la información de entrada, cómo generar resultados de salida (predicciones, contenidos, recomendaciones o decisiones)? */
+  infersOutputs: TriState;
 
-  // Q3: Soberanía del dato y privacidad (RGPD / ENS RD 311/2022)
-  hostingModel: 'local_on_premise' | 'eu_cloud_dpa' | 'us_hyperscaler';
-  processesSpecialCategoryData: boolean; // Art. 9 RGPD
-  ratActivityName: string; // Nombre actividad en Registro de Actividades de Tratamiento
+  // B. Prácticas prohibidas (Art. 5 RIA): una respuesta por práctica del catálogo
+  prohibitedPractices: Record<string, TriState>;
 
-  // Q4: Trazabilidad y registro de la actividad (ENS [op.exp.8] / Art. 12 RIA)
-  auditLogsEnabled: boolean;
+  // C. Alto riesgo (Art. 6 y Anexo III RIA)
+  annexIIIArea: AnnexIIIArea;
+  annexIIIUseDescription: string;
+  /** Solo punto 5.a): ¿evalúa la admisibilidad de personas físicas para servicios y prestaciones esenciales de asistencia pública (o los concede, reduce, retira o reclama)? */
+  essentialPublicAssistance: TriState;
+  /** Elaboración de perfiles de personas físicas (Art. 3.52 RIA → Art. 4.4 RGPD). */
+  performsProfiling: TriState;
+  article63Condition: Article63Condition;
+  /** Hechos que justifican la condición invocada del Art. 6.3. */
+  article63Facts: string;
+  /** ¿Influye sustancialmente en el resultado de la toma de decisiones? */
+  materialInfluence: TriState;
+
+  // D. Transparencia (Art. 50 RIA)
+  interactsWithPersons: TriState;
+  generatesSyntheticContent: TriState;
+
+  // E. Papel de la entidad
+  institutionalRole: InstitutionalRole;
+
+  // F. Supervisión humana y actuación administrativa automatizada (Art. 41 Ley 40/2015)
+  humanOversightLevel: 'pre_execution' | 'post_execution' | 'fully_automated' | 'desconocido';
+  supervisionRole: string;
+  /** ¿Interviene de forma directa un empleado público en cada acto o actuación? */
+  directHumanIntervention: TriState;
+  /** Descripción del funcionamiento real del procedimiento. */
+  procedureDescription: string;
+  publicCompetenceNorm: string;
+
+  // G. Protección de datos (RGPD)
+  processesPersonalData: TriState;
+  legalBasis: 'art_6_1_c' | 'art_6_1_e' | 'otra' | 'desconocida';
+  processesSpecialCategoryData: TriState; // Art. 9 RGPD
+  processesCriminalData: TriState; // Art. 10 RGPD
+  biometricIdentification: TriState;
+  geneticData: TriState;
+  systematicMonitoring: TriState;
+  largeScale: TriState;
+  datasetCombination: TriState;
+  vulnerableSubjects: TriState;
+  preventsRightsOrService: TriState;
+  ratActivityName: string;
+  hostingModel: 'local_on_premise' | 'eu_cloud_dpa' | 'us_hyperscaler' | 'desconocido';
+
+  // H. Seguridad (ENS, Anexo I) y trazabilidad
+  ensImpact: Record<EnsDimension, EnsLevel>;
+  auditLogsEnabled: TriState;
   logRetentionMonths: number;
-  deterministicConfig: boolean; // Temp 0 / Seed fijada / Versión fija del LLM
+  deterministicConfig: TriState;
+}
 
-  // Q5: Precisión Fáctica de Clasificación RIA (Art. 6.3 & Art. 50)
-  evaluatedSubjectType?: 'normative_or_unpersonalized_docs' | 'natural_persons_or_applicants' | 'system_logs_or_technical';
-  performsProfilingOrScoring?: boolean; // ¿Calcula baremación/puntuación de personas? Si es true, inhabilita Art. 6.3
-  interactionAndGenerationType?: 'chatbot_or_generative' | 'internal_non_generative'; // ¿Chat o textos sintéticos (Art. 50) vs proceso interno (Riesgo Mínimo)?
+/** Paso de la clasificación: qué se preguntó, qué se respondió, qué regla se aplicó y con qué límites. */
+export interface ClassificationStep {
+  id: string;
+  pregunta: string;
+  respuesta: string;
+  conclusion: string;
+  regla: string;
+  fuente: string;
+  limites?: string;
+}
+
+/** Validación humana documentada de un requisito. */
+export interface HumanValidation {
+  revisadoPor: string;
+  evidencia: string;
+  fecha: string;
+  /** Huella de las entradas en el momento de validar; si cambian, la validación debe revisarse. */
+  inputsKey: string;
 }
 
 /** ¿El requisito es aplicable al sistema evaluado? */
@@ -98,10 +182,25 @@ export interface RequirementAssessment {
   exigibleDesde?: string;
 }
 
+export type RiskClassification =
+  | 'prohibited'
+  | 'high_risk'
+  | 'transparency_risk'
+  | 'minimal_risk'
+  | 'not_ai_system'
+  | 'requires_review';
+
 export interface DiagnosticResult {
-  riskClassification: 'prohibited' | 'high_risk' | 'transparency_risk' | 'minimal_risk' | 'not_ai_system';
+  riskClassification: RiskClassification;
   riskLabel: string;
   riskSummary: string;
+  /** Motivos por los que la clasificación no puede concluirse (respuestas desconocidas o contradictorias). */
+  reviewReasons: string[];
+  /** Traza de la clasificación: hechos, regla, fuente y límites de cada paso. */
+  classificationTrace: ClassificationStep[];
+  /** Corte normativo de la base de conocimiento usada. */
+  normativeVersion: string;
+  institutionalRole: InstitutionalRole;
   isAiSystem: boolean; // Indica si entra en el ámbito de aplicación del AI Act (Art. 3.1)
   isHighRiskAnnexIII: boolean;
   annexIIICategory?: string;
@@ -111,6 +210,8 @@ export interface DiagnosticResult {
   isAutomatedAdministrativeAct: boolean;
   ensCategory: 'BASICA' | 'MEDIA' | 'ALTA';
   ensReasoning: string;
+  /** true si la categoría no procede de la valoración de todas las dimensiones (Anexo I ENS). */
+  ensCategoryIsOrientative: boolean;
   /** Fuente única de requisitos: prácticas prohibidas examinadas y obligaciones. */
   requirements: RequirementAssessment[];
   /** Versión del motor que produjo este diagnóstico. */
@@ -149,6 +250,8 @@ export interface FullAuditState {
   codeKit: CodeKit | null;
   metadata: OfficialDossierMetadata;
   analyzing: boolean;
+  /** Validaciones humanas documentadas, por identificador de requisito. */
+  validations?: Record<string, HumanValidation>;
 }
 
 export interface StoredAuditRecord {
@@ -157,7 +260,7 @@ export interface StoredAuditRecord {
   appName: string;
   entityName: string;
   serviceDepartment: string;
-  riskClassification: 'prohibited' | 'high_risk' | 'transparency_risk' | 'minimal_risk' | 'not_ai_system';
+  riskClassification: RiskClassification;
   riskLabel: string;
   ensCategory: 'BASICA' | 'MEDIA' | 'ALTA';
   isArticle63Derogation?: boolean;

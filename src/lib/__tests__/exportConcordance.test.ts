@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { generateOfficialDossierMarkdown } from '../officialDossierMd';
 import { buildAuditManifest } from '../auditManifestGenerator';
-import { buildEipdCriteria, buildEipdDocument } from '../eipdGenerator';
+import { buildAepdCriteria, buildEipdCriteria, buildEipdDocument, eipdScreening } from '../eipdGenerator';
 import { generateCryptographicReceipt } from '../signatureService';
-import { CASES, docxText, makeState, officialDossierText } from '../../test/fixtures';
+import { CASES, answeredAnswers, docxText, makeAnswers, makeState, officialDossierText } from '../../test/fixtures';
 import { computeExecutiveVerdict } from '../dashboardPillars';
 import { unaccreditedRequirements } from '../assessmentModel';
 import { buildDocumentTraceability, NORMATIVE_SNAPSHOT } from '../traceability';
@@ -109,9 +109,12 @@ describe('Diligencia de integridad', () => {
 
 describe('EIPD (criterios WP248)', () => {
   it('EIPD-01 · el criterio de tecnología innovadora no se activa para software sin IA', () => {
-    const state = makeState('Calculadora de plazos administrativos', {}, { isAiSystem: false });
+    const state = makeState('Calculadora de plazos administrativos', answeredAnswers({ infersOutputs: 'no' }), { isAiSystem: false });
     const c8 = buildEipdCriteria(state).find((c) => c.id === 'C8')!;
     expect(c8.applies).toBe(false);
+    const ai = buildEipdCriteria(CASES.asistenteRedaccion()).find((c) => c.id === 'C8')!;
+    expect(ai.applies).toBe(true);
+    expect(ai.justification).toMatch(/innovador|nueva tecnolog/i);
   });
 
   it('EIPD-04 · el borrador de EIPD no redacta el dictamen del DPD ni se presenta como metodología oficial', async () => {
@@ -125,8 +128,26 @@ describe('EIPD (criterios WP248)', () => {
     }
   });
 
+  it('EIPD-03 · WP248 (9) y lista AEPD (11) con numeración propia; criterios sin contestar quedan "desconocido"; riesgo residual pendiente', async () => {
+    const unanswered = makeState('Sistema', makeAnswers({ infersOutputs: 'si' }));
+    expect(buildEipdCriteria(unanswered)).toHaveLength(9);
+    expect(buildAepdCriteria(unanswered).map((c) => c.id)).toEqual(Array.from({ length: 11 }, (_, i) => `AEPD-${i + 1}`));
+    expect(buildEipdCriteria(unanswered).find((c) => c.id === 'C3')!.estado).toBe('desconocido');
+    expect(buildEipdCriteria(unanswered).find((c) => c.id === 'C6')!.estado).toBe('desconocido');
+    const text = await docxText(buildEipdDocument(CASES.altoRiesgoEmpleo()));
+    expect(text).toMatch(/LISTA DE LA AEPD/);
+    expect(text).toMatch(/RIESGO RESIDUAL/);
+    expect(text).toMatch(/pendiente de valoraci[óo]n/i);
+  });
+
+  it('EIPD-05 · el cribado de necesidad distingue "necesaria", "no indicada" y "por determinar"', () => {
+    expect(eipdScreening(CASES.altoRiesgoEmpleo())).toBe('necesaria');
+    expect(eipdScreening(CASES.asistenteRedaccion())).toBe('no_indicada');
+    expect(eipdScreening(makeState('Sistema', makeAnswers({ infersOutputs: 'si' })))).toBe('por_determinar');
+  });
+
   it('EIPD-02 · el criterio 9 de WP248 es el impedimento al ejercicio de derechos, no las transferencias internacionales', () => {
-    const state = makeState('Asistente de redacción', { hostingModel: 'us_hyperscaler' });
+    const state = makeState('Asistente de redacción', answeredAnswers({ hostingModel: 'us_hyperscaler' }));
     const c9 = buildEipdCriteria(state).find((c) => c.id === 'C9')!;
     expect(c9.title).not.toMatch(/transferencias/i);
   });

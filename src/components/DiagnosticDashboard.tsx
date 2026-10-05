@@ -12,7 +12,7 @@ import {
   Scale,
   BookOpen,
 } from 'lucide-react';
-import type { DiagnosticResult, AppIdioma, RoleViewMode, RequirementResult } from '../types';
+import type { DiagnosticResult, AppIdioma, RoleViewMode, RequirementResult, HumanValidation, RequirementAssessment } from '../types';
 import { RichDictamenView } from './RichDictamenView';
 import { computeExecutivePillars, computeExecutiveVerdict } from '../lib/dashboardPillars';
 import {
@@ -45,7 +45,85 @@ interface DiagnosticDashboardProps {
   onBackToInterview: () => void;
   onInspectNorm?: (normId: string, article: string) => void;
   idioma: AppIdioma;
+  validations?: Record<string, HumanValidation>;
+  onValidateRequirement?: (requirementId: string, revisadoPor: string, evidencia: string) => void;
+  onRevokeValidation?: (requirementId: string) => void;
 }
+
+/** Registro y retirada de la validación humana documentada de un requisito. */
+const ValidationControl: React.FC<{
+  requirement: RequirementAssessment;
+  validation?: HumanValidation;
+  onValidate?: (requirementId: string, revisadoPor: string, evidencia: string) => void;
+  onRevoke?: (requirementId: string) => void;
+}> = ({ requirement, validation, onValidate, onRevoke }) => {
+  const [open, setOpen] = React.useState(false);
+  const [revisadoPor, setRevisadoPor] = React.useState('');
+  const [evidencia, setEvidencia] = React.useState('');
+  if (!onValidate || requirement.aplicabilidad === 'no_aplica') return null;
+
+  if (requirement.resultado === 'acreditado') {
+    return (
+      <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: '#166534', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <span>✔ Validado por {requirement.revisadoPor} · Evidencia: {requirement.evidencia}</span>
+        {onRevoke && (
+          <button type="button" className="btn-secondary" style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem' }} onClick={() => onRevoke(requirement.id)}>
+            Retirar validación
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: '0.4rem' }}>
+      {validation && (
+        <div style={{ fontSize: '0.72rem', color: '#92400e', marginBottom: '0.25rem' }}>
+          ⚠ La validación anterior de {validation.revisadoPor} no se aplica: las respuestas o la documentación han cambiado.
+        </div>
+      )}
+      {!open ? (
+        <button type="button" className="btn-secondary" style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem' }} onClick={() => setOpen(true)}>
+          Registrar validación humana
+        </button>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '0.5rem', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}>
+          <input
+            type="text"
+            placeholder="Persona y cargo que valida (p. ej., DPD)"
+            value={revisadoPor}
+            onChange={(e) => setRevisadoPor(e.target.value)}
+            style={{ fontSize: '0.75rem' }}
+          />
+          <input
+            type="text"
+            placeholder="Evidencia (documento, acta, informe, referencia del expediente)"
+            value={evidencia}
+            onChange={(e) => setEvidencia(e.target.value)}
+            style={{ fontSize: '0.75rem' }}
+          />
+          <div style={{ display: 'flex', gap: '0.35rem' }}>
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem' }}
+              disabled={!revisadoPor.trim() || !evidencia.trim()}
+              onClick={() => {
+                onValidate(requirement.id, revisadoPor.trim(), evidencia.trim());
+                setOpen(false);
+              }}
+            >
+              Guardar validación
+            </button>
+            <button type="button" className="btn-secondary" style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem' }} onClick={() => setOpen(false)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
   diagnostic,
@@ -56,6 +134,9 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
   onBackToInterview,
   onInspectNorm,
   idioma,
+  validations = {},
+  onValidateRequirement,
+  onRevokeValidation,
 }) => {
   const getBadgeClass = (risk: DiagnosticResult['riskClassification']) => {
     switch (risk) {
@@ -69,6 +150,8 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
         return 'badge-success';
       case 'not_ai_system':
         return 'badge-neutral';
+      case 'requires_review':
+        return 'badge-warning';
       default:
         return 'badge-success';
     }
@@ -338,7 +421,9 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <span className={`badge ${getBadgeClass(diagnostic.riskClassification)}`} style={{ padding: '0.5rem 0.875rem', fontSize: '0.8125rem' }}>
               {diagnostic.riskClassification === 'high_risk' ? <ShieldAlert style={{ width: 16, height: 16 }} /> : <ShieldCheck style={{ width: 16, height: 16 }} />}
-              {diagnostic.riskClassification === 'not_ai_system'
+              {diagnostic.riskClassification === 'requires_review'
+                ? 'RIA: REQUIERE REVISIÓN'
+                : diagnostic.riskClassification === 'not_ai_system'
                 ? 'EXCLUIDO AI ACT (ART. 3.1)'
                 : diagnostic.riskClassification === 'minimal_risk'
                 ? 'AI ACT: RIESGO MÍNIMO (ART. 95)'
@@ -346,11 +431,11 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
             </span>
             {diagnostic.isArticle63Derogation && (
               <span className="badge badge-success" style={{ padding: '0.5rem 0.875rem', fontSize: '0.8125rem', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
-                ⚖️ EXCEPCIÓN ART. 6.3 RIA APLICADA
+                ⚖️ EXCEPCIÓN ART. 6.3 RIA (DECLARADA, PENDIENTE DE DOCUMENTAR)
               </span>
             )}
             <span className="badge badge-info" style={{ padding: '0.5rem 0.875rem', fontSize: '0.8125rem' }}>
-              ENS: CATEGORÍA {diagnostic.ensCategory}
+              ENS: CATEGORÍA {diagnostic.ensCategory}{diagnostic.ensCategoryIsOrientative ? ' (ORIENTATIVA)' : ''}
             </span>
           </div>
         </div>
@@ -361,9 +446,39 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
 
         {diagnostic.isArticle63Derogation && diagnostic.article63Justification && (
           <div style={{ marginTop: '0.75rem', padding: '0.75rem 1rem', background: '#f0fdf4', borderRadius: 'var(--radius-md)', border: '1px solid #bbf7d0', fontSize: '0.875rem', color: '#166534', lineHeight: 1.5 }}>
-            <strong>📜 Motivación Preceptiva de Excepción (Art. 6.4 RIA):</strong> {diagnostic.article63Justification}
+            <strong>📜 Fundamento declarado de la excepción (Art. 6.3 RIA):</strong> {diagnostic.article63Justification}
           </div>
         )}
+
+        {diagnostic.reviewReasons.length > 0 && (
+          <div style={{ marginTop: '0.75rem', padding: '0.75rem 1rem', background: '#fffbeb', borderRadius: 'var(--radius-md)', border: '1px solid #fcd34d', fontSize: '0.875rem', color: '#78350f', lineHeight: 1.5 }}>
+            <strong>Motivos por los que la clasificación no es concluyente:</strong>
+            <ul style={{ margin: '0.35rem 0 0', paddingLeft: '1.25rem' }}>
+              {diagnostic.reviewReasons.map((r, i) => <li key={i}>{r}</li>)}
+            </ul>
+            <button type="button" className="btn-secondary" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }} onClick={onBackToInterview}>
+              Completar la entrevista
+            </button>
+          </div>
+        )}
+
+        <details style={{ marginTop: '0.75rem', fontSize: '0.8125rem' }}>
+          <summary style={{ cursor: 'pointer', fontWeight: 700, color: 'var(--color-primary)' }}>
+            Traza de la clasificación ({diagnostic.classificationTrace.length} pasos · corte normativo: {diagnostic.normativeVersion})
+          </summary>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+            {diagnostic.classificationTrace.map((step) => (
+              <div key={step.id} style={{ padding: '0.6rem 0.75rem', background: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ fontWeight: 700 }}>{step.id} · {step.pregunta}</div>
+                <div><strong>Respuesta:</strong> {step.respuesta}</div>
+                <div><strong>Conclusión:</strong> {step.conclusion}</div>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
+                  Regla: {step.regla} · Fuente: {step.fuente}{step.limites ? ` · Límites: ${step.limites}` : ''}
+                </div>
+              </div>
+            ))}
+          </div>
+        </details>
       </div>
 
       {/* Live Legislation Sync Banner */}
@@ -399,7 +514,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#166534' }}>
-                {idioma === 'galego' ? 'Sincronización Normativa Telemática Activa' : 'Sincronización Normativa Telemática Activa'}
+                {idioma === 'galego' ? 'Consulta da lexislación oficial' : 'Consulta de la legislación oficial'}
               </span>
               <span
                 style={{
@@ -414,13 +529,13 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
                   fontWeight: 600,
                 }}
               >
-                ● CONEXIÓN BOE / DOUE
+                BOE / DOUE
               </span>
             </div>
             <p style={{ margin: 0, fontSize: '0.8125rem', color: '#334155' }}>
               {idioma === 'galego'
-                ? 'Normas vixentes verificadas: Reg. (UE) 2024/1689 (RIA), Lei 40/2015 (Art. 41), ENS RD 311/2022 e RGPD.'
-                : 'Normas vigentes verificadas: Reg. (UE) 2024/1689 (RIA), Ley 40/2015 (Art. 41), ENS RD 311/2022 y RGPD.'}
+                ? `Os preceptos citados proceden da base de coñecemento da ferramenta (${diagnostic.normativeVersion}). Comprobe a súa vixencia nas fontes oficiais.`
+                : `Los preceptos citados proceden de la base de conocimiento de la herramienta (${diagnostic.normativeVersion}). Compruebe su vigencia en las fuentes oficiales.`}
             </p>
           </div>
         </div>
@@ -519,6 +634,12 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
                     </button>
                   )}
                 </div>
+                <ValidationControl
+                  requirement={req}
+                  validation={validations[req.id]}
+                  onValidate={onValidateRequirement}
+                  onRevoke={onRevokeValidation}
+                />
               </div>
             ))}
           </div>
@@ -584,6 +705,12 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
                       </button>
                     )}
                   </div>
+                  <ValidationControl
+                    requirement={req}
+                    validation={validations[req.id]}
+                    onValidate={onValidateRequirement}
+                    onRevoke={onRevokeValidation}
+                  />
                 </div>
               );
             })}

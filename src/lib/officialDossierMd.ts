@@ -1,6 +1,7 @@
 import type { FullAuditState, AppIdioma, RequirementAssessment } from '../types';
-import { applicabilityLabel, normalizeDiagnostic, obligations, originLabel, prohibitedPractices, requirementsByPillar, resultLabel } from './assessmentModel';
+import { applicabilityLabel, obligations, originLabel, prohibitedPractices, requirementsByPillar, resultLabel } from './assessmentModel';
 import { computeExecutivePillars, computeExecutiveVerdict } from './dashboardPillars';
+import { effectiveDiagnostic } from './validations';
 import { ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 /** Escapa los separadores de tabla para que un texto no rompa la tabla Markdown. */
@@ -15,7 +16,7 @@ function requirementBlock(r: RequirementAssessment, idioma: AppIdioma): string {
 *${r.norma} · ${r.precepto} · ${originLabel(r.origen, idioma)}${exigible}*
 
 ${r.hechos}
-
+${r.resultado === 'acreditado' && r.evidencia ? `\n**Validación:** ${r.revisadoPor} · **Evidencia:** ${r.evidencia}\n` : ''}
 **Acción:** ${r.accionRequerida}
 `;
 }
@@ -27,7 +28,7 @@ export function generateOfficialDossierMarkdown(
   traceability?: DocumentTraceability
 ): string {
   const { ingest, answers, metadata } = state;
-  const diagnostic = normalizeDiagnostic(state.diagnostic);
+  const diagnostic = effectiveDiagnostic(state);
   const dateStr = metadata.auditDate || new Date().toLocaleDateString('es-ES');
   const isGl = _idioma === 'galego';
   const requirements = diagnostic?.requirements || [];
@@ -96,8 +97,8 @@ ${diagnostic?.executiveSummary || 'Diagnóstico no disponible.'}
   ? 'README.md y AGENTS.md / CLAUDE.md (directivas del agente). Ambos son declaraciones del promotor.'
   : 'README.md (documentación funcional y de usuario).'}
 - **Modelo de inferencia (declarado):**
-  ${ingest.isAiSystem === false
-    ? 'Software basado en reglas predefinidas, sin modelos de inferencia ni APIs de IA.'
+  ${diagnostic?.riskClassification === 'not_ai_system'
+    ? 'Software basado en reglas predefinidas, sin modelos de inferencia ni APIs de IA (declarado).'
     : answers.hostingModel === 'local_on_premise'
     ? 'Ejecución local en servidores propios (Ollama / vLLM). No se ha comprobado el proveedor efectivamente utilizado.'
     : answers.hostingModel === 'eu_cloud_dpa'
@@ -131,10 +132,12 @@ ${prohibitedPractices(requirements)
 
 ### 4.1. Fundamento
 ${
-  ingest.isAiSystem === false
+  diagnostic?.riskClassification === 'requires_review'
+    ? `**Clasificación no concluyente:** ${diagnostic.reviewReasons.join(' ')}`
+    : diagnostic?.riskClassification === 'not_ai_system'
     ? `**Nivel 0 - Exclusión del ámbito del RIA:** según lo declarado, el sistema se basa exclusivamente en reglas predefinidas, sin capacidad de inferencia, por lo que no sería un sistema de IA (Art. 3.1 del Reglamento (UE) 2024/1689). En ese caso se rige por la normativa de administración electrónica (Ley 39/2015, Ley 40/2015) y por el ENS.`
     : diagnostic?.riskClassification === 'prohibited'
-    ? `**Nivel 1 - Indicio de práctica prohibida (Art. 5 RIA):** se han detectado en la documentación indicios de prácticas prohibidas. Deben verificarse jurídicamente; si se confirman, el sistema no puede ponerse en servicio.`
+    ? `**Nivel 1 - Práctica prohibida declarada (Art. 5 RIA):** se ha declarado que el sistema incurre en una práctica prohibida. No puede introducirse en el mercado, ponerse en servicio ni utilizarse; requiere revisión jurídica.`
     : diagnostic?.riskClassification === 'high_risk'
     ? `**Nivel 2 - Alto Riesgo (Art. 6.2 y Anexo III RIA):** según lo declarado, el sistema interviene en un ámbito del Anexo III. Como proveedor: gestión de riesgos (Art. 9), gobernanza de datos (Art. 10), registro de eventos (Art. 12), supervisión humana (Art. 14), evaluación de la conformidad por control interno sin organismo notificado (Art. 43.2 y Anexo VI), marcado CE y registro (Art. 49). Como responsable del despliegue: Art. 26 y evaluación de impacto en los derechos fundamentales (Art. 27). Exigibles para el Anexo III desde el 2 de diciembre de 2027 (Reglamento (UE) 2026/1744).`
     : diagnostic?.isArticle63Derogation
@@ -153,6 +156,15 @@ ${
 **Pendiente (Arts. 6.4 y 49.2 RIA):** el proveedor debe documentar su evaluación antes de la puesta en servicio, facilitarla a las autoridades que la soliciten y registrar el sistema en la base de datos de la UE. Este informe recoge lo declarado, pero no sustituye esa documentación ni el registro.`
     : ''
 }
+
+### 4.3. Traza de la clasificación
+*Corte normativo: ${diagnostic?.normativeVersion || '—'}.*
+
+| Paso | Pregunta | Respuesta | Conclusión | Regla y fuente | Límites |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+${(diagnostic?.classificationTrace || [])
+  .map((s) => `| ${s.id} | ${cell(s.pregunta)} | ${cell(s.respuesta)} | ${cell(s.conclusion)} | ${cell(s.regla)} (${cell(s.fuente)}) | ${cell(s.limites || '—')} |`)
+  .join('\n')}
 
 ---
 
@@ -199,8 +211,10 @@ ${obligations(requirements).map((r) => requirementBlock(r, _idioma)).join('\n')}
 
 ### 7.1. Datos declarados en materia de protección de datos
 - **Norma competencial declarada:** *${answers.publicCompetenceNorm || 'No indicada'}*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
+- **Tratamiento de datos personales (declarado):** ${answers.processesPersonalData === 'si' ? 'sí' : answers.processesPersonalData === 'no' ? 'no' : 'no consta'}.
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *${answers.ratActivityName || 'No indicada'}*.
-- **Categorías especiales de datos (Art. 9 RGPD):** ${answers.processesSpecialCategoryData ? 'declarado que SÍ se tratan (exige EIPD previa y medidas reforzadas).' : 'declarado que NO se tratan.'}
+- **Categorías especiales de datos (Art. 9 RGPD):** ${answers.processesSpecialCategoryData === 'si' ? 'declarado que SÍ se tratan (exige garantías adicionales y probablemente EIPD).' : answers.processesSpecialCategoryData === 'no' ? 'declarado que NO se tratan.' : 'no consta.'}
+- **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** ${answers.processesCriminalData === 'si' ? 'declarado que SÍ se tratan.' : answers.processesCriminalData === 'no' ? 'declarado que NO se tratan.' : 'no consta.'}
 
 ${llmCritique ? `\n---\n\n## 8. ANÁLISIS ASISTIDO POR IA (CONTENIDO NO VERIFICADO)\n\n> *Texto generado por un modelo de lenguaje. Es contenido no verificado: no modifica la clasificación ni acredita requisitos, y sus citas deben comprobarse antes de cualquier uso.*\n\n${llmCritique}\n` : ''}
 

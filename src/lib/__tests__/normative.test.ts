@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PROHIBITED_SYSTEMS_CATALOG, REGULATORY_FRAMEWORK } from '../legalKnowledgeBase';
 import { NORMATIVE_CORPUS } from '../localRagEngine';
-import { CASES, runCase } from '../../test/fixtures';
+import { CASES, answeredAnswers, runCase } from '../../test/fixtures';
 
 /**
  * Pruebas de concordancia normativa. Las fuentes de cada criterio esperado
@@ -57,17 +57,21 @@ describe('Citas normativas en el diagnóstico', () => {
   });
 
   it('NOR-09 · la calificación sancionadora remite a la norma nacional y al Art. 99 RIA', () => {
-    const r = runCase('Sistema de puntuacion social de la conducta ciudadana');
+    const r = runCase('Sistema de puntuación social', answeredAnswers({
+      prohibitedPractices: { ...answeredAnswers().prohibitedPractices, social_scoring: 'si' },
+    }));
     if (/muy grave/i.test(r.riskSummary)) {
       expect(r.riskSummary).toMatch(/Art\. 99/);
     }
   });
 
   it('NOR-07 · los antecedentes penales se encuadran en el Art. 10 RGPD, no en el Art. 9', () => {
-    const r = runCase('Gestión de expedientes sancionadores', {
-      processesSpecialCategoryData: true,
+    const r = runCase('Gestión de expedientes sancionadores', answeredAnswers({
+      processesPersonalData: 'si',
+      processesSpecialCategoryData: 'si',
+      processesCriminalData: 'si',
       hostingModel: 'eu_cloud_dpa',
-    });
+    }));
     const flags = r.redFlags.join(' ');
     if (/antecedentes/i.test(flags)) {
       expect(flags).toMatch(/Art\. 10/);

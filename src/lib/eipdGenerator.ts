@@ -24,7 +24,11 @@ import {
 } from 'docx';
 import { saveAs } from 'file-saver';
 import { MONOGRAMA_JA_BASE64 } from './brandLogo';
-import type { FullAuditState, AppIdioma } from '../types';
+import type { FullAuditState, AppIdioma, TriState } from '../types';
+import { buildAepdCriteria, buildEipdCriteria, eipdScreening, type EipdCriterion } from './eipdCriteria';
+
+export { buildAepdCriteria, buildEipdCriteria, eipdScreening, isEipdMandatoryFor } from './eipdCriteria';
+export type { EipdCriterion, EipdScreening } from './eipdCriteria';
 
 const FONT_BODY = 'Calibri';
 const FONT_HEADING = 'Arial';
@@ -32,14 +36,6 @@ const COLOR_PRIMARY = '065F46'; // Verde institucional AEPD / Esmeralda oscuro
 const COLOR_SECONDARY = '047857';
 const COLOR_DARK = '0F172A';
 const COLOR_MUTED = '64748B';
-
-export interface EipdCriterion {
-  id: string;
-  title: string;
-  applies: boolean;
-  impact: string;
-  justification: string;
-}
 
 export async function exportEipdDocx(
   state: FullAuditState,
@@ -61,7 +57,8 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
   const isGl = idioma === 'galego';
 
   const criteria = buildEipdCriteria(state);
-  const isEipdMandatory = isEipdMandatoryFor(state, criteria);
+  const aepdCriteria = buildAepdCriteria(state);
+  const screening = eipdScreening(state);
 
   return new Document({
     styles: {
@@ -224,11 +221,13 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
                         children: [
                           new TextRun({ text: 'CRIBADO PRELIMINAR DE NECESIDAD: ', bold: true, color: COLOR_PRIMARY }),
                           new TextRun({
-                            text: isEipdMandatory
-                              ? 'EIPD PROBABLEMENTE NECESARIA (2 o más criterios WP248 o datos sensibles declarados)'
-                              : 'NO INDICADA POR LOS CRITERIOS EVALUADOS (valoración pendiente del DPD)',
+                            text: screening === 'necesaria'
+                              ? 'EIPD NECESARIA EN LA MAYORÍA DE LOS CASOS (2 o más criterios de WP248 o de la lista de la AEPD)'
+                              : screening === 'por_determinar'
+                              ? 'POR DETERMINAR (hay criterios sin contestar que podrían alcanzar el umbral)'
+                              : 'NO INDICADA POR LOS CRITERIOS DECLARADOS (valoración pendiente del DPD)',
                             bold: true,
-                            color: isEipdMandatory ? 'B91C1C' : '047857',
+                            color: screening === 'no_indicada' ? '047857' : screening === 'necesaria' ? 'B91C1C' : 'D97706',
                           }),
                         ],
                         spacing: { after: 120 },
@@ -266,67 +265,36 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
             spacing: { after: 200 },
           }),
 
-          // SECCIÓN 2: UMBRAL DE NECESIDAD (9 CRITERIOS WP248)
+          // SECCIÓN 2: UMBRAL DE NECESIDAD (WP248 Y LISTA DE LA AEPD)
           new Paragraph({
-            text: '2. ANÁLISIS DEL UMBRAL DE NECESIDAD (9 CRITERIOS DEL GRUPO DEL ART. 29 / AEPD)',
+            text: '2. ANÁLISIS DEL UMBRAL DE NECESIDAD',
             heading: HeadingLevel.HEADING_1,
             spacing: { before: 400, after: 200 },
           }),
           new Paragraph({
-            text: 'Según las directrices WP248 del Grupo de Trabajo del Artículo 29 (asumidas por el Comité Europeo de Protección de Datos), en la mayoría de los casos un tratamiento que cumple dos o más de los siguientes criterios requiere una EIPD. Debe consultarse además la lista de la AEPD del Art. 35.4 RGPD. Valoración preliminar, a revisar por el DPD:',
+            text: 'Valoración preliminar a partir de lo declarado, a revisar por el DPD. «POR VALORAR» indica un criterio sin contestar en la entrevista. Cada lista conserva su numeración.',
             spacing: { after: 200 },
           }),
-
-          // TABLA DE CRITERIOS
-          new Table({
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            rows: [
-              new TableRow({
-                children: [
-                  new TableCell({
-                    shading: { fill: '065F46' },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Criterio WP248', bold: true, color: 'FFFFFF' })] })],
-                    width: { size: 45, type: WidthType.PERCENTAGE },
-                  }),
-                  new TableCell({
-                    shading: { fill: '065F46' },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Aplica', bold: true, color: 'FFFFFF' })] })],
-                    width: { size: 15, type: WidthType.PERCENTAGE },
-                  }),
-                  new TableCell({
-                    shading: { fill: '065F46' },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Justificación y Hallazgo', bold: true, color: 'FFFFFF' })] })],
-                    width: { size: 40, type: WidthType.PERCENTAGE },
-                  }),
-                ],
-              }),
-              ...criteria.map((c) =>
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: c.title, bold: true, size: 20 })] })],
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: c.applies ? 'SÍ' : 'NO',
-                              bold: true,
-                              color: c.applies ? 'B91C1C' : '047857',
-                            }),
-                          ],
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      children: [new Paragraph({ children: [new TextRun({ text: c.justification, size: 20 })] })],
-                    }),
-                  ],
-                })
-              ),
-            ],
+          new Paragraph({
+            text: '2.1. CRITERIOS DE LAS DIRECTRICES WP248 (GRUPO DE TRABAJO DEL ARTÍCULO 29)',
+            heading: HeadingLevel.HEADING_2,
+            spacing: { before: 200, after: 120 },
           }),
+          new Paragraph({
+            text: 'Según las directrices WP248 rev.01 (asumidas por el Comité Europeo de Protección de Datos), en la mayoría de los casos un tratamiento que cumple dos o más criterios requiere una EIPD.',
+            spacing: { after: 150 },
+          }),
+          criteriaTable(criteria, 'Criterio WP248'),
+          new Paragraph({
+            text: '2.2. LISTA DE LA AEPD DE TRATAMIENTOS QUE REQUIEREN EIPD (ART. 35.4 RGPD)',
+            heading: HeadingLevel.HEADING_2,
+            spacing: { before: 300, after: 120 },
+          }),
+          new Paragraph({
+            text: 'Según la lista de la AEPD, será necesario realizar una EIPD en la mayoría de los casos en que el tratamiento cumpla dos o más criterios, salvo que figure en la lista de tratamientos que no la requieren (Art. 35.5 RGPD).',
+            spacing: { after: 150 },
+          }),
+          criteriaTable(aepdCriteria, 'Criterio de la lista de la AEPD'),
 
           // SECCIÓN 3: CICLO DE VIDA DEL DATO
           new Paragraph({
@@ -337,7 +305,7 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
           new Paragraph({
             children: [
               new TextRun({ text: '• Recogida e Ingesta: ', bold: true }),
-              new TextRun({ text: 'Declarado: las entradas proceden de la tramitación de expedientes en el procedimiento administrativo (' + answers.publicCompetenceNorm + ').' }),
+              new TextRun({ text: answers.publicCompetenceNorm ? 'Declarado: las entradas proceden de la tramitación de expedientes en el procedimiento administrativo (' + answers.publicCompetenceNorm + ').' : 'No consta la norma que regula el procedimiento del que proceden los datos.' }),
             ],
             spacing: { after: 120 },
           }),
@@ -349,7 +317,9 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
                   ? 'Declarado: ejecución local en servidores propios (Ollama/vLLM). Debe comprobarse que el proveedor configurado es efectivamente local.'
                   : answers.hostingModel === 'eu_cloud_dpa'
                   ? 'Declarado: nube de la Unión Europea con contrato de encargo del tratamiento (Art. 28 RGPD).'
-                  : 'Declarado: nube fuera del Espacio Económico Europeo. Debe valorarse la transferencia internacional y el riesgo de acceso por autoridades de terceros países.',
+                  : answers.hostingModel === 'us_hyperscaler'
+                  ? 'Declarado: nube fuera del Espacio Económico Europeo. Debe valorarse la transferencia internacional y el riesgo de acceso por autoridades de terceros países.'
+                  : 'No consta dónde se ejecuta el modelo.',
               }),
             ],
             spacing: { after: 120 },
@@ -358,9 +328,11 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
             children: [
               new TextRun({ text: '• Conservación y Trazabilidad: ', bold: true }),
               new TextRun({
-                text: answers.auditLogsEnabled
+                text: answers.auditLogsEnabled === 'si'
                   ? `Declarado: registro de actividad con conservación de ${answers.logRetentionMonths} meses. No se ha comprobado su existencia ni su protección.`
-                  : 'Declarado que no existe registro de actividad.',
+                  : answers.auditLogsEnabled === 'no'
+                  ? 'Declarado que no existe registro de actividad.'
+                  : 'No consta si existe registro de actividad.',
               }),
             ],
             spacing: { after: 200 },
@@ -375,7 +347,7 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
           new Paragraph({
             children: [
               new TextRun({ text: '1. Intervención humana (Art. 22 RGPD; Art. 14 RIA en sistemas de alto riesgo): ', bold: true }),
-              new TextRun({ text: `Declarado: la supervisión corresponde a ${answers.supervisionRole}. Debe verificarse que ningún resultado produce efectos sin revisión humana.` }),
+              new TextRun({ text: answers.supervisionRole ? `Declarado: la supervisión corresponde a ${answers.supervisionRole}. Debe verificarse que ningún resultado produce efectos sin revisión humana.` : 'No consta quién supervisa los resultados.' }),
             ],
             spacing: { after: 120 },
           }),
@@ -393,6 +365,18 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
             ],
             spacing: { after: 300 },
           }),
+
+          // SECCIÓN 4 BIS: RIESGO INHERENTE, MEDIDAS Y RIESGO RESIDUAL
+          new Paragraph({
+            text: '4 bis. RIESGO INHERENTE, MEDIDAS Y RIESGO RESIDUAL',
+            heading: HeadingLevel.HEADING_1,
+            spacing: { before: 400, after: 200 },
+          }),
+          new Paragraph({
+            text: 'Para cada criterio que concurre o está por valorar se indica el riesgo inherente estimado y las medidas declaradas. El riesgo residual no lo calcula la herramienta: queda pendiente de valoración por el responsable del tratamiento con el asesoramiento del DPD.',
+            spacing: { after: 150 },
+          }),
+          residualRiskTable([...criteria, ...aepdCriteria.filter((c) => c.id === 'AEPD-5' || c.id === 'AEPD-6')], declaredMeasures(answers)),
 
           // SECCIÓN 5: CONCLUSIÓN Y FIRMAS
           new Paragraph({
@@ -451,90 +435,71 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
   });
 }
 
-/**
- * Evaluación de los 9 criterios del Grupo del Art. 29 (WP248).
- */
-export function buildEipdCriteria(state: FullAuditState): EipdCriterion[] {
-  const { ingest, answers } = state;
-  return [
-    {
-      id: 'C1',
-      title: '1. Evaluación o puntuación (Scoring/Profiling)',
-      applies: answers.administrativeNature === 'citizen_assessment',
-      impact: answers.administrativeNature === 'citizen_assessment' ? 'ALTO' : 'BAJO',
-      justification: answers.administrativeNature === 'citizen_assessment'
-        ? 'El sistema procesa y evalúa méritos o situaciones individuales de ciudadanos.'
-        : 'El sistema actúa como auxilio documental técnico sin perfilado sistemático.',
-    },
-    {
-      id: 'C2',
-      title: '2. Toma de decisiones automatizadas con efectos jurídicos (Art. 22 RGPD)',
-      applies: answers.humanOversightLevel === 'fully_automated',
-      impact: answers.humanOversightLevel === 'fully_automated' ? 'CRÍTICO' : 'BAJO',
-      justification: answers.humanOversightLevel === 'fully_automated'
-        ? 'Se detecta riesgo de acto administrativo automatizado sin filtro humano directo.'
-        : 'Existe supervisión humana preceptiva que valida previamente cualquier salida.',
-    },
-    {
-      id: 'C3',
-      title: '3. Observación, monitorización o control sistemático',
-      applies: false,
-      impact: 'BAJO',
-      justification: 'No se realiza geolocalización ni videovigilancia continuada de interesados.',
-    },
-    {
-      id: 'C4',
-      title: '4. Datos de categorías especiales o altamente personales (Art. 9 RGPD)',
-      applies: answers.processesSpecialCategoryData,
-      impact: answers.processesSpecialCategoryData ? 'ALTO' : 'BAJO',
-      justification: answers.processesSpecialCategoryData
-        ? 'Se tratan datos de salud, discapacidad, afiliación o categorías protegidas.'
-        : 'No se declaran datos de categorías especiales según el Art. 9 del RGPD.',
-    },
-    {
-      id: 'C5',
-      title: '5. Tratamiento de datos a gran escala',
-      applies: ingest.targetAudience === 'public_citizens',
-      impact: ingest.targetAudience === 'public_citizens' ? 'MEDIO' : 'BAJO',
-      justification: ingest.targetAudience === 'public_citizens'
-        ? 'Dirigido potencialmente a una colectividad amplia de ciudadanos o administrados.'
-        : 'Uso circunscrito al personal empleado público tramitador.',
-    },
-    {
-      id: 'C6',
-      title: '6. Cruce o combinación de conjuntos de datos',
-      applies: false,
-      impact: 'BAJO',
-      justification: 'No se cruzan bases de datos masivas heterogéneas para inferir perfiles.',
-    },
-    {
-      id: 'C7',
-      title: '7. Datos relativos a interesados vulnerables',
-      applies: answers.administrativeNature === 'citizen_assessment' && answers.processesSpecialCategoryData,
-      impact: (answers.administrativeNature === 'citizen_assessment' && answers.processesSpecialCategoryData) ? 'ALTO' : 'BAJO',
-      justification: 'Requiere cautela reforzada si los administrados se encuentran en situación de asimetría o vulnerabilidad social.',
-    },
-    {
-      id: 'C8',
-      title: '8. Uso innovador o aplicación de nuevas soluciones tecnológicas / IA',
-      applies: true,
-      impact: 'MEDIO',
-      justification: 'Uso de Inteligencia Artificial Generativa / Modelos de Lenguaje Avanzados.',
-    },
-    {
-      id: 'C9',
-      title: '9. Transferencias internacionales de datos fuera del Espacio Económico Europeo',
-      applies: answers.hostingModel === 'us_hyperscaler',
-      impact: answers.hostingModel === 'us_hyperscaler' ? 'CRÍTICO' : 'BAJO',
-      justification: answers.hostingModel === 'us_hyperscaler'
-        ? 'Uso de nubes bajo jurisdicción extracomunitaria (FISA 702 / CLOUD Act).'
-        : 'Inferencia local soberana en CPD propio o en nube europea con garantías DPA.',
-    },
-  ];
+const ESTADO_LABEL: Record<TriState, string> = { si: 'SÍ', no: 'NO', desconocido: 'POR VALORAR' };
+const ESTADO_COLOR: Record<TriState, string> = { si: 'B91C1C', no: '047857', desconocido: 'D97706' };
+
+function headerCell(text: string, width: number): TableCell {
+  return new TableCell({
+    shading: { fill: '065F46' },
+    children: [new Paragraph({ children: [new TextRun({ text, bold: true, color: 'FFFFFF' })] })],
+    width: { size: width, type: WidthType.PERCENTAGE },
+  });
 }
 
-export function isEipdMandatoryFor(state: FullAuditState, criteria: EipdCriterion[]): boolean {
-  const { answers } = state;
-  const applicableCount = criteria.filter((c) => c.applies).length;
-  return applicableCount >= 2 || answers.processesSpecialCategoryData || answers.humanOversightLevel === 'fully_automated';
+function textCell(text: string, opts: { bold?: boolean; color?: string } = {}): TableCell {
+  return new TableCell({ children: [new Paragraph({ children: [new TextRun({ text, size: 20, bold: opts.bold, color: opts.color })] })] });
+}
+
+function criteriaTable(list: EipdCriterion[], title: string): Table {
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [
+      new TableRow({ children: [headerCell(title, 45), headerCell('Concurre', 15), headerCell('Justificación', 40)] }),
+      ...list.map(
+        (c) =>
+          new TableRow({
+            children: [
+              textCell(c.title, { bold: true }),
+              textCell(ESTADO_LABEL[c.estado], { bold: true, color: ESTADO_COLOR[c.estado] }),
+              textCell(c.justification),
+            ],
+          })
+      ),
+    ],
+  });
+}
+
+function declaredMeasures(answers: FullAuditState['answers']): string {
+  const measures: string[] = [];
+  if (answers.humanOversightLevel === 'pre_execution') measures.push('revisión humana previa (declarada)');
+  if (answers.auditLogsEnabled === 'si') measures.push('registro de actividad (declarado)');
+  if (answers.hostingModel === 'local_on_premise') measures.push('ejecución local (declarada)');
+  return measures.length ? measures.join('; ') : 'Sin medidas declaradas';
+}
+
+function residualRiskTable(list: EipdCriterion[], measures: string): Table | Paragraph {
+  const relevant = list.filter((c) => c.estado !== 'no');
+  if (relevant.length === 0) {
+    return new Paragraph({
+      text: 'Según lo declarado no concurre ningún criterio. El riesgo residual del tratamiento debe valorarse igualmente si se tratan datos personales.',
+      spacing: { after: 200 },
+    });
+  }
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [
+      new TableRow({ children: [headerCell('Riesgo (criterio)', 35), headerCell('Riesgo inherente', 15), headerCell('Medidas declaradas', 25), headerCell('Riesgo residual', 25)] }),
+      ...relevant.map(
+        (c) =>
+          new TableRow({
+            children: [
+              textCell(c.title, { bold: true }),
+              textCell(c.impact, { bold: true, color: c.estado === 'si' ? 'B91C1C' : 'D97706' }),
+              textCell(measures),
+              textCell('Pendiente de valoración por el responsable con el DPD', { color: 'D97706' }),
+            ],
+          })
+      ),
+    ],
+  });
 }

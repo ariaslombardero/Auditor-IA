@@ -53,10 +53,16 @@ export function computeExecutivePillars(diagnostic: DiagnosticResult): Executive
   const reqs = diagnostic.requirements;
 
   const riaReqs = requirementsByPillar(reqs, 'ria');
-  const riaStatus = diagnostic.riskClassification === 'prohibited' ? 'danger' : pillarStatusFrom(riaReqs);
+  const riaStatus = diagnostic.riskClassification === 'prohibited'
+    ? 'danger'
+    : diagnostic.riskClassification === 'requires_review'
+      ? 'warning'
+      : pillarStatusFrom(riaReqs);
   const riaLabel =
-    diagnostic.riskClassification === 'prohibited'
-      ? 'Indicio de práctica prohibida (Art. 5)'
+    diagnostic.riskClassification === 'requires_review'
+      ? 'Requiere revisión (clasificación no concluyente)'
+      : diagnostic.riskClassification === 'prohibited'
+      ? 'Práctica prohibida declarada (Art. 5)'
       : diagnostic.riskClassification === 'high_risk'
         ? 'Alto Riesgo (Anexo III)'
         : diagnostic.riskClassification === 'not_ai_system'
@@ -100,8 +106,15 @@ export function computeExecutiveVerdict(diagnostic: DiagnosticResult): Executive
   if (diagnostic.riskClassification === 'prohibited') {
     return {
       level: 'blocked',
-      label: 'VEREDICTO: BLOQUEADO — INDICIO DE PRÁCTICA PROHIBIDA',
-      detail: 'Se han detectado indicios de prácticas del Art. 5 del RIA. Requiere verificación jurídica antes de cualquier otra actuación.',
+      label: 'VEREDICTO: BLOQUEADO — PRÁCTICA PROHIBIDA DECLARADA',
+      detail: 'Se ha declarado una práctica del Art. 5 del RIA. Requiere revisión jurídica antes de cualquier otra actuación.',
+    };
+  }
+  if (diagnostic.riskClassification === 'requires_review') {
+    return {
+      level: 'conditioned',
+      label: 'VEREDICTO: CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN',
+      detail: `${diagnostic.reviewReasons.length} motivo${diagnostic.reviewReasons.length === 1 ? '' : 's'} impide${diagnostic.reviewReasons.length === 1 ? '' : 'n'} concluir: completar o corregir la entrevista. ${unaccredited.length} requisitos sin acreditar.`,
     };
   }
   if (breaches.length > 0) {

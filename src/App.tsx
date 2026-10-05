@@ -22,6 +22,8 @@ import { AuditHistoryModal } from './components/AuditHistoryModal';
 import { useApiConfig } from './context/ApiConfigContext';
 import { evaluateRulesDeterministically, analyzeWithLLM, LLM_DISSENT_NOTICE } from './lib/auditEngine';
 import { normalizeDiagnostic } from './lib/assessmentModel';
+import { normalizeAnswers } from './lib/answersModel';
+import { effectiveDiagnostic, inputsKey } from './lib/validations';
 import { generateCodeKit } from './lib/codeKitGenerator';
 import { getStoredAudits, saveAuditRecord } from './lib/auditHistoryService';
 import type {
@@ -121,8 +123,33 @@ export const App: React.FC = () => {
     setCurrentStep('diagnostico');
   };
 
+  // Validación humana documentada de un requisito (queda ligada a las entradas actuales)
+  const persistState = (next: FullAuditState) => {
+    setState(next);
+    saveAuditRecord(next, llmCritique);
+  };
+
+  const handleValidateRequirement = (requirementId: string, revisadoPor: string, evidencia: string) => {
+    persistState({
+      ...state,
+      validations: {
+        ...(state.validations || {}),
+        [requirementId]: { revisadoPor, evidencia, fecha: new Date().toISOString(), inputsKey: inputsKey(state) },
+      },
+    });
+  };
+
+  const handleRevokeValidation = (requirementId: string) => {
+    const { [requirementId]: _removed, ...rest } = state.validations || {};
+    persistState({ ...state, validations: rest });
+  };
+
   const handleLoadAuditFromHistory = (record: StoredAuditRecord) => {
-    setState({ ...record.state, diagnostic: normalizeDiagnostic(record.state.diagnostic) });
+    setState({
+      ...record.state,
+      answers: normalizeAnswers(record.state.answers),
+      diagnostic: normalizeDiagnostic(record.state.diagnostic),
+    });
     setLlmCritique(record.llmCritique);
     setCurrentStep('diagnostico');
     setShowHistoryModal(false);
@@ -198,6 +225,7 @@ export const App: React.FC = () => {
         {currentStep === 'entrevista' && (
           <LegalInterviewView
             answers={state.answers}
+            ingest={state.ingest}
             onChange={(newAnswers) => setState((p) => ({ ...p, answers: newAnswers }))}
             onBack={() => setCurrentStep('ingesta')}
             onAnalyze={handleStartAnalysis}
@@ -208,7 +236,10 @@ export const App: React.FC = () => {
 
         {currentStep === 'diagnostico' && state.diagnostic && (
           <DiagnosticDashboard
-            diagnostic={normalizeDiagnostic(state.diagnostic)!}
+            diagnostic={effectiveDiagnostic(state)!}
+            validations={state.validations || {}}
+            onValidateRequirement={handleValidateRequirement}
+            onRevokeValidation={handleRevokeValidation}
             appName={state.ingest.appName}
             llmCritique={llmCritique}
             onGoToCodeKit={() => setCurrentStep('codigo')}

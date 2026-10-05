@@ -1,9 +1,10 @@
 import { saveAs } from 'file-saver';
-import type { FullAuditState, AppIdioma, RequirementAssessment } from '../types';
+import type { FullAuditState, AppIdioma, RequirementAssessment, DiagnosticResult } from '../types';
 import { generateOfficialDossierMarkdown } from './officialDossierMd';
-import { normalizeDiagnostic, unaccreditedRequirements } from './assessmentModel';
+import { unaccreditedRequirements } from './assessmentModel';
+import { effectiveDiagnostic } from './validations';
 import { computeExecutiveVerdict } from './dashboardPillars';
-import { buildEipdCriteria, isEipdMandatoryFor } from './eipdGenerator';
+import { buildAepdCriteria, buildEipdCriteria, eipdScreening } from './eipdCriteria';
 import { buildDocumentTraceability, ENGINE_VERSION, NORMATIVE_SNAPSHOT, type DocumentTraceability } from './traceability';
 
 export interface AuditManifestRecord {
@@ -40,6 +41,9 @@ export interface AuditManifestRecord {
     ai_act: {
       risk_classification: string;
       risk_label: string;
+      review_reasons: string[];
+      institutional_role: string;
+      classification_trace: DiagnosticResult['classificationTrace'];
       basis: string;
       llm_dissent_alert: string | null;
       human_oversight: {
@@ -48,24 +52,28 @@ export interface AuditManifestRecord {
       };
     };
     administrative_nature: {
-      declared_type: string;
+      declared_direct_human_intervention: string;
+      declared_procedure: string;
       ley_40_2015_art_41_automated_act: boolean;
       verified: boolean;
     };
     ens_rd_311_2022: {
       indicative_category: string;
       reasoning: string;
-      declared_audit_logs_enabled: boolean;
+      declared_audit_logs_enabled: string;
       declared_log_retention_months: number;
     };
     gdpr_rgpd: {
       legal_basis: string;
       declared_competence_norm: string;
-      declared_special_categories_art_9: boolean;
+      declared_personal_data: string;
+      declared_special_categories_art_9: string;
+      declared_criminal_data_art_10: string;
       declared_rat_activity_name: string;
       dpia_eipd_screening: {
-        status: 'requerida' | 'no_requerida_segun_criterios';
+        status: 'necesaria' | 'no_indicada' | 'por_determinar';
         wp248_criteria_met: string;
+        aepd_list_criteria_met: string;
         residual_risk: string;
       };
     };
@@ -104,14 +112,15 @@ export function buildAuditManifest(
   traceability?: DocumentTraceability
 ): AuditManifestRecord {
   const { ingest, answers, metadata } = state;
-  const diagnostic = normalizeDiagnostic(state.diagnostic);
+  const diagnostic = effectiveDiagnostic(state);
   const safeName = ingest.appName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
   const dateStr = metadata.auditDate || new Date().toLocaleDateString('es-ES');
   const auditId = `EXP-IA-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
   const requirements = diagnostic?.requirements || [];
   const verdict = diagnostic ? computeExecutiveVerdict(diagnostic) : null;
   const eipdCriteria = buildEipdCriteria(state);
-  const eipdRequired = isEipdMandatoryFor(state, eipdCriteria);
+  const aepdCriteria = buildAepdCriteria(state);
+  const eipdStatus = eipdScreening(state);
 
   const mdDossier = generateOfficialDossierMarkdown(state, llmCritique, idioma, traceability);
 
@@ -148,6 +157,9 @@ export function buildAuditManifest(
       ai_act: {
         risk_classification: diagnostic?.riskClassification || 'sin_diagnostico',
         risk_label: diagnostic?.riskLabel || 'Sin diagnóstico',
+        review_reasons: diagnostic?.reviewReasons || [],
+        institutional_role: diagnostic?.institutionalRole || 'desconocido',
+        classification_trace: diagnostic?.classificationTrace || [],
         basis: 'Clasificación preliminar basada en lo declarado. Reglamento (UE) 2024/1689, modificado por el Reglamento (UE) 2026/1744.',
         llm_dissent_alert: diagnostic?.pericialDissentAlert || null,
         human_oversight: {
@@ -156,7 +168,8 @@ export function buildAuditManifest(
         },
       },
       administrative_nature: {
-        declared_type: answers.administrativeNature,
+        declared_direct_human_intervention: answers.directHumanIntervention,
+        declared_procedure: answers.procedureDescription || '',
         ley_40_2015_art_41_automated_act: Boolean(diagnostic?.isAutomatedAdministrativeAct),
         verified: false,
       },
@@ -169,11 +182,14 @@ export function buildAuditManifest(
       gdpr_rgpd: {
         legal_basis: 'No verificada: la base jurídica (Art. 6.1 RGPD) debe confirmarla el DPD.',
         declared_competence_norm: answers.publicCompetenceNorm || '',
+        declared_personal_data: answers.processesPersonalData,
         declared_special_categories_art_9: answers.processesSpecialCategoryData,
+        declared_criminal_data_art_10: answers.processesCriminalData,
         declared_rat_activity_name: answers.ratActivityName || '',
         dpia_eipd_screening: {
-          status: eipdRequired ? 'requerida' : 'no_requerida_segun_criterios',
+          status: eipdStatus,
           wp248_criteria_met: `${eipdCriteria.filter((c) => c.applies).length}/${eipdCriteria.length}`,
+          aepd_list_criteria_met: `${aepdCriteria.filter((c) => c.applies).length}/${aepdCriteria.length}`,
           residual_risk: 'no_calculado',
         },
       },
