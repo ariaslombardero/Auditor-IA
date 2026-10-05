@@ -3,6 +3,7 @@
 > Relaciona cada hallazgo de las auditorías independientes (Claude Opus 5.5 y GPT Sol 6.1) con su reproducción, el comportamiento esperado, la fase que lo corrige y la prueba que lo verifica.
 > **Línea base:** commit `48956a6` · `npm test` el 05/10/2026: **50 pruebas, 49 en rojo, 1 en verde** (DOC-06). Los hallazgos ⚪ dependen de decisiones de diseño de su fase (modelo de requisitos, papeles, calendario, ADR 001) y su prueba se escribirá al inicio de esa fase, antes de corregir.
 > **Cierre de la Fase 1** (05/10/2026): **55 pruebas, 29 en verde y 26 en rojo**. Las 26 en rojo corresponden a hallazgos asignados a las Fases 2 y 3. Se añaden NOR-10, DOC-11, DOC-12, ALM-06 y EIPD-04, detectados o introducidos durante la fase.
+> **Cierre de la Fase 2** (05/10/2026): **69 pruebas, 56 en verde y 13 en rojo**. Las 13 en rojo son hallazgos de la Fase 3 (ALM, RT y SEG). Las pruebas del motor se reescribieron para la entrevista v2 («sí / no / desconocido») conservando la intención de cada una; se añaden MOT-23 a MOT-26, EIPD-05 y DOC-13.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -10,28 +11,32 @@
 
 | ID | Hallazgo | Origen | Comportamiento esperado | Fase | Estado |
 | :--- | :--- | :---: | :--- | :---: | :---: |
-| MOT-01 | Las expresiones del Anexo III no detectan texto con tildes («baremación», «selección») | C+G | Normalización NFD; las palabras clave solo sugieren respuestas | 2 | 🔴 |
-| MOT-02 | Una negación («no usamos reconocimiento facial») se califica como práctica prohibida | C+G | Las palabras clave nunca deciden una prohibición | 2 | 🔴 |
-| MOT-03 | El `agents.md` de la propia app sale «prohibido» por la palabra «etnia» | C | Ídem | 2 | 🔴 |
-| MOT-04 | «Excluido del Art. 3.1» convive con alto riesgo y obligación de marcado CE | G | Coherencia o «requiere revisión» | 2 | 🔴 |
-| MOT-05 | Excepción del Art. 6.3 concedida a un sistema que evalúa personas sin alternativa a)–d) motivada | C+G | Exigir alternativa (disyuntiva), hechos y valoración de influencia material | 2 | 🔴 |
-| MOT-06 | La justificación del Art. 6.3 afirma «documentos despersonalizados» aunque se evalúen personas | C | Justificación construida a partir del caso | 2 | 🔴 |
-| MOT-07 | Declarar perfilado fuera del Anexo III basta para «alto riesgo» | C+G | Ámbito y perfilado se evalúan por separado | 2 | 🔴 |
-| MOT-08 | Con respuestas por defecto la salida es «riesgo de transparencia» | C+G | Respuestas `desconocido` → «requiere revisión» | 2 | 🔴 |
-| MOT-09 | Evaluación de solicitantes de becas cerrada en silencio como riesgo limitado | C | Ámbito no determinado → «requiere revisión» | 2 | 🔴 |
+| MOT-01 | Las expresiones del Anexo III no detectan texto con tildes («baremación», «selección») | C+G | Normalización NFD; las palabras clave solo sugieren respuestas | 2 | 🟢 |
+| MOT-02 | Una negación («no usamos reconocimiento facial») se califica como práctica prohibida | C+G | Las palabras clave nunca deciden una prohibición | 2 | 🟢 |
+| MOT-03 | El `agents.md` de la propia app sale «prohibido» por la palabra «etnia» | C | Ídem | 2 | 🟢 |
+| MOT-04 | «Excluido del Art. 3.1» convive con alto riesgo y obligación de marcado CE | G | Coherencia o «requiere revisión» | 2 | 🟢 |
+| MOT-05 | Excepción del Art. 6.3 concedida a un sistema que evalúa personas sin alternativa a)–d) motivada | C+G | Exigir alternativa (disyuntiva), hechos y valoración de influencia material | 2 | 🟢 |
+| MOT-06 | La justificación del Art. 6.3 afirma «documentos despersonalizados» aunque se evalúen personas | C | Justificación construida a partir del caso | 2 | 🟢 |
+| MOT-07 | Declarar perfilado fuera del Anexo III basta para «alto riesgo» | C+G | Ámbito y perfilado se evalúan por separado | 2 | 🟢 |
+| MOT-08 | Con respuestas por defecto la salida es «riesgo de transparencia» | C+G | Respuestas `desconocido` → «requiere revisión» | 2 | 🟢 |
+| MOT-09 | Evaluación de solicitantes de becas cerrada en silencio como riesgo limitado | C | Ámbito no determinado → «requiere revisión» | 2 | 🟢 |
 | MOT-10 | Ley 15/2022 marcada siempre `compliant` | C+G | `no_evaluado` sin evidencias | 1 | 🟢 |
 | MOT-11 | Art. 6.4 marcado `compliant` al concederse la excepción | C+G | `pendiente` hasta aportar la documentación (y el registro del Art. 49.2) | 1 | 🟢 |
 | MOT-12 | «Dictamen Favorable AGENTS.md» incondicional, incluso con alerta de autonomía | C | Sin dictámenes favorables automáticos | 1 | 🟢 |
 | MOT-13 | Pilar de gobernanza en verde con `fully_automated` | C | Derivado del modelo de requisitos | 1 | 🟢 |
 | MOT-14 | Pilar RGPD «Base legítima acreditada» sin preguntar la base jurídica | C+G | Base jurídica preguntada; si falta, pendiente | 1–2 | 🟢 |
 | MOT-15 | Veredicto «APTO PARA DESPLIEGUE EN PRODUCCIÓN» | G | Veredicto derivado de requisitos pendientes, sin aptitud para producción | 1 | 🟢 |
-| MOT-16 | Respuestas contradictorias (evalúa ciudadanos + solo documentos despersonalizados) se resuelven a favor de la excepción | C (en Fase 0) | «Requiere revisión» | 2 | 🔴 |
-| MOT-17 | Cobertura del Anexo III limitada a 4(a) y 5(a); sin vía Art. 6.1/Anexo I | C+G | Cubrir o declarar «no soportado» | 2 | 🔴 |
-| MOT-18 | Faltan obligaciones del responsable del despliegue (Arts. 4, 26, 27 solo alto riesgo, 49.3, 86) y el doble papel por caso | C (+G matiz) | Obligaciones por papel y clasificación | 2 | ⚪ |
-| MOT-19 | Calendario normativo ausente (Ómnibus: Anexo III 2/12/2027, Anexo I 2/8/2028) | C+G | Clasificación separada de exigibilidad | 2 | ⚪ |
-| MOT-20 | Categoría ENS por atajos (alojamiento), sin valoración D-A-I-C-T | C+G | Valoración por dimensiones o etiqueta «orientativa» | 2 | ⚪ |
-| MOT-21 | Deslinde del Art. 41 basado solo en lo declarado | G | Recoger funcionamiento real e intervención humana | 1–2 | ⚪ |
-| MOT-22 | `isAiSystem` meramente declarativo; AGENTS.md tomado como indicio de IA | G | Examen guiado de capacidades de inferencia (Art. 3.1) | 2 | ⚪ |
+| MOT-16 | Respuestas contradictorias (evalúa ciudadanos + solo documentos despersonalizados) se resuelven a favor de la excepción | C (en Fase 0) | «Requiere revisión» | 2 | 🟢 |
+| MOT-17 | Cobertura del Anexo III limitada a 4(a) y 5(a); sin vía Art. 6.1/Anexo I | C+G | Cubrir o declarar «no soportado» | 2 | 🟢 |
+| MOT-18 | Faltan obligaciones del responsable del despliegue (Arts. 4, 26, 27 solo alto riesgo, 49.3, 86) y el doble papel por caso | C (+G matiz) | Obligaciones por papel y clasificación | 2 | 🟢 |
+| MOT-19 | Calendario normativo ausente (Ómnibus: Anexo III 2/12/2027, Anexo I 2/8/2028) | C+G | Clasificación separada de exigibilidad | 2 | 🟢 |
+| MOT-20 | Categoría ENS por atajos (alojamiento), sin valoración D-A-I-C-T | C+G | Valoración por dimensiones o etiqueta «orientativa» | 2 | 🟢 |
+| MOT-21 | Deslinde del Art. 41 basado solo en lo declarado | G | Recoger funcionamiento real e intervención humana | 1–2 | 🟢 |
+| MOT-22 | `isAiSystem` meramente declarativo; AGENTS.md tomado como indicio de IA | G | Examen guiado de capacidades de inferencia (Art. 3.1) | 2 | 🟢 |
+| MOT-23 | La clasificación no mostraba hechos, regla, fuente, versión normativa ni límites | G | Traza por pasos en el diagnóstico, el cuadro de mando, el DOCX, el Markdown y el manifiesto | 2 | 🟢 |
+| MOT-24 | Ningún requisito podía llegar a «acreditado»: no existía validación humana documentada | C (en Fase 1) | Registro de validación (quién y con qué evidencia), ligada a las entradas; caduca si cambian | 2 | 🟢 |
+| MOT-25 | Las prácticas del Art. 5 se decidían por palabras clave | C+G | Una pregunta por práctica; «sí» = prohibido; «desconocido» = requiere revisión | 2 | 🟢 |
+| MOT-26 | El punto 5 del Anexo III se aplicaba a cualquier ayuda o subvención | G | Solo 5.a): prestaciones esenciales de asistencia pública a personas físicas; 5.b)–d) declarados no soportados | 2 | 🟢 |
 
 ## B. Citas normativas
 
@@ -64,15 +69,17 @@
 | DOC-10 | Formato, firma y metadatos sin ajustar a la política institucional (NTI) | C (+G matiz) | Decisión de interoperabilidad documentada | 4 | ⚪ |
 | DOC-11 | Los documentos no identificaban versión del motor, corte normativo ni entradas utilizadas | G | Versión, corte normativo y huella SHA-256 de las entradas en DOCX, Markdown y manifiesto | 1 | 🟢 |
 | DOC-12 | Cada exportador reconstruía sus propias conformidades (el manifiesto fijaba además `ley_40_2015_art_41_automated_act: false`) | C+G | Cuadro de mando, DOCX, Markdown y manifiesto consumen el mismo modelo y expresan el mismo veredicto | 1 | 🟢 |
+| DOC-13 | El cuadro de mando mostraba un banner fijo «Sincronización Normativa Telemática Activa · Normas vigentes verificadas» | C (en Fase 2) | Banner de consulta que indica el corte normativo y remite a las fuentes oficiales | 2 | 🟢 |
 
 ## D. EIPD (`src/lib/eipdGenerator.ts`)
 
 | ID | Hallazgo | Origen | Comportamiento esperado | Fase | Estado |
 | :--- | :--- | :---: | :--- | :---: | :---: |
-| EIPD-01 | C8 (tecnología innovadora) en `applies: true` para cualquier sistema | G (corrige a C) | Valoración motivada | 2 | 🔴 |
-| EIPD-02 | C9 rotulado como «transferencias internacionales» | G | Impedimento al ejercicio de derechos (WP248) | 2 | 🔴 |
-| EIPD-03 | Sin cálculo de riesgo residual; C3/C6 fijos en `false`; WP248 y lista AEPD mezclados | C+G | Riesgo inherente → medidas → residual; numeraciones separadas | 2 | ⚪ |
+| EIPD-01 | C8 (tecnología innovadora) en `applies: true` para cualquier sistema | G (corrige a C) | Valoración motivada | 2 | 🟢 |
+| EIPD-02 | C9 rotulado como «transferencias internacionales» | G | Impedimento al ejercicio de derechos (WP248) | 2 | 🟢 |
+| EIPD-03 | Sin cálculo de riesgo residual; C3/C6 fijos en `false`; WP248 y lista AEPD mezclados | C+G | Riesgo inherente → medidas → residual; numeraciones separadas | 2 | 🟢 |
 | EIPD-04 | El borrador de EIPD redactaba el dictamen del DPD («FAVORABLE PARA EL PASO A PRODUCCIÓN»), se presentaba como «Metodología Oficial de la AEPD» y daba por implantadas medidas no comprobadas | C (en Fase 1) | Borrador rotulado como tal; medidas como declaradas o pendientes; dictamen en blanco para el DPD | 1 | 🟢 |
+| EIPD-05 | La necesidad de EIPD era binaria y presumía «obligatoria» con datos sensibles | G | Cribado «necesaria / no indicada / por determinar» con el umbral de dos criterios de WP248 o de la lista de la AEPD | 2 | 🟢 |
 
 ## E. Historial local (`src/lib/auditHistoryService.ts`)
 
