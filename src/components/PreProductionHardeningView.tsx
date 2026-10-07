@@ -26,9 +26,20 @@ import {
   runAdversarialSuite,
   scanForExposedSecrets,
   buildSecretsScanInput,
+  ADVERSARIAL_TEST_BATTERY,
   type AdversarialSuiteReport,
   type AttackCategory,
+  type TestStatus,
 } from '../lib/adversarialSimulator';
+
+/** Presentación de cada estado de un ensayo adversario. */
+const ESTADO_ENSAYO: Record<TestStatus, { etiqueta: string; color: string; fondo: string }> = {
+  aprobado: { etiqueta: 'Superado', color: '#047857', fondo: '#ecfdf5' },
+  fallo: { etiqueta: 'Fallo observado', color: '#b91c1c', fondo: '#fef2f2' },
+  indeterminado: { etiqueta: 'Indeterminado', color: '#b45309', fondo: '#fffbeb' },
+  no_ejecutada: { etiqueta: 'No ejecutado', color: '#475569', fondo: '#f1f5f9' },
+  demostracion: { etiqueta: 'Demostración', color: '#475569', fondo: '#f8fafc' },
+};
 import { exportEipdDocx, buildEipdCriteria, buildAepdCriteria, eipdScreening } from '../lib/eipdGenerator';
 import {
   scanPromptSecurity,
@@ -64,7 +75,9 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
   // --- 1. Red Teaming State ---
   const [isRunningRedTeaming, setIsRunningRedTeaming] = useState(false);
   const [redTeamingReport, setRedTeamingReport] = useState<AdversarialSuiteReport | null>(null);
-  const [redTeamingProgress, setRedTeamingProgress] = useState({ current: 0, total: 15 });
+  const [redTeamingProgress, setRedTeamingProgress] = useState({ current: 0, total: ADVERSARIAL_TEST_BATTERY.length });
+  const appSystemPrompt = state.ingest.systemPrompt?.trim() || '';
+  const [useAppPrompt, setUseAppPrompt] = useState(Boolean(appSystemPrompt));
   const [selectedArchetype, setSelectedArchetype] = useState<'universal' | 'documental' | 'chatbot' | 'agente'>('universal');
   const [categoryFilter, setCategoryFilter] = useState<AttackCategory | 'ALL'>('ALL');
   const [copiedReport, setCopiedReport] = useState(false);
@@ -77,14 +90,15 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
   const handleRunRedTeaming = async () => {
     setIsRunningRedTeaming(true);
     setRedTeamingReport(null);
-    setRedTeamingProgress({ current: 0, total: 15 });
+    setRedTeamingProgress({ current: 0, total: ADVERSARIAL_TEST_BATTERY.length });
 
     try {
       const report = await runAdversarialSuite(
         isConfigured ? config : null,
         state.ingest.appName || 'Aplicación Pública',
         (current, total) => setRedTeamingProgress({ current, total }),
-        selectedArchetype
+        selectedArchetype,
+        { systemPrompt: useAppPrompt ? appSystemPrompt : undefined }
       );
       setRedTeamingReport(report);
     } catch (err) {
@@ -99,14 +113,17 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
     let md = `# INFORME TÉCNICO DE RED TEAMING Y PRUEBAS ADVERSARIAS\n`;
     md += `**Aplicación:** ${redTeamingReport.appName}\n`;
     md += `**Fecha:** ${redTeamingReport.timestamp}\n`;
-    md += `**Puntuación de Robustez:** ${redTeamingReport.robustnessScore}%\n`;
-    md += `**Dictamen:** ${redTeamingReport.executiveSummary}\n\n`;
-    md += `## Detalle de Ensayos\n`;
+    md += `**Modelo:** ${redTeamingReport.providerTested} · ${redTeamingReport.modelTested}\n`;
+    md += `**Alcance:** ${redTeamingReport.alcance}\n`;
+    md += `**Superados sobre ejecutados:** ${redTeamingReport.robustnessScore === null ? 'sin ensayos ejecutados' : `${redTeamingReport.robustnessScore} %`}\n`;
+    md += `**Resumen:** ${redTeamingReport.executiveSummary}\n\n`;
+    md += `## Detalle de los ensayos\n`;
     for (const r of redTeamingReport.results) {
-      md += `### [${r.status}] ${r.testCase.id} - ${r.testCase.title}\n`;
+      md += `### [${ESTADO_ENSAYO[r.status].etiqueta}] ${r.testCase.id} - ${r.testCase.title}\n`;
       md += `* **Ataque:** ${r.testCase.payload}\n`;
-      md += `* **Respuesta IA:** ${r.aiResponse}\n`;
-      md += `* **Evaluación Heurística:** ${r.analysis}\n\n`;
+      md += `* **Efecto observado:** ${r.testCase.efectoObservado}\n`;
+      md += `* **Respuesta del modelo:** ${r.aiResponse || '(sin respuesta)'}\n`;
+      md += `* **Veredicto:** ${r.analysis}\n\n`;
     }
     navigator.clipboard.writeText(md);
     setCopiedReport(true);
@@ -342,13 +359,13 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
                 <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Auditoría de Pentesting Heurístico
+                  Ensayos adversarios
                 </span>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)', marginTop: '0.2rem' }}>
-                  Evaluación Heurística de Resiliencia del Modelo y Salvaguardas Éticas
+                  Pruebas adversarias sobre el modelo configurado
                 </h3>
                 <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-                  Simulación de penetración ética alineada con OWASP Top 10 for LLM (2025/2026), RIA (Art. 14) y ENS (RD 311/2022).
+                  Ensayos basados en OWASP Top 10 for LLM Applications 2025. Cada ensayo pide una respuesta estructurada y se juzga por su efecto (puntuación alterada, pago propuesto, herramienta solicitada, secreto revelado o enlace de exfiltración), no por las palabras empleadas.
                 </p>
               </div>
 
@@ -427,6 +444,22 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                 </button>
                 <button
                   type="button"
+                  onClick={() => setSelectedArchetype('agente')}
+                  style={{
+                    fontSize: '0.75rem',
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: 6,
+                    cursor: 'pointer',
+                    fontWeight: selectedArchetype === 'agente' ? 700 : 500,
+                    background: selectedArchetype === 'agente' ? '#6b21a8' : '#ffffff',
+                    color: selectedArchetype === 'agente' ? '#ffffff' : '#4b5563',
+                    border: '1px solid #c084fc',
+                  }}
+                >
+                  🤖 Agente con herramientas (Correo, Pagos, Registros)
+                </button>
+                <button
+                  type="button"
                   onClick={() => setSelectedArchetype('universal')}
                   style={{
                     fontSize: '0.75rem',
@@ -439,7 +472,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                     border: '1px solid #c084fc',
                   }}
                 >
-                  🌐 Universal (Batería Completa de 15 Ensayos)
+                  🌐 Batería completa ({ADVERSARIAL_TEST_BATTERY.length} ensayos)
                 </button>
               </div>
             </div>
@@ -487,15 +520,25 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
 
             {/* Provider info alert */}
             <div style={{ padding: '0.65rem 0.85rem', background: '#f8fafc', borderRadius: 6, border: '1px solid #e2e8f0', fontSize: '0.75rem', color: '#475569', marginBottom: '1.25rem' }}>
-              <strong>Proveedor activo para el test:</strong>{' '}
-              {isConfigured && config ? `${describirProveedor(config)} · ${config.model}` : 'Modo demostración (sin proveedor configurado)'}
+              <strong>Modelo que se ensayará:</strong>{' '}
+              {isConfigured && config ? `${describirProveedor(config)} · ${config.model}` : 'ninguno (modo demostración: no se envía nada a ningún modelo y no hay puntuación)'}
+              {appSystemPrompt ? (
+                <label style={{ display: 'flex', gap: '0.4rem', alignItems: 'flex-start', marginTop: '0.5rem', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={useAppPrompt} onChange={(e) => setUseAppPrompt(e.target.checked)} style={{ marginTop: 2 }} />
+                  <span>Usar el prompt del sistema aportado de la aplicación auditada (si no, se usa un prompt genérico del auditor).</span>
+                </label>
+              ) : (
+                <div style={{ marginTop: '0.35rem' }}>
+                  No se ha aportado el prompt del sistema de la aplicación auditada: se ensayará el modelo con un prompt genérico del auditor, no la aplicación.
+                </div>
+              )}
             </div>
 
             {/* Progress bar when running */}
             {isRunningRedTeaming && (
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.35rem' }}>
-                  <span>Progreso de penetración ética...</span>
+                  <span>Ejecutando ensayos...</span>
                   <span>{Math.round((redTeamingProgress.current / redTeamingProgress.total) * 100)}%</span>
                 </div>
                 <div style={{ width: '100%', height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
@@ -514,38 +557,26 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             {/* Score Cards when report is ready */}
             {redTeamingReport && (
               <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <div style={{ padding: '1rem', background: '#f5f3ff', borderRadius: 8, border: '1px solid #ddd6fe', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#7c3aed', textTransform: 'uppercase' }}>Índice de Robustez</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6d28d9', marginTop: '0.25rem' }}>
-                      {redTeamingReport.robustnessScore}%
+                <div style={{ padding: '0.75rem 1rem', background: redTeamingReport.modo === 'demostracion' ? '#f1f5f9' : '#eff6ff', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.8125rem', color: '#1e293b', marginBottom: '0.75rem' }}>
+                  <strong>Alcance:</strong> {redTeamingReport.alcance}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
+                  {[
+                    { titulo: 'Superados / ejecutados', valor: redTeamingReport.robustnessScore === null ? '—' : `${redTeamingReport.robustnessScore} %`, color: '#6d28d9', fondo: '#f5f3ff' },
+                    { titulo: 'Superados', valor: String(redTeamingReport.passedCount), color: '#047857', fondo: '#ecfdf5' },
+                    { titulo: 'Fallos observados', valor: String(redTeamingReport.failedCount), color: '#b91c1c', fondo: '#fef2f2' },
+                    { titulo: 'Indeterminados', valor: String(redTeamingReport.indeterminateCount), color: '#b45309', fondo: '#fffbeb' },
+                    { titulo: redTeamingReport.modo === 'demostracion' ? 'Sin ejecutar (demostración)' : 'No ejecutados', valor: String(redTeamingReport.notExecutedCount), color: '#475569', fondo: '#f8fafc' },
+                  ].map((t) => (
+                    <div key={t.titulo} style={{ padding: '0.85rem', background: t.fondo, borderRadius: 8, border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.7rem', fontWeight: 600, color: t.color, textTransform: 'uppercase' }}>{t.titulo}</div>
+                      <div style={{ fontSize: '1.75rem', fontWeight: 800, color: t.color, marginTop: '0.25rem' }}>{t.valor}</div>
                     </div>
-                  </div>
-
-                  <div style={{ padding: '1rem', background: '#ecfdf5', borderRadius: 8, border: '1px solid #a7f3d0', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#059669', textTransform: 'uppercase' }}>Neutralizados</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#047857', marginTop: '0.25rem' }}>
-                      {redTeamingReport.passedCount} <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>/ {redTeamingReport.totalTests}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ padding: '1rem', background: '#fffbeb', borderRadius: 8, border: '1px solid #fde68a', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d97706', textTransform: 'uppercase' }}>Advertencias</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#b45309', marginTop: '0.25rem' }}>
-                      {redTeamingReport.warningCount}
-                    </div>
-                  </div>
-
-                  <div style={{ padding: '1rem', background: '#fef2f2', borderRadius: 8, border: '1px solid #fecaca', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#dc2626', textTransform: 'uppercase' }}>Vulnerables</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#b91c1c', marginTop: '0.25rem' }}>
-                      {redTeamingReport.failedCount}
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
                 <div style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 6, borderLeft: '4px solid #7c3aed', fontSize: '0.85rem', color: '#1e293b' }}>
-                  <strong>Dictamen Ejecutivo del Auditor:</strong> {redTeamingReport.executiveSummary}
+                  <strong>Resumen:</strong> {redTeamingReport.executiveSummary}
                 </div>
               </div>
             )}
@@ -556,7 +587,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <h4 style={{ fontSize: '0.9375rem', fontWeight: 700 }}>Detalle de Vectores Evaluados</h4>
                   <div style={{ display: 'flex', gap: '0.35rem' }}>
-                    {(['ALL', 'LLM01_PROMPT_INJECTION', 'LLM02_SENSITIVE_DATA_LEAK', 'LLM06_EXCESSIVE_AGENCY', 'LLM09_LEGAL_HALLUCINATION', 'BIAS_DISCRIMINATION', 'JAILBREAK_EVASION'] as const).map((cat) => (
+                    {(['ALL', 'LLM01_PROMPT_INJECTION', 'LLM02_SENSITIVE_DATA_LEAK', 'LLM06_EXCESSIVE_AGENCY', 'LLM07_SYSTEM_PROMPT_LEAKAGE', 'LLM09_LEGAL_HALLUCINATION', 'BIAS_DISCRIMINATION', 'JAILBREAK_EVASION'] as const).map((cat) => (
                       <button
                         key={cat}
                         type="button"
@@ -587,7 +618,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                           border: '1px solid #e2e8f0',
                           borderRadius: 8,
                           padding: '1rem',
-                          background: r.status === 'PASSED' ? '#fafafa' : r.status === 'WARNING' ? '#fffdf5' : '#fff5f5',
+                          background: r.status === 'fallo' ? '#fff5f5' : r.status === 'indeterminado' ? '#fffdf5' : '#fafafa',
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -614,21 +645,10 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                            {r.status === 'PASSED' && (
-                              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: '#047857', background: '#ecfdf5', padding: '0.25rem 0.5rem', borderRadius: 4 }}>
-                                <CheckCircle2 style={{ width: 14, height: 14 }} /> Neutralizado
-                              </span>
-                            )}
-                            {r.status === 'WARNING' && (
-                              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: '#b45309', background: '#fffbeb', padding: '0.25rem 0.5rem', borderRadius: 4 }}>
-                                <AlertTriangle style={{ width: 14, height: 14 }} /> Advertencia
-                              </span>
-                            )}
-                            {r.status === 'FAILED' && (
-                              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: '#b91c1c', background: '#fef2f2', padding: '0.25rem 0.5rem', borderRadius: 4 }}>
-                                <XCircle style={{ width: 14, height: 14 }} /> Vulnerable
-                              </span>
-                            )}
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: ESTADO_ENSAYO[r.status].color, background: ESTADO_ENSAYO[r.status].fondo, padding: '0.25rem 0.5rem', borderRadius: 4 }}>
+                              {r.status === 'aprobado' ? <CheckCircle2 style={{ width: 14, height: 14 }} /> : r.status === 'fallo' ? <XCircle style={{ width: 14, height: 14 }} /> : <AlertTriangle style={{ width: 14, height: 14 }} />}
+                              {ESTADO_ENSAYO[r.status].etiqueta}
+                            </span>
                           </div>
                         </div>
 
@@ -637,12 +657,12 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                         </div>
 
                         <div style={{ fontSize: '0.8125rem', color: '#1e293b', background: '#ffffff', padding: '0.65rem', borderRadius: 6, border: '1px solid #e2e8f0', marginBottom: '0.5rem' }}>
-                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: '0.25rem' }}>Respuesta de la IA:</span>
-                          <span style={{ fontStyle: 'italic' }}>{r.aiResponse}</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: '0.25rem' }}>Efecto observado: {r.testCase.efectoObservado}. Respuesta del modelo:</span>
+                          <span style={{ fontStyle: 'italic', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.75rem' }}>{r.aiResponse || '(no se ha obtenido respuesta)'}</span>
                         </div>
 
-                        <div style={{ fontSize: '0.75rem', color: r.status === 'PASSED' ? '#047857' : r.status === 'WARNING' ? '#b45309' : '#b91c1c' }}>
-                          <strong>Análisis pericial:</strong> {r.analysis}
+                        <div style={{ fontSize: '0.75rem', color: ESTADO_ENSAYO[r.status].color }}>
+                          <strong>Veredicto:</strong> {r.analysis}
                         </div>
                       </div>
                     ))}

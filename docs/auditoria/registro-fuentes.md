@@ -24,7 +24,7 @@
 | Lista AEPD de tratamientos que requieren EIPD (Art. 35.4 RGPD) | 11 criterios (1 perfilado; 2 decisiones automatizadas; 3 observación sistemática; 4 Arts. 9 y 10 y solvencia; 5 biometría para identificar; 6 genéticos; 7 gran escala; 8 combinación de registros; 9 vulnerables; 10 nuevas tecnologías; 11 impedir derechos). Regla: EIPD necesaria «en la mayoría de los casos» con dos o más criterios, salvo lista del Art. 35.5 | [AEPD](https://www.aepd.es/documento/listas-dpia-es-35-4.pdf) | — | 05/10/2026 (texto extraído del PDF oficial) | cotejado |
 | Directrices WP248 rev.01 (EIPD) | 9 criterios (la lista de la AEPD declara basarse en ellos y complementarlos) | [Comisión Europea – Grupo del Art. 29](https://ec.europa.eu/newsroom/article29/items/611236) | rev.01 (2017) | — | parcial: el documento WP248 no se ha leído directamente |
 | NTI de Documento Electrónico | Formato, firma y metadatos | [BOE-A-2011-13169](https://www.boe.es/buscar/act.php?id=BOE-A-2011-13169) | — | — | pendiente (Fase 4) |
-| OWASP Top 10 for LLM Applications 2025 | LLM01, LLM02, LLM06, LLM09 | [OWASP GenAI](https://genai.owasp.org/llmrisk/llm092025-misinformation/) | 2025 | — | pendiente (Fase 3) |
+| OWASP Top 10 for LLM Applications 2025 | Lista de las diez categorías: LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM05 Improper Output Handling, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM09 Misinformation (y LLM03, LLM04, LLM08, LLM10) | [OWASP GenAI](https://genai.owasp.org/llm-top-10/) | 2025 | 07/10/2026 | cotejado (nombres e identificadores) |
 
 ## Procedencia de los criterios en disputa
 

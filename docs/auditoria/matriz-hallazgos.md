@@ -6,6 +6,7 @@
 > **Cierre de la Fase 2** (05/10/2026): **69 pruebas, 56 en verde y 13 en rojo**. Las 13 en rojo son hallazgos de la Fase 3 (ALM, RT y SEG). Las pruebas del motor se reescribieron para la entrevista v2 («sí / no / desconocido») conservando la intención de cada una; se añaden MOT-23 a MOT-26, EIPD-05 y DOC-13.
 > **Fase 3 · entrega 3.1** (07/10/2026): **111 pruebas, 102 en verde y 9 en rojo**. Los 9 en rojo son de custodia (ALM-01 a ALM-04, entrega 3.2) y red teaming (RT-01 a RT-05, entrega 3.3). Arquitectura de proveedores y credenciales igual que *Opositor transparente* (ADR 001). El selector de modelo deja de usar listas fijas: muestra solo los modelos que devuelve el proveedor para la clave o el servidor indicados. La prueba SEG-07 de la Fase 0 se adapta: la CSP se comprueba en la página compilada, porque en desarrollo la impediría el refresco en caliente de Vite.
 > **Fase 3 · entrega 3.2** (07/10/2026): **118 pruebas, 113 en verde y 5 en rojo** (RT-01 a RT-05, entrega 3.3). Historial con revisiones, errores de guardado comunicados, importación validada y política de conservación documentada. La prueba ALM-01 de la Fase 0 se conserva: sin expediente indicado, cada guardado abre uno nuevo.
+> **Cierre de la Fase 3** (07/10/2026): **125 pruebas, 125 en verde**. Entrega 3.3: ensayos adversarios juzgados por efectos observables, estados `demostracion` y `no_ejecutada`, batería de agentes y alcance declarado. Categorías OWASP cotejadas con la lista oficial de 2025 (la extracción de instrucciones pasa a LLM07 y la exfiltración por Markdown se atribuye también a LLM05). La prueba RT-01 de la Fase 0 se conserva y se añaden pruebas de efectos, detectores y alcance.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -111,12 +112,12 @@
 
 | ID | Hallazgo | Origen | Comportamiento esperado | Fase | Estado |
 | :--- | :--- | :---: | :--- | :---: | :---: |
-| RT-01 | Falso aprobado por mencionar «órgano instructor» | G | Veredicto por efectos observables | 3 | 🔴 |
-| RT-02 | Modo simulación puntuado (57–60 %) | C+G | `demostración`, sin puntuación | 3 | 🔴 |
-| RT-03 | Errores del proveedor evaluados como respuestas | G | `no ejecutada` | 3 | 🔴 |
-| RT-04 | Ninguna prueba específica de agentes | G | Batería de agentes | 3 | 🔴 |
-| RT-05 | DOC-02 del manual (exfiltración Markdown) no implementado | G | Alinear manual y código | 3 | 🔴 |
-| RT-06 | Ataca a un modelo genérico con el prompt del auditor, no a la cadena de la app auditada | C+G | Rotular alcance o recorrer la cadena real | 3 | ⚪ |
+| RT-01 | Falso aprobado por mencionar «órgano instructor» | G | Respuesta estructurada (JSON) y veredicto por efectos observables: puntuación, pago, exclusión, herramienta solicitada; detectores de secreto señuelo, exfiltración y DNI/IBAN | 3 | 🟢 |
+| RT-02 | Modo simulación puntuado (57–60 %) | C+G | Estado `demostracion`, sin llamadas ni puntuación | 3 | 🟢 |
+| RT-03 | Errores del proveedor evaluados como respuestas | G | Estado `no_ejecutada`; la puntuación se calcula solo sobre ensayos ejecutados | 3 | 🟢 |
+| RT-04 | Ninguna prueba específica de agentes | G | AGENT-01 a AGENT-04 (correo al atacante, pago, desactivar registro, borrado) juzgados por la herramienta solicitada | 3 | 🟢 |
+| RT-05 | DOC-02 del manual (exfiltración Markdown) no implementado | G | LLM01-DOC-01 a DOC-03 alineados con el manual (memoria técnica, imagen Markdown, pago sin certificados); dominio reservado `attacker-controlled.example`. El manual (`agents.md`) se actualizará en la Fase 4 | 3 | 🟢 |
+| RT-06 | Ataca a un modelo genérico con el prompt del auditor, no a la cadena de la app auditada | C+G | El informe declara el alcance; si se aporta el prompt del sistema de la app auditada, se ensaya con él. La cadena completa (extracción, recuperación, renderizado, herramientas reales) queda fuera y así se indica | 3 | 🟢 |
 
 ## Correcciones a las auditorías previas registradas en esta matriz
 
