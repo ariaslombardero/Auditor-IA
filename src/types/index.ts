@@ -277,6 +277,19 @@ export interface FullAuditState {
   analyzing: boolean;
   /** Validaciones humanas documentadas, por identificador de requisito. */
   validations?: Record<string, HumanValidation>;
+  /** Respuestas que proceden de una sugerencia aceptada, por identificador de pregunta. Las demás son de la persona. */
+  answerSources?: Record<string, AnswerSource>;
+}
+
+/** Origen de una respuesta aceptada a partir de una sugerencia. */
+export interface AnswerSource {
+  origen: 'ia' | 'indicio';
+  /** «con_cita»: la cita se comprobó en la documentación; «inferida»: sin respaldo literal. */
+  tipo: 'con_cita' | 'inferida';
+  /** Proveedor y modelo (solo IA). */
+  modelo?: string;
+  cita?: string;
+  fecha: string;
 }
 
 export interface StoredAuditRecord {

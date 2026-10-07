@@ -1,5 +1,5 @@
 import { saveAs } from 'file-saver';
-import type { FullAuditState, AppIdioma, RequirementAssessment, DiagnosticResult, AiAssistanceRecord } from '../types';
+import type { FullAuditState, AppIdioma, RequirementAssessment, DiagnosticResult, AiAssistanceRecord, AnswerSource } from '../types';
 import { generateOfficialDossierMarkdown } from './officialDossierMd';
 import { unaccreditedRequirements } from './assessmentModel';
 import { effectiveDiagnostic } from './validations';
@@ -19,6 +19,8 @@ export interface AuditManifestRecord {
     /** Proveedor de IA que asistió al auditor (sin claves) o motivo por el que no se usó. */
     ai_assistance: AiAssistanceRecord | null;
   };
+  /** Respuestas que proceden de una sugerencia aceptada; las demás las introdujo la persona usuaria. */
+  answer_sources: Record<string, AnswerSource>;
   entity: {
     name: string;
     department: string;
@@ -140,6 +142,7 @@ export function buildAuditManifest(
       input_fingerprint_sha256: traceability?.inputFingerprint || null,
       ai_assistance: diagnostic?.aiAssistance ?? null,
     },
+    answer_sources: state.answerSources ?? {},
     entity: {
       name: metadata.entityName || 'Administración Pública Promotora',
       department: metadata.serviceDepartment || 'Área de Régimen Jurídico y Transformación Digital',

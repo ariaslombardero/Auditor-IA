@@ -23,6 +23,7 @@ import { obligations, prohibitedPractices, requirementsByPillar, resultLabel, or
 import { computeExecutivePillars, computeExecutiveVerdict, type PillarStatus } from './dashboardPillars';
 import { effectiveDiagnostic } from './validations';
 import { describirAsistencia } from './proveedorEfectivo';
+import { answerProvenanceRows, PROVENANCE_NOTE } from './answerProvenance';
 import { buildDocumentTraceability, ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 const FONT_BODY = 'Calibri';
@@ -671,6 +672,13 @@ export function buildOfficialDossierDocument(
           makeBulletPoint(`${isGl ? 'Pegada SHA-256 das entradas (inxesta e entrevista)' : 'Huella SHA-256 de las entradas (ingesta y entrevista)'}: ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED} (${isGl ? 'permite comprobar que dous documentos parten das mesmas entradas; non acredita a integridade do documento' : 'permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento'})`),
           makeBulletPoint(`${isGl ? 'Data de xeración' : 'Fecha de generación'}: ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}`),
           makeBulletPoint(`${isGl ? 'Asistencia de IA' : 'Asistencia de IA'}: ${describirAsistencia(diagnostic?.aiAssistance)}`),
+          new Paragraph({ children: [new TextRun({ text: isGl ? 'Orixe das respostas' : 'Origen de las respuestas', bold: true, color: COLOR_PRIMARY })], spacing: { before: 200, after: 100 } }),
+          ...(answerProvenanceRows(state).length
+            ? [
+                ...answerProvenanceRows(state).map((f) => makeBulletPoint(`${f.pregunta} → ${f.respuesta}. ${f.origen}. ${f.respaldo}.`)),
+                new Paragraph({ children: [new TextRun({ text: PROVENANCE_NOTE, italics: true, size: 18, color: COLOR_MUTED })], spacing: { after: 100 } }),
+              ]
+            : [makeBulletPoint(isGl ? 'Todas as respostas introduciunas a persoa usuaria.' : 'Todas las respuestas las introdujo la persona usuaria.')]),
           new Paragraph({ text: '', spacing: { before: 200 } }),
 
           // DILIGENCIA DE FIRMAS

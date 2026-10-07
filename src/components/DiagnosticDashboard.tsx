@@ -1,6 +1,6 @@
 import { describirAsistencia } from '../lib/proveedorEfectivo';
 import React, { useState } from 'react';
-import { BLOCK_TITLES, pendingByPriority } from '../lib/interviewCatalog';
+import { BLOCK_TITLES, pendingByPriority, type InterviewQuestion } from '../lib/interviewCatalog';
 import { QuestionField } from './QuestionField';
 import {
   ShieldAlert,
@@ -59,6 +59,8 @@ interface DiagnosticDashboardProps {
   onSetAnswer?: (id: string, value: string) => void;
   /** Abre la entrevista desplazada a la pregunta indicada. */
   onGoToQuestion?: (id: string) => void;
+  /** Sugerencia o botón de sugerencia bajo cada pregunta pendiente. */
+  renderAssist?: (q: InterviewQuestion) => React.ReactNode;
 }
 
 /** Panel «Lo que falta»: preguntas sin contestar, contestables aquí mismo. */
@@ -66,7 +68,8 @@ const PendingAnswersPanel: React.FC<{
   answers: LegalEnrichmentAnswers;
   onSetAnswer: (id: string, value: string) => void;
   onGoToQuestion?: (id: string) => void;
-}> = ({ answers, onSetAnswer, onGoToQuestion }) => {
+  renderAssist?: (q: InterviewQuestion) => React.ReactNode;
+}> = ({ answers, onSetAnswer, onGoToQuestion, renderAssist }) => {
   const [verTodas, setVerTodas] = useState(false);
   const lista = pendingByPriority(answers);
   if (lista.length === 0) return null;
@@ -93,6 +96,7 @@ const PendingAnswersPanel: React.FC<{
               </button>
             )}
           </div>
+          {renderAssist?.(q)}
         </QuestionField>
       ))}
       {lista.length > 5 && (
@@ -195,6 +199,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
   answers,
   onSetAnswer,
   onGoToQuestion,
+  renderAssist,
 }) => {
   const respuestasPendientes = diagnostic.pendingAnswers ?? 0;
   const requisitosPorValidar = unaccreditedRequirements(diagnostic.requirements).length;
@@ -481,7 +486,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
         </div>
       </div>
 
-      {answers && onSetAnswer && <PendingAnswersPanel answers={answers} onSetAnswer={onSetAnswer} onGoToQuestion={onGoToQuestion} />}
+      {answers && onSetAnswer && <PendingAnswersPanel answers={answers} onSetAnswer={onSetAnswer} onGoToQuestion={onGoToQuestion} renderAssist={renderAssist} />}
 
       {/* Risk Summary Header Card */}
       <div className="card" style={{

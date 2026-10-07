@@ -3,6 +3,7 @@ import { applicabilityLabel, obligations, originLabel, prohibitedPractices, requ
 import { computeExecutivePillars, computeExecutiveVerdict } from './dashboardPillars';
 import { effectiveDiagnostic } from './validations';
 import { describirAsistencia } from './proveedorEfectivo';
+import { answerProvenanceRows, PROVENANCE_NOTE } from './answerProvenance';
 import { ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 /** Escapa los separadores de tabla para que un texto no rompa la tabla Markdown. */
@@ -247,6 +248,13 @@ ${
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED} (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
 - **Fecha de generación:** ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}
 - **Asistencia de IA:** ${describirAsistencia(diagnostic?.aiAssistance)}
+
+### ${isGl ? 'Orixe das respostas' : 'Origen de las respuestas'}
+${(() => {
+  const filas = answerProvenanceRows(state);
+  if (!filas.length) return isGl ? 'Todas as respostas introduciunas a persoa usuaria.' : 'Todas las respuestas las introdujo la persona usuaria.';
+  return `| Pregunta | Respuesta | Origen | Respaldo |\n| :--- | :--- | :--- | :--- |\n${filas.map((f) => `| ${f.pregunta} | ${f.respuesta} | ${f.origen} | ${f.respaldo.replace(/\|/g, '/')} |`).join('\n')}\n\n*${PROVENANCE_NOTE}*`;
+})()}
 
 ---
 

@@ -29,7 +29,19 @@ import { registroAsistencia, restriccionEnvio } from './lib/proveedorEfectivo';
 import { formatApiError } from './lib/apiService';
 import { getStoredAudits, saveAuditRecord, type SaveOutcome } from './lib/auditHistoryService';
 import { currentAiComment, recomputeAudit } from './lib/auditState';
-import { setAnswerValue } from './lib/interviewCatalog';
+import { isPending, pendingQuestions, setAnswerValue, type InterviewQuestion } from './lib/interviewCatalog';
+import {
+  acceptSuggestion,
+  bulkAcceptable,
+  hintSuggestions,
+  ingestKey,
+  sourcesAfterManualChange,
+  suggestWithAI,
+  type AnswerSuggestion,
+} from './lib/interviewSuggestions';
+import { ETIQUETA_UBICACION, ubicacionProveedor } from './lib/proveedorEfectivo';
+import { describirProveedor } from './lib/apiService';
+import { AssistToolbar, SuggestButton, SuggestionBox } from './components/SuggestionAssist';
 import type {
   AppIdioma,
   FullAuditState,
@@ -57,6 +69,10 @@ export const App: React.FC = () => {
   // Expediente en curso: sus nuevas versiones se guardan como revisiones, sin sobrescribir.
   const [currentAuditId, setCurrentAuditId] = useState<string | undefined>(undefined);
   const [custodyNotice, setCustodyNotice] = useState<{ tipo: 'error' | 'aviso'; texto: string } | null>(null);
+  // Sugerencias de respuesta: nunca se aplican solas (se aceptan una a una o, las de cita comprobada, en bloque).
+  const [suggestions, setSuggestions] = useState<Record<string, AnswerSuggestion>>({});
+  const [suggestStatus, setSuggestStatus] = useState<{ cargando: boolean; texto?: string; error?: string }>({ cargando: false });
+  const [externalConsent, setExternalConsent] = useState(false);
   // Huella de las entradas de la última revisión guardada en el historial.
   const [savedInputsKey, setSavedInputsKey] = useState<string | undefined>(undefined);
 
@@ -89,6 +105,8 @@ export const App: React.FC = () => {
       setCurrentAuditId(undefined);
       setCustodyNotice(null);
       setSavedInputsKey(undefined);
+      setSuggestions({});
+      setSuggestStatus({ cargando: false });
       setCurrentStep('ingesta');
     }
   };
@@ -173,8 +191,95 @@ export const App: React.FC = () => {
 
   /** Cambios en la ingesta o la entrevista: el diagnóstico ya emitido se recalcula al momento. */
   const updateInputs = (patch: Partial<Pick<FullAuditState, 'ingest' | 'answers'>>) => {
-    setState((p) => recomputeAudit({ ...p, ...patch }));
+    setState((p) => {
+      // Si la persona cambia una respuesta que venía de una sugerencia, el origen vuelve a ser suyo.
+      const answerSources = patch.answers ? sourcesAfterManualChange(p.answers, patch.answers, p.answerSources) : p.answerSources;
+      return recomputeAudit({ ...p, ...patch, answerSources });
+    });
   };
+
+  // ---- Sugerencias de respuesta ----
+  const currentIngestKey = ingestKey(state.ingest);
+  const conIA = Boolean(isConfigured && config);
+  const proveedorLabel = isConfigured && config ? `${describirProveedor(config)} · ${config.model}` : null;
+  const quitarSugerencias = (ids: string[]) =>
+    setSuggestions((p) => Object.fromEntries(Object.entries(p).filter(([id]) => !ids.includes(id))));
+
+  const requestSuggestions = async (ids: string[]) => {
+    if (!ids.length || suggestStatus.cargando) return;
+    if (!isConfigured || !config) {
+      const indicios = hintSuggestions(state.ingest, state.answers).filter((s) => ids.includes(s.questionId));
+      setSuggestions((p) => ({ ...p, ...Object.fromEntries(indicios.map((s) => [s.questionId, s])) }));
+      setSuggestStatus({
+        cargando: false,
+        texto: indicios.length
+          ? `${indicios.length} indicio(s) encontrados en la documentación.`
+          : 'La documentación no contiene indicios para estas preguntas. Configura un proveedor de IA para obtener sugerencias razonadas.',
+      });
+      return;
+    }
+    if (ubicacionProveedor(config) === 'externo' && !externalConsent) {
+      const ok = window.confirm(
+        `Para sugerir respuestas se enviará la documentación del paso 1 (descripción, README, AGENTS.md y prompt del sistema) a ${describirProveedor(config)}, un servicio externo. ¿Continuar?`
+      );
+      if (!ok) return;
+      setExternalConsent(true);
+    }
+    setSuggestStatus({ cargando: true, texto: 'Pidiendo sugerencias…' });
+    const r = await suggestWithAI(config, state.ingest, state.answers, ids, (hechos, total) =>
+      setSuggestStatus({ cargando: true, texto: `Pidiendo sugerencias… bloque ${hechos} de ${total}` })
+    );
+    setSuggestions((p) => ({ ...p, ...Object.fromEntries(r.sugerencias.map((s) => [s.questionId, s])) }));
+    const partes = [`${r.sugerencias.length} sugerencia(s) recibida(s)`];
+    if (r.descartadas) partes.push(`${r.descartadas} descartada(s) por no ser válidas`);
+    if (r.recortada) partes.push('la documentación era muy larga y se envió recortada');
+    setSuggestStatus({ cargando: false, texto: `${partes.join(' · ')}.`, error: r.error });
+  };
+
+  const handleAcceptSuggestion = (s: AnswerSuggestion) => {
+    setState((p) => recomputeAudit(acceptSuggestion(p, s)));
+    quitarSugerencias([s.questionId]);
+  };
+
+  const sugerenciasVigentes = Object.values(suggestions).filter((s) => s.ingestKey === currentIngestKey && isPending(state.answers, s.questionId));
+  const enBloque = bulkAcceptable(sugerenciasVigentes);
+  const handleAcceptBulk = () => {
+    setState((p) => recomputeAudit(enBloque.reduce((acc, s) => acceptSuggestion(acc, s), p)));
+    quitarSugerencias(enBloque.map((s) => s.questionId));
+  };
+
+  /** Ayuda bajo cada pregunta pendiente: la sugerencia recibida o el botón para pedirla. */
+  const renderAssist = (q: InterviewQuestion): React.ReactNode => {
+    if (!isPending(state.answers, q.id)) return null;
+    const s = suggestions[q.id];
+    if (s) {
+      return (
+        <SuggestionBox
+          question={q}
+          suggestion={s}
+          stale={s.ingestKey !== currentIngestKey}
+          onAccept={() => handleAcceptSuggestion(s)}
+          onDiscard={() => quitarSugerencias([q.id])}
+        />
+      );
+    }
+    return <SuggestButton question={q} conIA={conIA} cargando={suggestStatus.cargando} onClick={() => requestSuggestions([q.id])} />;
+  };
+
+  const assistToolbar = (
+    <AssistToolbar
+      proveedor={proveedorLabel}
+      ubicacion={config ? ETIQUETA_UBICACION[ubicacionProveedor(config)] : ''}
+      pendientes={pendingQuestions(state.answers).length}
+      cargando={suggestStatus.cargando}
+      estado={suggestStatus.texto}
+      error={suggestStatus.error}
+      aceptablesEnBloque={enBloque.length}
+      hayDeIA={sugerenciasVigentes.some((s) => s.fuente === 'ia')}
+      onSuggestAll={() => requestSuggestions(pendingQuestions(state.answers).map((q) => q.id))}
+      onAcceptBulk={handleAcceptBulk}
+    />
+  );
 
   // Comentario de IA solo si corresponde a las respuestas actuales.
   const aiComment = currentAiComment(state, llmCritique);
@@ -204,6 +309,8 @@ export const App: React.FC = () => {
     setLlmCritique(record.llmCritique);
     setCurrentAuditId(record.auditId);
     setSavedInputsKey(inputsKey(record.state));
+    setSuggestions({});
+    setSuggestStatus({ cargando: false });
     setCustodyNotice(null);
     setCurrentStep('diagnostico');
     setShowHistoryModal(false);
@@ -328,6 +435,8 @@ export const App: React.FC = () => {
             onChange={(newAnswers) => updateInputs({ answers: newAnswers })}
             hasDiagnostic={Boolean(state.diagnostic)}
             focusQuestionId={focusQuestionId}
+            renderAssist={renderAssist}
+            assistToolbar={assistToolbar}
             onBack={() => setCurrentStep('ingesta')}
             onAnalyze={handleStartAnalysis}
             isAnalyzing={isAnalyzing}
@@ -346,6 +455,7 @@ export const App: React.FC = () => {
             onRegenerateAi={handleStartAnalysis}
             answers={state.answers}
             onSetAnswer={(id, value) => updateInputs({ answers: setAnswerValue(state.answers, id, value) })}
+            renderAssist={renderAssist}
             onGoToQuestion={(id) => {
               setFocusQuestionId(undefined);
               window.setTimeout(() => setFocusQuestionId(id), 0);

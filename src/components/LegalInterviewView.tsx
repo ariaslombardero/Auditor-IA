@@ -10,6 +10,7 @@ import {
   questionsOfBlock,
   setAnswerValue,
   type InterviewBlock,
+  type InterviewQuestion,
 } from '../lib/interviewCatalog';
 import { QuestionField } from './QuestionField';
 
@@ -25,6 +26,10 @@ interface LegalInterviewViewProps {
   hasDiagnostic?: boolean;
   /** Pregunta a la que desplazarse al abrir (llegada desde el diagnóstico). */
   focusQuestionId?: string;
+  /** Sugerencia o botón de sugerencia bajo cada pregunta pendiente. */
+  renderAssist?: (q: InterviewQuestion) => React.ReactNode;
+  /** Barra de ayuda para contestar (sugerencias). */
+  assistToolbar?: React.ReactNode;
 }
 
 const BLOCK_ICONS: Record<InterviewBlock, React.ReactNode> = {
@@ -90,6 +95,8 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({
   isAnalyzing,
   hasDiagnostic,
   focusQuestionId,
+  renderAssist,
+  assistToolbar,
 }) => {
   const [soloPendientes, setSoloPendientes] = useState(false);
   const [resaltada, setResaltada] = useState<string | undefined>(undefined);
@@ -186,7 +193,9 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({
       const q = mostradas.find((x) => x.id === id)!;
       return (
         <React.Fragment key={q.id}>
-          <QuestionField question={q} answers={answers} onSet={onSet} hint={hintFor(q.id)} highlight={resaltada === q.id} />
+          <QuestionField question={q} answers={answers} onSet={onSet} hint={hintFor(q.id)} highlight={resaltada === q.id}>
+            {renderAssist?.(q)}
+          </QuestionField>
           {!soloPendientes && extras[q.id]}
         </React.Fragment>
       );
@@ -232,6 +241,8 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({
           </p>
         )}
       </div>
+
+      {assistToolbar}
 
       {/* Barra fija de respuestas pendientes */}
       <div
