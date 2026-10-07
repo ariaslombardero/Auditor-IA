@@ -271,7 +271,16 @@ export interface FullAuditState {
 }
 
 export interface StoredAuditRecord {
+  /** Identificador único de esta revisión. */
   id: string;
+  /** Versión del formato del registro. */
+  schemaVersion?: number;
+  /** Expediente al que pertenece: las revisiones de un mismo análisis comparten auditId. */
+  auditId: string;
+  /** Número de revisión dentro del expediente (1, 2, 3…). Las anteriores se conservan. */
+  revision: number;
+  /** Procedencia: creado en este navegador o importado de una copia. */
+  origen?: 'local' | 'importado';
   createdAt: string; // ISO string
   appName: string;
   entityName: string;

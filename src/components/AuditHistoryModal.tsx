@@ -21,6 +21,8 @@ import {
   clearAuditHistory,
   exportHistoryJson,
   importHistoryJson,
+  countUnreadableRecords,
+  HISTORY_LIMIT,
 } from '../lib/auditHistoryService';
 import { exportOfficialDossierDocx } from '../lib/officialDossierDocx';
 
@@ -40,6 +42,8 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
   const [audits, setAudits] = useState<StoredAuditRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [unreadable, setUnreadable] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isGl = idioma === 'galego';
@@ -47,31 +51,47 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setAudits(getStoredAudits());
+      setUnreadable(countUnreadableRecords());
       setSearchTerm('');
       setFeedbackMsg(null);
+      setErrorMsg(null);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const showFeedback = (msg: string) => {
+    setErrorMsg(null);
     setFeedbackMsg(msg);
-    setTimeout(() => setFeedbackMsg(null), 3500);
+    setTimeout(() => setFeedbackMsg(null), 6000);
+  };
+
+  const showError = (msg: string) => {
+    setFeedbackMsg(null);
+    setErrorMsg(msg);
   };
 
   const handleDelete = (id: string, appName: string) => {
     if (window.confirm(isGl ? `¿Eliminar a auditoría de "${appName}"?` : `¿Eliminar la auditoría de "${appName}"?`)) {
-      const updated = deleteAuditRecord(id);
-      setAudits(updated);
-      showFeedback(isGl ? 'Expediente eliminado do historial' : 'Expediente eliminado del historial');
+      try {
+        setAudits(deleteAuditRecord(id));
+        showFeedback(isGl ? 'Rexistro eliminado do historial' : 'Registro eliminado del historial');
+      } catch (err) {
+        showError((err as Error).message);
+      }
     }
   };
 
   const handleClearAll = () => {
     if (window.confirm(isGl ? '¿Baleirar todo o historial de auditorías locais?' : '¿Vaciar todo el historial de auditorías locales?')) {
-      clearAuditHistory();
-      setAudits([]);
-      showFeedback(isGl ? 'Historial baleirado' : 'Historial vaciado');
+      try {
+        clearAuditHistory();
+        setAudits([]);
+        setUnreadable(0);
+        showFeedback(isGl ? 'Historial baleirado' : 'Historial vaciado');
+      } catch (err) {
+        showError((err as Error).message);
+      }
     }
   };
 
@@ -95,12 +115,18 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
     reader.onload = (event) => {
       const content = event.target?.result as string;
       const res = importHistoryJson(content);
-      if (res.success) {
-        setAudits(getStoredAudits());
-        showFeedback(isGl ? `${res.importedCount} auditorías importadas con éxito` : `${res.importedCount} auditorías importadas con éxito`);
-      } else {
-        alert(res.error || 'Error al importar archivo');
-      }
+      setAudits(getStoredAudits());
+      const partes = [
+        isGl ? `${res.importedCount} rexistro(s) importado(s)` : `${res.importedCount} registro(s) importado(s)`,
+        res.duplicates ? (isGl ? `${res.duplicates} xa existían` : `${res.duplicates} ya existían`) : '',
+        res.rejected.length
+          ? (isGl ? 'rexeitados: ' : 'rechazados: ') + res.rejected.map((r) => `nº ${r.index + 1} (${r.motivo})`).join('; ')
+          : '',
+        res.retirados ? (isGl ? `retiráronse ${res.retirados} rexistro(s) antigo(s) polo límite de ${HISTORY_LIMIT}` : `se han retirado ${res.retirados} registro(s) antiguo(s) por el límite de ${HISTORY_LIMIT}`) : '',
+      ].filter(Boolean);
+      if (!res.success && res.error && res.rejected.length === 0) showError(res.error);
+      else if (res.rejected.length || !res.success) showError(partes.join(' · '));
+      else showFeedback(partes.join(' · '));
     };
     reader.readAsText(file);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -245,8 +271,8 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
               </div>
               <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>
                 {isGl
-                  ? 'Rexistro persistente de expedientes de conformidade RIA e ENS gardados neste navegador'
-                  : 'Registro persistente de expedientes de conformidad RIA y ENS guardados en este navegador'}
+                  ? `Copia de traballo neste navegador (máximo ${HISTORY_LIMIT} rexistros). Non substitúe ao xestor de expedientes.`
+                  : `Copia de trabajo en este navegador (máximo ${HISTORY_LIMIT} registros). No sustituye al gestor de expedientes.`}
               </p>
             </div>
           </div>
@@ -283,6 +309,21 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
           >
             <CheckCircle style={{ width: 16, height: 16 }} />
             <span>{feedbackMsg}</span>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div role="alert" style={{ padding: '0.625rem 1.5rem', backgroundColor: '#fef2f2', borderBottom: '1px solid #fecaca', color: '#991b1b', fontSize: '0.8125rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <AlertTriangle style={{ width: 16, height: 16, flexShrink: 0, marginTop: 1 }} />
+            <span style={{ flex: 1 }}>{errorMsg}</span>
+            <button type="button" onClick={() => setErrorMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontWeight: 700 }} aria-label="Cerrar">×</button>
+          </div>
+        )}
+        {unreadable > 0 && (
+          <div style={{ padding: '0.5rem 1.5rem', backgroundColor: '#fffbeb', borderBottom: '1px solid #fde68a', color: '#92400e', fontSize: '0.75rem' }}>
+            {isGl
+              ? `${unreadable} rexistro(s) gardado(s) non superan a validación e non se mostran. Non se borraron.`
+              : `${unreadable} registro(s) guardado(s) no superan la validación y no se muestran. No se han borrado.`}
           </div>
         )}
 
@@ -492,6 +533,10 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
                           ENS {item.ensCategory}
                         </span>
                       </div>
+                      <div style={{ fontSize: '0.6875rem', color: '#64748b', marginBottom: '0.3rem' }}>
+                        {isGl ? 'Revisión' : 'Revisión'} {item.revision} · {isGl ? 'motor' : 'motor'} v{item.state.diagnostic?.engineVersion || '—'}
+                        {item.origen === 'importado' ? (isGl ? ' · importado dunha copia' : ' · importado de una copia') : ''}
+                      </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', fontSize: '0.75rem', color: '#64748b' }}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -523,7 +568,7 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
                           gap: '0.35rem',
                           boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                         }}
-                        title="Cargar esta auditoría y ver el dictamen completo"
+                        title="Cargar esta revisión y ver el diagnóstico"
                       >
                         <FolderOpen style={{ width: 14, height: 14 }} />
                         <span>{isGl ? 'Cargar' : 'Cargar'}</span>
@@ -590,8 +635,8 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
         >
           <span>
             {isGl
-              ? 'Os expedientes almacénanse localmente no navegador (LocalStorage) sen saír da túa máquina.'
-              : 'Los expedientes se almacenan localmente en el navegador (LocalStorage) sin salir de tu máquina.'}
+              ? 'Gárdase só neste navegador. Borrar os datos do navegador elimínao: exporte copias e conserve os informes no xestor de expedientes.'
+              : 'Se guarda solo en este navegador. Borrar los datos del navegador lo elimina: exporte copias y conserve los informes en el gestor de expedientes.'}
           </span>
           <button
             onClick={onClose}

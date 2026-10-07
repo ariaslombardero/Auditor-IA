@@ -230,7 +230,7 @@ ${
 }
 
 - **Versión del motor:** ${engineVersion}
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED}
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED} (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
 - **Fecha de generación:** ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}
 - **Asistencia de IA:** ${describirAsistencia(diagnostic?.aiAssistance)}
 

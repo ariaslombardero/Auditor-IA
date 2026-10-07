@@ -5,6 +5,7 @@
 > **Cierre de la Fase 1** (05/10/2026): **55 pruebas, 29 en verde y 26 en rojo**. Las 26 en rojo corresponden a hallazgos asignados a las Fases 2 y 3. Se añaden NOR-10, DOC-11, DOC-12, ALM-06 y EIPD-04, detectados o introducidos durante la fase.
 > **Cierre de la Fase 2** (05/10/2026): **69 pruebas, 56 en verde y 13 en rojo**. Las 13 en rojo son hallazgos de la Fase 3 (ALM, RT y SEG). Las pruebas del motor se reescribieron para la entrevista v2 («sí / no / desconocido») conservando la intención de cada una; se añaden MOT-23 a MOT-26, EIPD-05 y DOC-13.
 > **Fase 3 · entrega 3.1** (07/10/2026): **111 pruebas, 102 en verde y 9 en rojo**. Los 9 en rojo son de custodia (ALM-01 a ALM-04, entrega 3.2) y red teaming (RT-01 a RT-05, entrega 3.3). Arquitectura de proveedores y credenciales igual que *Opositor transparente* (ADR 001). El selector de modelo deja de usar listas fijas: muestra solo los modelos que devuelve el proveedor para la clave o el servidor indicados. La prueba SEG-07 de la Fase 0 se adapta: la CSP se comprueba en la página compilada, porque en desarrollo la impediría el refresco en caliente de Vite.
+> **Fase 3 · entrega 3.2** (07/10/2026): **118 pruebas, 113 en verde y 5 en rojo** (RT-01 a RT-05, entrega 3.3). Historial con revisiones, errores de guardado comunicados, importación validada y política de conservación documentada. La prueba ALM-01 de la Fase 0 se conserva: sin expediente indicado, cada guardado abre uno nuevo.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -86,11 +87,11 @@
 
 | ID | Hallazgo | Origen | Comportamiento esperado | Fase | Estado |
 | :--- | :--- | :---: | :--- | :---: | :---: |
-| ALM-01 | Sobrescritura de auditorías de la misma app en 30 minutos | C+G | Revisiones añadidas | 3 | 🔴 |
-| ALM-02 | Guardado fallido devuelto como correcto | G | Error comunicado | 3 | 🔴 |
-| ALM-03 | Importación de registros malformados | C+G | Validación de esquema | 3 | 🔴 |
-| ALM-04 | Importación de clasificaciones inexistentes | C+G | Validación de valores | 3 | 🔴 |
-| ALM-05 | Purga silenciosa al superar 50 registros; registros antiguos mostrados como si pasaran el motor nuevo | C+G | Política de conservación; «motor vX, no recalculado» | 3 | ⚪ |
+| ALM-01 | Sobrescritura de auditorías de la misma app en 30 minutos | C+G | Expedientes con revisiones añadidas (`auditId`, `revision`); nada se sobrescribe | 3 | 🟢 |
+| ALM-02 | Guardado fallido devuelto como correcto | G | `ErrorCustodia` y aviso en pantalla («El diagnóstico NO se ha guardado») | 3 | 🟢 |
+| ALM-03 | Importación de registros malformados | C+G | Validación de estructura y tamaño (10 MB); informe de rechazados con su motivo | 3 | 🟢 |
+| ALM-04 | Importación de clasificaciones inexistentes | C+G | Valores admitidos y coincidencia entre la clasificación del registro y la de su diagnóstico | 3 | 🟢 |
+| ALM-05 | Purga silenciosa al superar 50 registros; registros antiguos mostrados como si pasaran el motor nuevo | C+G | Retiradas comunicadas; política en `docs/custodia-historial.md`; registros antiguos como revisión 1 y «motor no recalculado»; la huella SHA-256 se declara como no acreditativa de integridad | 3 | 🟢 |
 | ALM-06 | Registros guardados por el motor anterior podían mostrarse como si hubieran pasado el motor nuevo; pilares vacíos se mostraban como «Requisitos acreditados» | G (+C en Fase 1) | Migración a «no verificado», versión «no recalculado» y pilares sin requisitos como «Sin requisitos evaluados» | 1 | 🟢 |
 
 ## F. Seguridad del auditor

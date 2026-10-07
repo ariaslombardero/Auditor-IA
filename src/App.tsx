@@ -27,7 +27,7 @@ import { effectiveDiagnostic, inputsKey } from './lib/validations';
 import { generateCodeKit } from './lib/codeKitGenerator';
 import { registroAsistencia, restriccionEnvio } from './lib/proveedorEfectivo';
 import { formatApiError } from './lib/apiService';
-import { getStoredAudits, saveAuditRecord } from './lib/auditHistoryService';
+import { getStoredAudits, saveAuditRecord, type SaveOutcome } from './lib/auditHistoryService';
 import type {
   AppIdioma,
   FullAuditState,
@@ -50,6 +50,9 @@ export const App: React.FC = () => {
   const [llmCritique, setLlmCritique] = useState<string | undefined>(undefined);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [historyCount, setHistoryCount] = useState(0);
+  // Expediente en curso: sus nuevas versiones se guardan como revisiones, sin sobrescribir.
+  const [currentAuditId, setCurrentAuditId] = useState<string | undefined>(undefined);
+  const [custodyNotice, setCustodyNotice] = useState<{ tipo: 'error' | 'aviso'; texto: string } | null>(null);
 
   const { config, isConfigured } = useApiConfig();
 
@@ -77,8 +80,28 @@ export const App: React.FC = () => {
         analyzing: false,
       });
       setLlmCritique(undefined);
+      setCurrentAuditId(undefined);
+      setCustodyNotice(null);
       setCurrentStep('ingesta');
     }
+  };
+
+  /** Guarda una revisión del expediente en curso y comunica cualquier fallo o retirada de registros. */
+  const saveRevision = (next: FullAuditState, critique: string | undefined) => {
+    let outcome: SaveOutcome;
+    try {
+      outcome = saveAuditRecord(next, critique, { auditId: currentAuditId });
+    } catch (err) {
+      setCustodyNotice({ tipo: 'error', texto: `El diagnóstico NO se ha guardado en el historial. ${(err as Error).message}` });
+      return;
+    }
+    setCurrentAuditId(outcome.record.auditId);
+    setHistoryCount(getStoredAudits().length);
+    setCustodyNotice(
+      outcome.retirados.length > 0
+        ? { tipo: 'aviso', texto: `Guardada la revisión ${outcome.record.revision}. Para respetar el límite del historial se han retirado ${outcome.retirados.length} registro(s) antiguo(s) del navegador. Exporte una copia JSON si los necesita.` }
+        : null
+    );
   };
 
   const handleStartAnalysis = async () => {
@@ -123,13 +146,8 @@ export const App: React.FC = () => {
     setLlmCritique(critiqueText);
     setState(updatedFullState);
 
-    // 3. Auto-guardar en historial persistente de auditorías
-    try {
-      saveAuditRecord(updatedFullState, critiqueText);
-      setHistoryCount(getStoredAudits().length);
-    } catch (saveErr) {
-      console.warn('No se pudo auto-guardar en el historial local:', saveErr);
-    }
+    // 3. Guardar como revisión del expediente en curso (o abrir uno nuevo)
+    saveRevision(updatedFullState, critiqueText);
 
     setIsAnalyzing(false);
     setCurrentStep('diagnostico');
@@ -138,7 +156,7 @@ export const App: React.FC = () => {
   // Validación humana documentada de un requisito (queda ligada a las entradas actuales)
   const persistState = (next: FullAuditState) => {
     setState(next);
-    saveAuditRecord(next, llmCritique);
+    saveRevision(next, llmCritique);
   };
 
   const handleValidateRequirement = (requirementId: string, revisadoPor: string, evidencia: string) => {
@@ -163,6 +181,8 @@ export const App: React.FC = () => {
       diagnostic: normalizeDiagnostic(record.state.diagnostic),
     });
     setLlmCritique(record.llmCritique);
+    setCurrentAuditId(record.auditId);
+    setCustodyNotice(null);
     setCurrentStep('diagnostico');
     setShowHistoryModal(false);
   };
@@ -191,6 +211,27 @@ export const App: React.FC = () => {
       />
 
       <main className="container" style={{ flex: 1 }}>
+        {custodyNotice && (
+          <div
+            role={custodyNotice.tipo === 'error' ? 'alert' : 'status'}
+            style={{
+              margin: '1rem 0 0',
+              padding: '0.75rem 1rem',
+              borderRadius: 8,
+              fontSize: '0.8125rem',
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: '0.75rem',
+              background: custodyNotice.tipo === 'error' ? '#fef2f2' : '#fffbeb',
+              border: `1px solid ${custodyNotice.tipo === 'error' ? '#f87171' : '#fcd34d'}`,
+              color: custodyNotice.tipo === 'error' ? '#991b1b' : '#92400e',
+            }}
+          >
+            <span>{custodyNotice.texto}</span>
+            <button type="button" onClick={() => setCustodyNotice(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontWeight: 700 }} aria-label="Cerrar aviso">×</button>
+          </div>
+        )}
         {/* Stepper Navigation */}
         <nav className="stepper-nav" aria-label="Progreso de auditoría">
           {stepsList.map((s, index) => {

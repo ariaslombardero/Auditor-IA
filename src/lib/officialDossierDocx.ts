@@ -648,7 +648,7 @@ export function buildOfficialDossierDocument(
             spacing: { after: 150 },
           }),
           makeBulletPoint(`${isGl ? 'Versión do motor' : 'Versión del motor'}: ${traceability?.engineVersion || diagnostic?.engineVersion || ENGINE_VERSION}`),
-          makeBulletPoint(`${isGl ? 'Pegada SHA-256 das entradas (inxesta e entrevista)' : 'Huella SHA-256 de las entradas (ingesta y entrevista)'}: ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED}`),
+          makeBulletPoint(`${isGl ? 'Pegada SHA-256 das entradas (inxesta e entrevista)' : 'Huella SHA-256 de las entradas (ingesta y entrevista)'}: ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED} (${isGl ? 'permite comprobar que dous documentos parten das mesmas entradas; non acredita a integridade do documento' : 'permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento'})`),
           makeBulletPoint(`${isGl ? 'Data de xeración' : 'Fecha de generación'}: ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}`),
           makeBulletPoint(`${isGl ? 'Asistencia de IA' : 'Asistencia de IA'}: ${describirAsistencia(diagnostic?.aiAssistance)}`),
           new Paragraph({ text: '', spacing: { before: 200 } }),
