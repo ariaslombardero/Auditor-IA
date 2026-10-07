@@ -1,20 +1,17 @@
-import React from 'react';
-import { ArrowLeft, ArrowRight, Ban, Building2, Cpu, Eye, Lock, Scale, ShieldCheck, UserCheck } from 'lucide-react';
-import type {
-  AnnexIIIArea,
-  AppIdioma,
-  AppIngestData,
-  Article63Condition,
-  EnsLevel,
-  InstitutionalRole,
-  LegalEnrichmentAnswers,
-  TriState,
-} from '../types';
+import React, { useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, ArrowDownCircle, Ban, Building2, Cpu, Eye, Lock, Scale, ShieldCheck, UserCheck } from 'lucide-react';
+import type { AppIdioma, AppIngestData, LegalEnrichmentAnswers, TriState } from '../types';
 import { PROHIBITED_SYSTEMS_CATALOG } from '../lib/legalKnowledgeBase';
-import { ENS_DIMENSIONS, ENS_DIMENSION_LABELS } from '../lib/answersModel';
-import { pendingQuestions } from '../lib/interviewCatalog';
 import { aiUsageHint, annexIIIHints, prohibitedPracticeHints } from '../lib/documentHints';
-import { ANNEX_III_LABELS, ARTICLE_63_CONDITIONS } from '../lib/engine/evaluators';
+import {
+  BLOCK_TITLES,
+  isPending,
+  pendingQuestions,
+  questionsOfBlock,
+  setAnswerValue,
+  type InterviewBlock,
+} from '../lib/interviewCatalog';
+import { QuestionField } from './QuestionField';
 
 interface LegalInterviewViewProps {
   answers: LegalEnrichmentAnswers;
@@ -26,85 +23,42 @@ interface LegalInterviewViewProps {
   idioma: AppIdioma;
   /** Si ya se emitió un diagnóstico: los cambios lo actualizan al momento. */
   hasDiagnostic?: boolean;
+  /** Pregunta a la que desplazarse al abrir (llegada desde el diagnóstico). */
+  focusQuestionId?: string;
 }
 
-const TRI_OPTIONS: Array<{ value: TriState; label: string }> = [
-  { value: 'si', label: 'Sí' },
-  { value: 'no', label: 'No' },
-  { value: 'desconocido', label: 'No lo sé' },
-];
+const BLOCK_ICONS: Record<InterviewBlock, React.ReactNode> = {
+  A: <Cpu style={{ width: 18, height: 18 }} />,
+  B: <Ban style={{ width: 18, height: 18 }} />,
+  C: <Scale style={{ width: 18, height: 18 }} />,
+  D: <Eye style={{ width: 18, height: 18 }} />,
+  E: <Building2 style={{ width: 18, height: 18 }} />,
+  F: <UserCheck style={{ width: 18, height: 18 }} />,
+  G: <Lock style={{ width: 18, height: 18 }} />,
+  H: <ShieldCheck style={{ width: 18, height: 18 }} />,
+};
 
-/** Pregunta de tres respuestas. «No lo sé» se conserva como desconocido: nunca equivale a «no». */
-const TriField: React.FC<{
-  label: string;
-  help?: string;
-  value: TriState;
-  onChange: (v: TriState) => void;
-  hint?: string;
-}> = ({ label, help, value, onChange, hint }) => (
-  <div className="form-group">
-    <span className="form-label">{label}</span>
-    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-      {TRI_OPTIONS.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          onClick={() => onChange(o.value)}
-          aria-pressed={value === o.value}
-          style={{
-            padding: '0.35rem 0.9rem',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '0.8125rem',
-            fontWeight: value === o.value ? 700 : 500,
-            cursor: 'pointer',
-            border: value === o.value ? '1.5px solid var(--color-primary)' : '1px solid var(--color-border)',
-            background: value === o.value ? (o.value === 'desconocido' ? '#fffbeb' : '#eff6ff') : 'white',
-            color: 'var(--color-text)',
-          }}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-    {help && <p className="form-help">{help}</p>}
-    {hint && <p className="form-help" style={{ color: '#92400e' }}>Indicio en la documentación: «{hint}». Solo orienta la respuesta.</p>}
-  </div>
-);
+const BLOCK_SUBTITLES: Partial<Record<InterviewBlock, string>> = {
+  B: 'Indica si el sistema incurre en cada práctica. Si no consta, la clasificación no podrá concluirse.',
+  E: 'De este papel dependen las obligaciones: el proveedor responde del sistema; el responsable del despliegue, de su uso.',
+  H: 'Valora el perjuicio que causaría un incidente en cada dimensión. La categoría del sistema es la del nivel más alto.',
+};
 
-const Section: React.FC<{ icon: React.ReactNode; title: string; subtitle?: string; children: React.ReactNode }> = ({ icon, title, subtitle, children }) => (
+const Section: React.FC<{ bloque: InterviewBlock; pendientes: number; children: React.ReactNode }> = ({ bloque, pendientes, children }) => (
   <div className="card">
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: subtitle ? '0.35rem' : '1rem' }}>
-      <div style={{ background: '#dbeafe', color: '#1e40af', padding: '0.4rem', borderRadius: 'var(--radius-md)', display: 'flex' }}>{icon}</div>
-      <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--color-text)' }}>{title}</h3>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: BLOCK_SUBTITLES[bloque] ? '0.35rem' : '1rem', flexWrap: 'wrap' }}>
+      <div style={{ background: '#dbeafe', color: '#1e40af', padding: '0.4rem', borderRadius: 'var(--radius-md)', display: 'flex' }}>{BLOCK_ICONS[bloque]}</div>
+      <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--color-text)' }}>{BLOCK_TITLES[bloque]}</h3>
+      {pendientes > 0 ? (
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#92400e', background: '#fef3c7', padding: '0.1rem 0.5rem', borderRadius: 999 }}>
+          {pendientes} sin contestar
+        </span>
+      ) : (
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', background: '#dcfce7', padding: '0.1rem 0.5rem', borderRadius: 999 }}>Completo</span>
+      )}
     </div>
-    {subtitle && <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>{subtitle}</p>}
+    {BLOCK_SUBTITLES[bloque] && <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>{BLOCK_SUBTITLES[bloque]}</p>}
     {children}
-  </div>
-);
-
-const SelectField = <T extends string>({
-  label,
-  help,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  help?: string;
-  value: T;
-  options: Array<{ value: T; label: string }>;
-  onChange: (v: T) => void;
-}) => (
-  <div className="form-group">
-    <label className="form-label">{label}</label>
-    <select value={value} onChange={(e) => onChange(e.target.value as T)}>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
-    {help && <p className="form-help">{help}</p>}
   </div>
 );
 
@@ -127,42 +81,140 @@ const TextField: React.FC<{ label: string; help?: string; value: string; onChang
   </div>
 );
 
-const AREA_OPTIONS: Array<{ value: AnnexIIIArea; label: string }> = [
-  { value: 'desconocido', label: 'No lo sé' },
-  { value: 'ninguno', label: 'Ninguno de los ámbitos del Anexo III' },
-  ...(Object.entries(ANNEX_III_LABELS) as Array<[AnnexIIIArea, string]>).map(([value, label]) => ({ value, label })),
-];
+export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({
+  answers,
+  ingest,
+  onChange,
+  onBack,
+  onAnalyze,
+  isAnalyzing,
+  hasDiagnostic,
+  focusQuestionId,
+}) => {
+  const [soloPendientes, setSoloPendientes] = useState(false);
+  const [resaltada, setResaltada] = useState<string | undefined>(undefined);
 
-const CONDITION_OPTIONS: Array<{ value: Article63Condition; label: string }> = [
-  { value: 'desconocido', label: 'No lo sé' },
-  { value: 'ninguna', label: 'No concurre ninguna condición' },
-  ...(Object.entries(ARTICLE_63_CONDITIONS) as Array<[Article63Condition, string]>).map(([value, text]) => ({ value, label: `Letra ${value}): ${text}` })),
-];
+  const setText = <K extends keyof LegalEnrichmentAnswers>(key: K, value: LegalEnrichmentAnswers[K]) => onChange({ ...answers, [key]: value });
+  const onSet = (id: string, value: string) => onChange(setAnswerValue(answers, id, value));
 
-const ROLE_OPTIONS: Array<{ value: InstitutionalRole; label: string }> = [
-  { value: 'desconocido', label: 'No lo sé' },
-  { value: 'proveedor', label: 'Proveedora: desarrolla el sistema (o lo encarga) y lo pone en servicio con su propio nombre' },
-  { value: 'responsable_despliegue', label: 'Responsable del despliegue: utiliza bajo su autoridad un sistema de un tercero' },
-  { value: 'ambos', label: 'Ambas: lo desarrolla y lo utiliza (caso habitual de las aplicaciones propias)' },
-];
-
-const ENS_LEVEL_OPTIONS: Array<{ value: EnsLevel; label: string }> = [
-  { value: 'desconocido', label: 'Sin valorar' },
-  { value: 'no_afectada', label: 'No afectada' },
-  { value: 'bajo', label: 'Bajo (perjuicio limitado)' },
-  { value: 'medio', label: 'Medio (perjuicio grave)' },
-  { value: 'alto', label: 'Alto (perjuicio muy grave)' },
-];
-
-export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers, ingest, onChange, onBack, onAnalyze, isAnalyzing, hasDiagnostic }) => {
-  const set = <K extends keyof LegalEnrichmentAnswers>(key: K, value: LegalEnrichmentAnswers[K]) => onChange({ ...answers, [key]: value });
   const pHints = prohibitedPracticeHints(ingest);
   const aHints = annexIIIHints(ingest);
   const aiHint = aiUsageHint(ingest);
-  const pending = pendingQuestions(answers).length;
+  const hintFor = (id: string): string | undefined => {
+    if (id === 'infersOutputs') return aiHint?.evidence;
+    if (id === 'annexIIIArea' && aHints.length) return aHints.map((h) => `${h.target.replace('annexIII:', '')}: ${h.evidence}`).join(' · ');
+    if (id.startsWith('prohibitedPractices.')) return pHints.find((h) => h.target === id.split('.')[1])?.evidence;
+    return undefined;
+  };
+
+  const pendientes = pendingQuestions(answers);
   const esIA = answers.infersOutputs !== 'no';
-  const inAnnexArea = answers.annexIIIArea !== 'ninguno' && answers.annexIIIArea !== 'desconocido';
-  const personalRelevant = answers.processesPersonalData !== 'no';
+  const inAnnexArea = esIA && answers.annexIIIArea !== 'ninguno' && answers.annexIIIArea !== 'desconocido';
+  const tratarDatos = answers.processesPersonalData !== 'no';
+
+  const irA = (id: string) => {
+    const el = document.getElementById(`pregunta-${id}`);
+    if (!el) return;
+    // Desplazamiento suave solo si la página está visible y no se ha pedido reducir el movimiento
+    const suave = document.visibilityState === 'visible' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'center' });
+    setResaltada(id);
+    window.setTimeout(() => setResaltada((actual) => (actual === id ? undefined : actual)), 2500);
+  };
+
+  // Llegada desde el diagnóstico: desplazarse a la pregunta indicada
+  useEffect(() => {
+    if (focusQuestionId) window.setTimeout(() => irA(focusQuestionId), 150);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusQuestionId]);
+
+  /** La siguiente pendiente por debajo de la posición actual; si no hay, la primera. */
+  const irALaSiguiente = () => {
+    const visibles = pendientes.map((q) => document.getElementById(`pregunta-${q.id}`)).filter((el): el is HTMLElement => Boolean(el));
+    if (!visibles.length) return;
+    const siguiente = visibles.find((el) => el.getBoundingClientRect().top > 140) ?? visibles[0];
+    irA(siguiente.id.replace('pregunta-', ''));
+  };
+
+  /** Campos de texto opcionales que acompañan a algunas preguntas (no cuentan como pendientes). */
+  const extras: Record<string, React.ReactNode> = {
+    annexIIIArea: inAnnexArea ? (
+      <TextField
+        label="Describe el uso concreto en ese ámbito"
+        value={answers.annexIIIUseDescription}
+        onChange={(v) => setText('annexIIIUseDescription', v)}
+        placeholder="Por ejemplo: ordena las solicitudes según los méritos alegados"
+      />
+    ) : null,
+    humanOversightLevel: (
+      <TextField label="¿Quién supervisa? (rol)" value={answers.supervisionRole} onChange={(v) => setText('supervisionRole', v)} placeholder="Por ejemplo: técnico de la unidad tramitadora" />
+    ),
+    directHumanIntervention: (
+      <>
+        <TextField
+          label="Describe cómo funciona realmente el procedimiento"
+          help="Quién interviene, en qué momento y con qué capacidad de modificar o descartar el resultado. Sin esta descripción el deslinde del Art. 41 queda pendiente."
+          value={answers.procedureDescription}
+          onChange={(v) => setText('procedureDescription', v)}
+          multiline
+        />
+        <TextField label="Norma que regula el procedimiento o la competencia" value={answers.publicCompetenceNorm} onChange={(v) => setText('publicCompetenceNorm', v)} placeholder="Por ejemplo: bases de la convocatoria, Ley 39/2015" />
+      </>
+    ),
+    preventsRightsOrService: tratarDatos ? (
+      <TextField label="Actividad del Registro de Actividades de Tratamiento" value={answers.ratActivityName} onChange={(v) => setText('ratActivityName', v)} help="Indicar el nombre no acredita la inscripción: debe verificarla el DPD." />
+    ) : null,
+    auditLogsEnabled:
+      answers.auditLogsEnabled === 'si' ? (
+        <div className="form-group">
+          <label className="form-label">Meses de conservación del registro</label>
+          <input type="number" min={0} value={answers.logRetentionMonths} onChange={(e) => setText('logRetentionMonths', Number(e.target.value) || 0)} />
+        </div>
+      ) : null,
+  };
+
+  const bloques: InterviewBlock[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+  const renderBloque = (bloque: InterviewBlock) => {
+    const preguntas = questionsOfBlock(bloque).filter((q) => q.visible(answers));
+    const pendientesBloque = preguntas.filter((q) => isPending(answers, q.id)).length;
+    if (preguntas.length === 0) return null;
+    if (soloPendientes && pendientesBloque === 0) return null;
+    const mostradas = soloPendientes ? preguntas.filter((q) => isPending(answers, q.id)) : preguntas;
+
+    const campo = (id: string) => {
+      const q = mostradas.find((x) => x.id === id)!;
+      return (
+        <React.Fragment key={q.id}>
+          <QuestionField question={q} answers={answers} onSet={onSet} hint={hintFor(q.id)} highlight={resaltada === q.id} />
+          {!soloPendientes && extras[q.id]}
+        </React.Fragment>
+      );
+    };
+    const ens = mostradas.filter((q) => q.id.startsWith('ensImpact.'));
+    const resto = mostradas.filter((q) => !q.id.startsWith('ensImpact.'));
+
+    return (
+      <Section key={bloque} bloque={bloque} pendientes={pendientesBloque}>
+        {bloque === 'B' && !soloPendientes && (
+          <button
+            type="button"
+            className="btn-secondary"
+            style={{ marginBottom: '1rem', fontSize: '0.8125rem' }}
+            onClick={() => onChange({ ...answers, prohibitedPractices: Object.fromEntries(PROHIBITED_SYSTEMS_CATALOG.map((p) => [p.id, 'no' as TriState])) })}
+          >
+            He revisado todas y declaro que no concurre ninguna
+          </button>
+        )}
+        {ens.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 1.5rem' }}>
+            {ens.map((q) => campo(q.id))}
+          </div>
+        )}
+        {resto.map((q) => campo(q.id))}
+      </Section>
+    );
+  };
 
   return (
     <div className="animate-fade-in" style={{ width: '100%' }}>
@@ -172,10 +224,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
         </h2>
         <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
           Las respuestas son declaraciones del promotor y determinan la clasificación preliminar según el Reglamento (UE) 2024/1689 (modificado por el Reglamento (UE) 2026/1744), el RGPD, el ENS y la Ley 40/2015.
-          Contesta «No lo sé» cuando no conste: el resultado será <strong>«requiere revisión»</strong> en lugar de presumir que no hay riesgo.
-        </p>
-        <p style={{ fontSize: '0.8125rem', fontWeight: 700, marginTop: '0.5rem', color: pending ? '#92400e' : '#166534' }}>
-          {pending ? pending === 1 ? 'Queda 1 respuesta sin contestar.' : `Quedan ${pending} respuestas sin contestar.` : 'Todas las preguntas están contestadas.'}
+          Pulsa «¿Qué significa?» en cualquier pregunta para ver una explicación sencilla con ejemplos. Contesta «No lo sé» cuando no conste: el resultado será <strong>«requiere revisión»</strong> en lugar de presumir que no hay riesgo.
         </p>
         {hasDiagnostic && (
           <p style={{ fontSize: '0.8125rem', marginTop: '0.35rem', color: '#1e3a8a' }}>
@@ -184,15 +233,46 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
         )}
       </div>
 
-      <Section icon={<Cpu style={{ width: 18, height: 18 }} />} title="A. ¿Es un sistema de IA? (Art. 3.1 RIA)">
-        <TriField
-          label="¿Infiere el sistema, a partir de la información de entrada, la manera de generar resultados (predicciones, contenidos, recomendaciones o decisiones)?"
-          help="Un sistema basado únicamente en reglas fijas definidas por personas (calcular plazos, validar formularios) no infiere. Un modelo de lenguaje o de aprendizaje automático sí."
-          value={answers.infersOutputs}
-          onChange={(v) => set('infersOutputs', v)}
-          hint={aiHint?.evidence}
-        />
-      </Section>
+      {/* Barra fija de respuestas pendientes */}
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 5,
+          background: pendientes.length ? '#fffbeb' : '#f0fdf4',
+          border: `1px solid ${pendientes.length ? '#fcd34d' : '#bbf7d0'}`,
+          borderRadius: 'var(--radius-md)',
+          padding: '0.55rem 0.9rem',
+          marginBottom: '1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.75rem',
+          flexWrap: 'wrap',
+          fontSize: '0.8125rem',
+          boxShadow: '0 2px 6px rgba(15,23,42,0.06)',
+        }}
+      >
+        <strong style={{ color: pendientes.length ? '#92400e' : '#166534' }}>
+          {pendientes.length === 0
+            ? 'Todas las preguntas están contestadas.'
+            : pendientes.length === 1
+              ? 'Queda 1 respuesta sin contestar.'
+              : `Quedan ${pendientes.length} respuestas sin contestar.`}
+        </strong>
+        {pendientes.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button type="button" className="btn-secondary" style={{ fontSize: '0.78rem', padding: '0.3rem 0.7rem' }} onClick={irALaSiguiente}>
+              <ArrowDownCircle style={{ width: 14, height: 14 }} />
+              <span>Ir a la siguiente</span>
+            </button>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}>
+              <input type="checkbox" checked={soloPendientes} onChange={(e) => setSoloPendientes(e.target.checked)} />
+              <span>Mostrar solo las pendientes</span>
+            </label>
+          </div>
+        )}
+      </div>
 
       {!esIA && (
         <div className="card" style={{ background: '#f8fafc', fontSize: '0.875rem', color: '#475569' }}>
@@ -200,193 +280,13 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
         </div>
       )}
 
-      {esIA && (<>
-      <Section
-        icon={<Ban style={{ width: 18, height: 18 }} />}
-        title="B. Prácticas prohibidas (Art. 5 RIA)"
-        subtitle="Indica si el sistema incurre en cada práctica. Si no consta, la clasificación no podrá concluirse."
-      >
-        <button
-          type="button"
-          className="btn-secondary"
-          style={{ marginBottom: '1rem', fontSize: '0.8125rem' }}
-          onClick={() => set('prohibitedPractices', Object.fromEntries(PROHIBITED_SYSTEMS_CATALOG.map((p) => [p.id, 'no' as TriState])))}
-        >
-          He revisado todas y declaro que no concurre ninguna
-        </button>
-        {PROHIBITED_SYSTEMS_CATALOG.map((p) => (
-          <TriField
-            key={p.id}
-            label={`${p.legalArticle}: ${p.title}${p.applicableFrom ? ` (aplicable desde el ${new Date(p.applicableFrom).toLocaleDateString('es-ES')})` : ''}`}
-            value={answers.prohibitedPractices[p.id] ?? 'desconocido'}
-            onChange={(v) => set('prohibitedPractices', { ...answers.prohibitedPractices, [p.id]: v })}
-            hint={pHints.find((h) => h.target === p.id)?.evidence}
-          />
-        ))}
-      </Section>
+      {bloques.map(renderBloque)}
 
-      <Section icon={<Scale style={{ width: 18, height: 18 }} />} title="C. Alto riesgo (Art. 6 y Anexo III RIA)">
-        <SelectField
-          label="¿En qué ámbito del Anexo III se utiliza el sistema?"
-          help={aHints.length ? `Indicios en la documentación: ${aHints.map((h) => h.target.replace('annexIII:', '')).join(', ')}. Solo orientan la respuesta.` : undefined}
-          value={answers.annexIIIArea}
-          options={AREA_OPTIONS}
-          onChange={(v) => set('annexIIIArea', v)}
-        />
-        {inAnnexArea && (
-          <TextField
-            label="Describe el uso concreto en ese ámbito"
-            value={answers.annexIIIUseDescription}
-            onChange={(v) => set('annexIIIUseDescription', v)}
-            placeholder="Por ejemplo: ordena las solicitudes según los méritos alegados"
-          />
-        )}
-        {answers.annexIIIArea === 'servicios_esenciales' && (
-          <TriField
-            label="¿Evalúa la admisibilidad de personas físicas para servicios y prestaciones esenciales de asistencia pública (o los concede, reduce, retira o reclama)?"
-            help="Punto 5.a) del Anexo III. No toda ayuda o subvención es una prestación esencial de asistencia pública, y las ayudas a personas jurídicas no están en este punto."
-            value={answers.essentialPublicAssistance}
-            onChange={(v) => set('essentialPublicAssistance', v)}
-          />
-        )}
-        <TriField
-          label="¿Elabora perfiles de personas físicas (evalúa aspectos personales como rendimiento, situación económica, fiabilidad o comportamiento)?"
-          help="Comprobar si una solicitud incluye los documentos exigidos no es, por sí solo, perfilar. Puntuar o valorar la idoneidad de una persona sí lo es. En el ámbito del Anexo III, el perfilado impide la excepción del Art. 6.3."
-          value={answers.performsProfiling}
-          onChange={(v) => set('performsProfiling', v)}
-        />
-        {inAnnexArea && answers.performsProfiling === 'no' && (
-          <>
-            <SelectField
-              label="¿Qué condición del Art. 6.3 concurre? (basta una)"
-              value={answers.article63Condition}
-              options={CONDITION_OPTIONS}
-              onChange={(v) => set('article63Condition', v)}
-            />
-            {answers.article63Condition !== 'ninguna' && answers.article63Condition !== 'desconocido' && (
-              <>
-                <TextField
-                  label="Hechos que justifican esa condición"
-                  help="Se incorporan literalmente a la justificación. El proveedor debe documentar la evaluación antes de la puesta en servicio (Art. 6.4)."
-                  value={answers.article63Facts}
-                  onChange={(v) => set('article63Facts', v)}
-                  multiline
-                />
-                <TriField
-                  label="¿Influye sustancialmente el sistema en el resultado de la toma de decisiones?"
-                  value={answers.materialInfluence}
-                  onChange={(v) => set('materialInfluence', v)}
-                />
-              </>
-            )}
-          </>
-        )}
-      </Section>
-
-      <Section icon={<Eye style={{ width: 18, height: 18 }} />} title="D. Transparencia (Art. 50 RIA)">
-        <TriField label="¿Interactúa directamente con personas físicas (por ejemplo, un asistente conversacional)?" value={answers.interactsWithPersons} onChange={(v) => set('interactsWithPersons', v)} />
-        <TriField label="¿Genera contenido sintético (texto, imagen, audio o vídeo)?" value={answers.generatesSyntheticContent} onChange={(v) => set('generatesSyntheticContent', v)} />
-      </Section>
-
-      <Section icon={<Building2 style={{ width: 18, height: 18 }} />} title="E. Papel de la entidad (Art. 3, puntos 3 y 4, RIA)" subtitle="De este papel dependen las obligaciones: el proveedor responde del sistema; el responsable del despliegue, de su uso.">
-        <SelectField label="¿Qué papel tiene la entidad respecto del sistema?" value={answers.institutionalRole} options={ROLE_OPTIONS} onChange={(v) => set('institutionalRole', v)} />
-      </Section>
-      </>)}
-
-      <Section icon={<UserCheck style={{ width: 18, height: 18 }} />} title="F. Supervisión humana y actuación administrativa automatizada (Art. 41 Ley 40/2015)">
-        <SelectField
-          label="¿Cuándo revisa una persona los resultados?"
-          value={answers.humanOversightLevel}
-          options={[
-            { value: 'desconocido', label: 'No lo sé' },
-            { value: 'pre_execution', label: 'Antes de que produzcan efectos (revisión previa)' },
-            { value: 'post_execution', label: 'Después de que produzcan efectos (revisión posterior)' },
-            { value: 'fully_automated', label: 'Nunca: el sistema actúa sin intervención humana' },
-          ]}
-          onChange={(v) => set('humanOversightLevel', v)}
-        />
-        <TextField label="¿Quién supervisa? (rol)" value={answers.supervisionRole} onChange={(v) => set('supervisionRole', v)} placeholder="Por ejemplo: técnico de la unidad tramitadora" />
-        <TriField
-          label="¿Interviene de forma directa un empleado público en cada acto o actuación?"
-          help="Si no interviene, es actuación administrativa automatizada (Art. 41): deben establecerse previamente los órganos competentes y el responsable a efectos de impugnación."
-          value={answers.directHumanIntervention}
-          onChange={(v) => set('directHumanIntervention', v)}
-        />
-        <TextField
-          label="Describe cómo funciona realmente el procedimiento"
-          help="Quién interviene, en qué momento y con qué capacidad de modificar o descartar el resultado. Sin esta descripción el deslinde del Art. 41 queda pendiente."
-          value={answers.procedureDescription}
-          onChange={(v) => set('procedureDescription', v)}
-          multiline
-        />
-        <TextField label="Norma que regula el procedimiento o la competencia" value={answers.publicCompetenceNorm} onChange={(v) => set('publicCompetenceNorm', v)} placeholder="Por ejemplo: bases de la convocatoria, Ley 39/2015" />
-      </Section>
-
-      <Section icon={<Lock style={{ width: 18, height: 18 }} />} title="G. Protección de datos (RGPD)">
-        <TriField label="¿Trata datos personales?" value={answers.processesPersonalData} onChange={(v) => set('processesPersonalData', v)} />
-        {personalRelevant && (
-          <>
-            <SelectField
-              label="Base jurídica del tratamiento (Art. 6.1 RGPD)"
-              value={answers.legalBasis}
-              options={[
-                { value: 'desconocida', label: 'No lo sé' },
-                { value: 'art_6_1_e', label: 'Art. 6.1.e): misión de interés público o ejercicio de poderes públicos' },
-                { value: 'art_6_1_c', label: 'Art. 6.1.c): cumplimiento de una obligación legal' },
-                { value: 'otra', label: 'Otra base del Art. 6.1' },
-              ]}
-              onChange={(v) => set('legalBasis', v)}
-            />
-            <TriField label="¿Trata categorías especiales de datos (Art. 9 RGPD: salud, origen étnico, opiniones políticas, afiliación sindical, etc.)?" value={answers.processesSpecialCategoryData} onChange={(v) => set('processesSpecialCategoryData', v)} />
-            <TriField label="¿Trata datos relativos a condenas e infracciones penales (Art. 10 RGPD)?" value={answers.processesCriminalData} onChange={(v) => set('processesCriminalData', v)} />
-            <TriField label="¿Usa datos biométricos para identificar de manera única a una persona?" value={answers.biometricIdentification} onChange={(v) => set('biometricIdentification', v)} />
-            <TriField label="¿Trata datos genéticos?" value={answers.geneticData} onChange={(v) => set('geneticData', v)} />
-            <TriField label="¿Observa, monitoriza o controla a los interesados de forma sistemática?" value={answers.systematicMonitoring} onChange={(v) => set('systematicMonitoring', v)} />
-            <TriField label="¿Trata datos a gran escala?" value={answers.largeScale} onChange={(v) => set('largeScale', v)} />
-            <TriField label="¿Combina o enlaza datos de distintos tratamientos o responsables?" value={answers.datasetCombination} onChange={(v) => set('datasetCombination', v)} />
-            <TriField label="¿Afecta a personas vulnerables o en riesgo de exclusión social?" value={answers.vulnerableSubjects} onChange={(v) => set('vulnerableSubjects', v)} />
-            <TriField label="¿Puede impedir a los interesados ejercer un derecho o acceder a un servicio o contrato?" value={answers.preventsRightsOrService} onChange={(v) => set('preventsRightsOrService', v)} />
-            <TextField label="Actividad del Registro de Actividades de Tratamiento" value={answers.ratActivityName} onChange={(v) => set('ratActivityName', v)} help="Indicar el nombre no acredita la inscripción: debe verificarla el DPD." />
-          </>
-        )}
-        <SelectField
-          label="¿Dónde se ejecuta el modelo?"
-          value={answers.hostingModel}
-          options={[
-            { value: 'desconocido', label: 'No lo sé' },
-            { value: 'local_on_premise', label: 'En servidores propios (Ollama, vLLM u otro modelo local)' },
-            { value: 'eu_cloud_dpa', label: 'En una nube de la Unión Europea con contrato de encargo del tratamiento' },
-            { value: 'us_hyperscaler', label: 'En una nube fuera del Espacio Económico Europeo' },
-          ]}
-          onChange={(v) => set('hostingModel', v)}
-        />
-      </Section>
-
-      <Section
-        icon={<ShieldCheck style={{ width: 18, height: 18 }} />}
-        title="H. Seguridad (ENS, Anexo I) y trazabilidad"
-        subtitle="Valora el perjuicio que causaría un incidente en cada dimensión. La categoría del sistema es la del nivel más alto."
-      >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0 1rem' }}>
-          {ENS_DIMENSIONS.map((d) => (
-            <SelectField
-              key={d}
-              label={`${ENS_DIMENSION_LABELS[d]} [${d}]`}
-              value={answers.ensImpact[d]}
-              options={ENS_LEVEL_OPTIONS}
-              onChange={(v) => set('ensImpact', { ...answers.ensImpact, [d]: v })}
-            />
-          ))}
+      {soloPendientes && pendientes.length === 0 && (
+        <div className="card" style={{ background: '#f0fdf4', color: '#166534', fontSize: '0.875rem' }}>
+          No queda ninguna pregunta sin contestar. Desmarca «Mostrar solo las pendientes» para ver la entrevista completa.
         </div>
-        <TriField label="¿Se registran las peticiones, respuestas y eventos (registro de actividad)?" value={answers.auditLogsEnabled} onChange={(v) => set('auditLogsEnabled', v)} />
-        {answers.auditLogsEnabled === 'si' && (
-          <div className="form-group">
-            <label className="form-label">Meses de conservación del registro</label>
-            <input type="number" min={0} value={answers.logRetentionMonths} onChange={(e) => set('logRetentionMonths', Number(e.target.value) || 0)} />
-          </div>
-        )}
-        <TriField label="¿Se fija la configuración del modelo (versión, temperatura) para que los resultados sean reproducibles?" value={answers.deterministicConfig} onChange={(v) => set('deterministicConfig', v)} />
-      </Section>
+      )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <button type="button" onClick={onBack} className="btn-secondary">

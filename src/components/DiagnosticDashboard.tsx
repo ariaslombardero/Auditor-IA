@@ -1,5 +1,7 @@
 import { describirAsistencia } from '../lib/proveedorEfectivo';
-import React from 'react';
+import React, { useState } from 'react';
+import { BLOCK_TITLES, pendingByPriority } from '../lib/interviewCatalog';
+import { QuestionField } from './QuestionField';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -13,7 +15,7 @@ import {
   Scale,
   BookOpen,
 } from 'lucide-react';
-import type { DiagnosticResult, AppIdioma, RoleViewMode, RequirementResult, HumanValidation, RequirementAssessment } from '../types';
+import type { DiagnosticResult, AppIdioma, RoleViewMode, RequirementResult, HumanValidation, RequirementAssessment, LegalEnrichmentAnswers } from '../types';
 import { RichDictamenView } from './RichDictamenView';
 import { computeExecutivePillars, computeExecutiveVerdict } from '../lib/dashboardPillars';
 import {
@@ -52,7 +54,55 @@ interface DiagnosticDashboardProps {
   onRevokeValidation?: (requirementId: string) => void;
   /** Vuelve a emitir el diagnóstico para regenerar el comentario de IA desfasado. */
   onRegenerateAi?: () => void;
+  /** Respuestas actuales, para contestar lo pendiente desde el panel. */
+  answers?: LegalEnrichmentAnswers;
+  onSetAnswer?: (id: string, value: string) => void;
+  /** Abre la entrevista desplazada a la pregunta indicada. */
+  onGoToQuestion?: (id: string) => void;
 }
+
+/** Panel «Lo que falta»: preguntas sin contestar, contestables aquí mismo. */
+const PendingAnswersPanel: React.FC<{
+  answers: LegalEnrichmentAnswers;
+  onSetAnswer: (id: string, value: string) => void;
+  onGoToQuestion?: (id: string) => void;
+}> = ({ answers, onSetAnswer, onGoToQuestion }) => {
+  const [verTodas, setVerTodas] = useState(false);
+  const lista = pendingByPriority(answers);
+  if (lista.length === 0) return null;
+  const bloquean = lista.filter((q) => q.bloqueaClasificacion);
+  const mostradas = verTodas ? lista : lista.slice(0, 5);
+  return (
+    <div className="card" style={{ border: '1px solid #fcd34d', background: '#fffdf5', marginBottom: '1.5rem' }}>
+      <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#92400e', marginBottom: '0.25rem' }}>
+        Lo que falta por contestar ({lista.length})
+      </h3>
+      <p style={{ fontSize: '0.8rem', color: '#475569', marginBottom: '0.75rem' }}>
+        {bloquean.length > 0
+          ? `${bloquean.length} de estas preguntas pueden impedir que se concluya la clasificación y aparecen primero. `
+          : ''}
+        Puedes contestarlas aquí: el diagnóstico se actualiza al momento. Pulsa «¿Qué significa?» si tienes dudas.
+      </p>
+      {mostradas.map((q) => (
+        <QuestionField key={q.id} question={q} answers={answers} onSet={onSetAnswer} compact>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.35rem', fontSize: '0.72rem', color: '#64748b' }}>
+            <span>{BLOCK_TITLES[q.bloque]}{q.bloqueaClasificacion ? ' · puede impedir concluir la clasificación' : ''}</span>
+            {onGoToQuestion && (
+              <button type="button" onClick={() => onGoToQuestion(q.id)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--color-primary)', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600 }}>
+                Ver en la entrevista
+              </button>
+            )}
+          </div>
+        </QuestionField>
+      ))}
+      {lista.length > 5 && (
+        <button type="button" className="btn-secondary" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }} onClick={() => setVerTodas(!verTodas)}>
+          {verTodas ? 'Ver solo las 5 primeras' : `Ver las ${lista.length} preguntas pendientes`}
+        </button>
+      )}
+    </div>
+  );
+};
 
 /** Registro y retirada de la validación humana documentada de un requisito. */
 const ValidationControl: React.FC<{
@@ -142,6 +192,9 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
   onValidateRequirement,
   onRevokeValidation,
   onRegenerateAi,
+  answers,
+  onSetAnswer,
+  onGoToQuestion,
 }) => {
   const respuestasPendientes = diagnostic.pendingAnswers ?? 0;
   const requisitosPorValidar = unaccreditedRequirements(diagnostic.requirements).length;
@@ -413,8 +466,8 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
               : 'Todas las preguntas de la entrevista están contestadas.'}
           </p>
           {respuestasPendientes > 0 && (
-            <button type="button" className="btn-secondary" style={{ fontSize: '0.8rem' }} onClick={onBackToInterview}>
-              Ir a contestarlas
+            <button type="button" className="btn-secondary" style={{ fontSize: '0.8rem' }} onClick={() => (onGoToQuestion && answers ? onGoToQuestion(pendingByPriority(answers)[0]?.id ?? '') : onBackToInterview())}>
+              Ir a la entrevista (primera pendiente)
             </button>
           )}
         </div>
@@ -427,6 +480,8 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
           </p>
         </div>
       </div>
+
+      {answers && onSetAnswer && <PendingAnswersPanel answers={answers} onSetAnswer={onSetAnswer} onGoToQuestion={onGoToQuestion} />}
 
       {/* Risk Summary Header Card */}
       <div className="card" style={{
@@ -668,6 +723,16 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
                     </button>
                   )}
                 </div>
+                {req.resultado === 'pendiente' && onGoToQuestion && (
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ fontSize: '0.75rem', marginTop: '0.35rem', padding: '0.2rem 0.6rem' }}
+                    onClick={() => onGoToQuestion(`prohibitedPractices.${req.id.replace('RIA-ART-5-', '')}`)}
+                  >
+                    Contestar en la entrevista
+                  </button>
+                )}
                 <ValidationControl
                   requirement={req}
                   validation={validations[req.id]}

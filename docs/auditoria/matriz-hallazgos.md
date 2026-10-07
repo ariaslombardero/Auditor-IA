@@ -11,6 +11,7 @@
 > **Fase 4 · entregas 4.3 y 4.4** (07/10/2026): **149 pruebas en verde**. Comprobación de principio a fin en el navegador (entrevista contestada desde la interfaz; panel, Markdown y manifiesto concordantes en clasificación, alerta y huella). Formato documental cotejado con la Ley 39/2015 (Arts. 26 y 70), la NTI de Documento Electrónico y la NTI de Catálogo de estándares.
 > **Cierre de la Fase 4** (07/10/2026): **151 pruebas en verde**. Documentación reescrita (README, `agents.md`), lista de revisión humana (`docs/revision-humana.md`) y condiciones del piloto (`docs/piloto.md`). Pendiente fuera del código: decisión expresa de los responsables, designación de participantes, validación del formato documental y cotejo de las fuentes marcadas como parciales o no accesibles.
 > **Fase 5 · entrega 5.1** (08/10/2026): **164 pruebas en verde**. Coherencia del estado (EST-01 a EST-04): diagnóstico recalculado con cada cambio, contador de respuestas pendientes basado en el catálogo de preguntas, separación entre respuestas pendientes y requisitos por validar, y comentario de IA desfasado. La prueba DOC-12 se adapta a la nueva expresión «por validar».
+> **Fase 5 · entrega 5.2** (08/10/2026): **171 pruebas en verde**. Entrevista generada desde el catálogo con ayuda en lenguaje sencillo y navegación a lo pendiente (UX-01, UX-02).
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -135,6 +136,8 @@ Origen **U** = detectado al usar la aplicación (responsable del proyecto).
 | EST-02 | El contador de respuestas pendientes contaba preguntas ocultas (influencia sustancial, base jurídica, datos sensibles) y no contaba el ENS | U | `pendingQuestions` del catálogo único: solo preguntas visibles, incluidas las dimensiones del ENS; los bloques B a E se ocultan si no es un sistema de IA | 5 | 🟢 |
 | EST-03 | «Sin acreditar» mezclaba lo no contestado con lo contestado y no validado: nunca bajaba al contestar | U | Panel y documentos separan «respuestas pendientes» (`pendingAnswers`) de «requisitos por validar», con explicación; veredicto «PENDIENTE DE VALIDACIÓN HUMANA» o «FALTAN RESPUESTAS Y VALIDACIÓN HUMANA» | 5 | 🟢 |
 | EST-04 | El comentario de IA y su aviso de discrepancia no se marcaban como desfasados al cambiar las respuestas | C (en Fase 5) | Estado `desfasada` ligado a la huella de las entradas; no se muestra ni se exporta; botón para regenerarlo | 5 | 🟢 |
+| UX-01 | No había forma de localizar lo pendiente: el contador no decía dónde estaba, y desde el diagnóstico solo había «Modificar respuestas» | U | Preguntas pendientes resaltadas, recuento por bloque, barra fija con «Ir a la siguiente» y «Mostrar solo las pendientes»; panel «Lo que falta» en el diagnóstico para contestar allí mismo; «Ver en la entrevista» y «Contestar en la entrevista» llevan a la pregunta resaltada | 5 | 🟢 |
+| UX-02 | Las preguntas exigían conocer la normativa, sin explicación sencilla ni ejemplos | U | «¿Qué significa?» en todas las preguntas, con explicación, ejemplo de «sí», ejemplo de «no» y norma (`interviewHelp.ts`); funciona sin IA. RGPD cotejado (Arts. 4.1, 4.4, 6.1, 9.1, 10 y capítulo V) para estos textos | 5 | 🟢 |
 
 ## Correcciones a las auditorías previas registradas en esta matriz
 

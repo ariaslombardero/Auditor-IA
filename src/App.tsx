@@ -29,6 +29,7 @@ import { registroAsistencia, restriccionEnvio } from './lib/proveedorEfectivo';
 import { formatApiError } from './lib/apiService';
 import { getStoredAudits, saveAuditRecord, type SaveOutcome } from './lib/auditHistoryService';
 import { currentAiComment, recomputeAudit } from './lib/auditState';
+import { setAnswerValue } from './lib/interviewCatalog';
 import type {
   AppIdioma,
   FullAuditState,
@@ -47,6 +48,8 @@ export const App: React.FC = () => {
   const [showLiveLegislation, setShowLiveLegislation] = useState(false);
   const [liveNormTarget, setLiveNormTarget] = useState<{ normId: string; article: string }>({ normId: 'AI-ACT', article: '14' });
   const [currentStep, setCurrentStep] = useState<Step>('ingesta');
+  // Pregunta a la que debe desplazarse la entrevista al abrirla desde el diagnóstico.
+  const [focusQuestionId, setFocusQuestionId] = useState<string | undefined>(undefined);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [llmCritique, setLlmCritique] = useState<string | undefined>(undefined);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -324,6 +327,7 @@ export const App: React.FC = () => {
             ingest={state.ingest}
             onChange={(newAnswers) => updateInputs({ answers: newAnswers })}
             hasDiagnostic={Boolean(state.diagnostic)}
+            focusQuestionId={focusQuestionId}
             onBack={() => setCurrentStep('ingesta')}
             onAnalyze={handleStartAnalysis}
             isAnalyzing={isAnalyzing}
@@ -340,6 +344,13 @@ export const App: React.FC = () => {
             appName={state.ingest.appName}
             llmCritique={aiComment}
             onRegenerateAi={handleStartAnalysis}
+            answers={state.answers}
+            onSetAnswer={(id, value) => updateInputs({ answers: setAnswerValue(state.answers, id, value) })}
+            onGoToQuestion={(id) => {
+              setFocusQuestionId(undefined);
+              window.setTimeout(() => setFocusQuestionId(id), 0);
+              setCurrentStep('entrevista');
+            }}
             onGoToCodeKit={() => setCurrentStep('codigo')}
             onOpenDossier={() => setCurrentStep('expediente')}
             onBackToInterview={() => setCurrentStep('entrevista')}

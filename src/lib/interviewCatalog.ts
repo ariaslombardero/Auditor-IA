@@ -2,6 +2,7 @@ import type { EnsDimension, LegalEnrichmentAnswers } from '../types';
 import { PROHIBITED_SYSTEMS_CATALOG } from './legalKnowledgeBase';
 import { ENS_DIMENSIONS, ENS_DIMENSION_LABELS } from './answersModel';
 import { ANNEX_III_LABELS, ARTICLE_63_CONDITIONS } from './engine/evaluators';
+import { INTERVIEW_HELP } from './interviewHelp';
 
 /**
  * Catálogo único de preguntas de la entrevista. Lo usan la entrevista, el contador de
@@ -17,7 +18,7 @@ export interface QuestionOption {
   label: string;
 }
 
-/** Explicación en lenguaje sencillo, con ejemplos (se completa en la entrega 5.2). */
+/** Explicación en lenguaje sencillo, con ejemplos (textos en interviewHelp.ts). */
 export interface QuestionHelp {
   queSignifica: string;
   ejemploSi?: string;
@@ -78,7 +79,7 @@ const tri = (
   ...extra,
 });
 
-export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
+const BASE_QUESTIONS: InterviewQuestion[] = [
   tri('infersOutputs', 'A', '¿Infiere el sistema, a partir de la información de entrada, la manera de generar resultados (predicciones, contenidos, recomendaciones o decisiones)?', siempre, { bloqueaClasificacion: true }),
 
   ...PROHIBITED_SYSTEMS_CATALOG.map((p) =>
@@ -251,6 +252,14 @@ export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
   tri('deterministicConfig', 'H', '¿Se fija la configuración del modelo (versión, temperatura) para que los resultados sean reproducibles?', siempre),
 ];
 
+/** Preguntas en el orden de la entrevista, con su ayuda en lenguaje sencillo. */
+export const INTERVIEW_QUESTIONS: InterviewQuestion[] = BASE_QUESTIONS.map((q) => ({ ...q, ayuda: INTERVIEW_HELP[q.id] }));
+
+/** Preguntas de un bloque, en orden. */
+export function questionsOfBlock(bloque: InterviewBlock): InterviewQuestion[] {
+  return INTERVIEW_QUESTIONS.filter((q) => q.bloque === bloque);
+}
+
 const POR_ID = new Map(INTERVIEW_QUESTIONS.map((q) => [q.id, q]));
 
 export function questionById(id: string): InterviewQuestion | undefined {
@@ -291,4 +300,10 @@ export function pendingQuestions(a: LegalEnrichmentAnswers): InterviewQuestion[]
 export function isPending(a: LegalEnrichmentAnswers, id: string): boolean {
   const q = questionById(id);
   return Boolean(q && q.visible(a) && sinContestar(a, q));
+}
+
+/** Pendientes ordenadas por prioridad: primero las que impiden concluir la clasificación. */
+export function pendingByPriority(a: LegalEnrichmentAnswers): InterviewQuestion[] {
+  const lista = pendingQuestions(a);
+  return [...lista.filter((q) => q.bloqueaClasificacion), ...lista.filter((q) => !q.bloqueaClasificacion)];
 }
