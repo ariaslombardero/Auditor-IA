@@ -43,6 +43,9 @@ Antes de dar un cambio por terminado: `npm test` y `npm run build` sin errores.
 5. **Cada precepto citado debe estar en el [registro de fuentes](docs/auditoria/registro-fuentes.md),** cotejado en BOE, EUR-Lex, AEPD u OWASP. No se inventan artículos.
 6. **Castellano y gallego se actualizan juntos** (`src/lib/i18n.ts` y los textos `isGl` de los exportadores).
 7. **Solo datos sintéticos y claves ficticias** en pruebas y ejemplos.
+8. **La IA propone; la persona decide; el motor clasifica.** Las sugerencias de respuesta nunca se aplican solas. La cita que da el modelo la comprueba la app; sin cita comprobada, la sugerencia es «inferida» y no entra en la aceptación en bloque. Un «no» sobre prácticas prohibidas, datos sensibles o perfilado es siempre inferido. En las decisiones de la entidad (papel, base jurídica, ENS) la IA solo orienta.
+9. **El diagnóstico corresponde siempre a las entradas actuales.** Tras el primer diagnóstico, cualquier cambio lo recalcula (`recomputeAudit`). El comentario de IA queda ligado a la huella de sus entradas y, si cambian, se marca como desfasado y no se exporta.
+10. **Respuestas pendientes y requisitos por validar son cosas distintas.** Las primeras se cuentan con el catálogo (`pendingQuestions`, solo preguntas visibles). Los segundos solo se reducen con una validación humana.
 
 **Prohibido reintroducir** (son errores corregidos):
 - medidas «IA-01…IA-12» atribuidas a la Guía CCN-STIC 884D, que no se ha podido cotejar;
@@ -59,7 +62,9 @@ React 19 + TypeScript + Vite 8, sin servidor propio. Mapa de módulos:
 | Área | Ficheros |
 | :--- | :--- |
 | Motor de clasificación | `src/lib/engine/` (`evaluators.ts`, `obligations.ts`, `index.ts`); `auditEngine.ts` reexporta y añade el comentario opcional del modelo |
-| Entrevista | `src/lib/answersModel.ts` (respuestas `si / no / desconocido`, migración v1→v2), `src/components/LegalInterviewView.tsx` |
+| Entrevista | `src/lib/interviewCatalog.ts` (catálogo único de preguntas: visibilidad, prioridad, recuento de pendientes), `interviewHelp.ts` (ayuda en lenguaje sencillo con ejemplos), `answersModel.ts` (respuestas `si / no / desconocido`, migración v1→v2), `components/LegalInterviewView.tsx` y `components/QuestionField.tsx` |
+| Sugerencias de respuesta | `interviewSuggestions.ts` (IA por bloques, indicios sin IA, comprobación de citas, aceptación), `answerProvenance.ts` (origen de las respuestas en los documentos), `components/SuggestionAssist.tsx` |
+| Coherencia del estado | `auditState.ts` (`recomputeAudit`, comentario de IA vigente) |
 | Requisitos y validación humana | `assessmentModel.ts`, `validations.ts`, `dashboardPillars.ts` |
 | Calendario normativo | `regulatoryCalendar.ts` (Reglamento 2026/1744: Art. 5.1 b bis y b ter desde el 2/12/2026; Anexo III desde el 2/12/2027; Anexo I desde el 2/08/2028) |
 | Indicios documentales | `documentHints.ts` (normalización de tildes, negaciones, servicios en la nube citados) |

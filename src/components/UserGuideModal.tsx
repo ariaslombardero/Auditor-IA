@@ -284,11 +284,11 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({ isOpen, onClose,
                   [
                     tx('2. Entrevista', '2. Entrevista'),
                     tx('Contesta ocho bloques (A a H): si es IA, prácticas prohibidas, alto riesgo, transparencia, papel de la entidad, supervisión humana, datos personales y seguridad. Casi todo es «Sí / No / No lo sé».', 'Contesta oito bloques (A a H): se é IA, prácticas prohibidas, alto risco, transparencia, papel da entidade, supervisión humana, datos persoais e seguridade. Case todo é «Sí / No / No lo sé» (a entrevista móstrase en castelán).'),
-                    tx('Un contador de respuestas pendientes.', 'Un contador de respostas pendentes.'),
+                    tx('«¿Qué significa?» en cada pregunta, preguntas pendientes resaltadas con «Ir a la siguiente», y sugerencias de respuesta que solo se aplican si las aceptas.', '«¿Qué significa?» en cada pregunta, preguntas pendentes resaltadas con «Ir á seguinte», e suxestións de resposta que só se aplican se as aceptas.'),
                   ],
                   [
                     tx('3. Diagnóstico', '3. Diagnóstico'),
-                    tx('Lee la clasificación, su traza y los requisitos; registra validaciones con su evidencia.', 'Le a clasificación, a súa traza e os requisitos; rexistra validacións coa súa evidencia.'),
+                    tx('Lee la clasificación y su traza, contesta lo que falte en el panel «Lo que falta por contestar» y registra validaciones con su evidencia. Se actualiza solo al cambiar respuestas.', 'Le a clasificación e a súa traza, contesta o que falte no panel «Lo que falta por contestar» e rexistra validacións coa súa evidencia. Actualízase só ao cambiar respostas.'),
                     tx('Clasificación razonada, cuadro de mando de 4 pilares, alertas y recomendaciones.', 'Clasificación razoada, cadro de mando de 4 piares, alertas e recomendacións.'),
                   ],
                   [
@@ -341,6 +341,15 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({ isOpen, onClose,
                 <li><strong>{tx('Alertas para la revisión:', 'Alertas para a revisión:')}</strong> {tx('avisos que no cambian la clasificación pero deben atenderse.', 'avisos que non cambian a clasificación pero deben atenderse.')}</li>
               </ul>
 
+              <h3 style={titulo}>{tx('Respuestas pendientes y requisitos por validar', 'Respostas pendentes e requisitos por validar')}</h3>
+              <Tabla
+                cabecera={[tx('Recuadro', 'Recadro'), tx('Qué cuenta', 'Que conta'), tx('Cómo se reduce', 'Como se reduce')]}
+                filas={[
+                  [tx('Respuestas pendientes', 'Respostas pendentes'), tx('Preguntas en «No lo sé» o sin contestar.', 'Preguntas en «No lo sé» ou sen contestar.'), tx('Contestándolas, en la entrevista o en el panel «Lo que falta por contestar».', 'Contestándoas, na entrevista ou no panel «Lo que falta por contestar».')],
+                  [tx('Requisitos por validar', 'Requisitos por validar'), tx('Obligaciones contestadas que nadie ha validado todavía.', 'Obrigas contestadas que ninguén validou aínda.'), tx('Solo con «Registrar validación humana». Contestar no los reduce: es normal.', 'Só con «Registrar validación humana». Contestar non os reduce: é normal.')],
+                ]}
+              />
+
               <h3 style={titulo}>{tx('Estado de los requisitos', 'Estado dos requisitos')}</h3>
               <Tabla
                 cabecera={[tx('Estado', 'Estado'), tx('Significado', 'Significado')]}
@@ -372,10 +381,19 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({ isOpen, onClose,
                   [tx('Modelo local', 'Modelo local'), tx('Instale Ollama, descargue un modelo (por ejemplo, qwen2.5:14b) y pulse «Detectar modelos del servidor local». Es la opción recomendada para uso institucional.', 'Instale Ollama, descargue un modelo (por exemplo, qwen2.5:14b) e prema «Detectar modelos do servidor local». É a opción recomendada para uso institucional.')],
                 ]}
               />
+              <h3 style={titulo}>{tx('Sugerencias de respuesta', 'Suxestións de resposta')}</h3>
+              <p style={parrafo}>
+                {tx(
+                  'Si no sabes una respuesta, pulsa «Sugerir respuesta con IA» (o «Buscar indicios en la documentación» si no hay proveedor). La sugerencia aparece bajo la pregunta y nunca se aplica sola. La app comprueba la cita: «con cita comprobada» se puede aceptar en bloque; «inferida» (sin respaldo, o cualquier «no» sobre prácticas prohibidas, datos sensibles o perfilado) solo una a una. En las decisiones de la entidad la IA solo explica. El informe indica qué respuestas proceden de una sugerencia aceptada.',
+                  'Se non sabes unha resposta, preme «Sugerir respuesta con IA» (ou «Buscar indicios en la documentación» se non hai provedor). A suxestión aparece baixo a pregunta e nunca se aplica soa. A app comproba a cita: «con cita comprobada» pódese aceptar en bloque; «inferida» (sen respaldo, ou calquera «non» sobre prácticas prohibidas, datos sensibles ou perfilado) só unha a unha. Nas decisións da entidade a IA só explica. O informe indica que respostas proceden dunha suxestión aceptada.'
+                )}
+              </p>
+
               <h3 style={titulo}>{tx('Privacidad', 'Privacidade')}</h3>
               <ul style={{ margin: '0 0 1rem 1.1rem', color: '#334155' }}>
                 <li>{tx('La aplicación no tiene servidor propio: la clave solo se envía al proveedor elegido.', 'A aplicación non ten servidor propio: a clave só se envía ao provedor escollido.')}</li>
                 <li>{tx('La clave se borra al cerrar la pestaña, salvo que marque «Recordar». No lo marque en equipos compartidos.', 'A clave bórrase ao pechar a lapela, agás que marque «Lembrar». Non o marque en equipos compartidos.')}</li>
+                <li>{tx('Antes de enviar la documentación a un servicio externo para pedir sugerencias, la app pide confirmación.', 'Antes de enviar a documentación a un servizo externo para pedir suxestións, a app pide confirmación.')}</li>
                 <li>{tx('Si declara datos de salud o penales y el proveedor es externo, la documentación no se envía al modelo y el informe lo indica.', 'Se declara datos de saúde ou penais e o provedor é externo, a documentación non se envía ao modelo e o informe indícao.')}</li>
                 <li>{tx('El historial se guarda solo en este navegador. Borrar los datos del navegador lo elimina: exporte copias desde «Historial».', 'O historial gárdase só neste navegador. Borrar os datos do navegador elimínao: exporte copias desde «Historial».')}</li>
               </ul>

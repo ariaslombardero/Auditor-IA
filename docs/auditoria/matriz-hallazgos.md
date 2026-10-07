@@ -13,6 +13,7 @@
 > **Fase 5 · entrega 5.1** (08/10/2026): **164 pruebas en verde**. Coherencia del estado (EST-01 a EST-04): diagnóstico recalculado con cada cambio, contador de respuestas pendientes basado en el catálogo de preguntas, separación entre respuestas pendientes y requisitos por validar, y comentario de IA desfasado. La prueba DOC-12 se adapta a la nueva expresión «por validar».
 > **Fase 5 · entrega 5.2** (08/10/2026): **171 pruebas en verde**. Entrevista generada desde el catálogo con ayuda en lenguaje sencillo y navegación a lo pendiente (UX-01, UX-02).
 > **Fase 5 · entrega 5.3** (08/10/2026): **191 pruebas en verde**. Sugerencias de respuesta con comprobación de citas y procedencia en los documentos (SUG-01 a SUG-03). Verificado en el navegador con un modelo local simulado.
+> **Cierre de la Fase 5** (08/10/2026): **191 pruebas en verde**. Guía de uso, manual de la app, `agents.md` y README actualizados con la entrevista asistida, el panel «Lo que falta» y la diferencia entre respuestas pendientes y requisitos por validar.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 

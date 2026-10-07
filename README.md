@@ -9,7 +9,7 @@ Desarrollada por [Arias Lombardero · Aplicaciones](https://ariaslombardero.es/)
 ## Qué hace
 
 1. **Ingesta.** Recoge la descripción, el README, el AGENTS.md y el prompt del sistema de la aplicación (pegados o desde un repositorio público de GitHub). Las palabras clave solo sugieren qué revisar.
-2. **Entrevista.** Cada pregunta admite «sí», «no» o «no lo sé». Cubre:
+2. **Entrevista asistida.** Cada pregunta admite «sí», «no» o «no lo sé» y tiene un botón «¿Qué significa?» con una explicación sencilla y ejemplos. Las preguntas pendientes se resaltan y se puede saltar de una a otra. Si no sabes una respuesta, puedes pedir una sugerencia a la IA o buscar indicios en la documentación: nunca se aplica sola, y la app comprueba la cita que da el modelo. Cubre:
    - definición de sistema de IA (Art. 3.1);
    - las prácticas prohibidas del Art. 5, una a una;
    - ámbito del Anexo III, perfilado y excepción del Art. 6.3;
@@ -20,7 +20,8 @@ Desarrollada por [Arias Lombardero · Aplicaciones](https://ariaslombardero.es/)
 3. **Diagnóstico.** Clasificación orientativa con su **traza** (pregunta, respuesta, regla, fuente y límites). Además:
    - requisitos con su estado de acreditación: nada se da por acreditado sin una validación humana registrada;
    - cuadro de mando de 4 pilares, alertas y recomendaciones;
-   - si faltan respuestas o hay contradicciones, el resultado es **«requiere revisión»**.
+   - si faltan respuestas o hay contradicciones, el resultado es **«requiere revisión»**;
+   - el panel **«Lo que falta por contestar»** permite completar la entrevista desde el propio diagnóstico, que se actualiza al momento.
 4. **Kit de código.** Avisos de transparencia (Art. 50) para interfaces y documentos.
 5. **Informe técnico.** Word (`.docx`) y Markdown, más un manifiesto `.json`, todos con la misma información, la versión del motor y la huella de las entradas. También un borrador de EIPD.
 6. **Laboratorio de pruebas.**

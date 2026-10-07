@@ -1,6 +1,6 @@
 # Guía de uso · Auditor IA · Sector Público
 
-> Versión para la herramienta con motor v2.1.0 (octubre de 2026). Escrita para personas sin formación técnica.
+> Versión para la herramienta con motor v2.1.0 y entrevista asistida (octubre de 2026). Escrita para personas sin formación técnica.
 
 ## 1. Qué es, en un minuto
 
@@ -51,9 +51,10 @@ Sirve para ver el recorrido completo sin preparar nada.
    - **¿Cuándo revisa una persona los resultados?** «Antes de que produzcan efectos». **¿Interviene un empleado público?** Sí.
    - **¿Trata datos personales?** Sí. **Base jurídica:** «Art. 6.1.e».
    - En el resto de preguntas, lo que le parezca razonable. Use **«No lo sé»** cuando no lo sepa.
+   - Si una pregunta no se entiende, pulse **«¿Qué significa?»**: verá una explicación sencilla con un ejemplo de «sí» y otro de «no».
 5. Pulse **«Emitir diagnóstico preliminar»**.
 6. En el **Paso 3** verá **«ALTO RIESGO (Anexo III RIA)»**. Despliegue la **traza de la clasificación** para ver por qué.
-7. Repita el ejercicio dejando varias preguntas en «No lo sé»: el resultado pasa a **«REQUIERE REVISIÓN»**. Es intencionado: la herramienta no supone lo que no sabe.
+7. Repita el ejercicio dejando varias preguntas en «No lo sé»: el resultado pasa a **«REQUIERE REVISIÓN»**. Es intencionado: la herramienta no supone lo que no sabe. Conteste las que faltan desde el panel **«Lo que falta por contestar»**, en el propio diagnóstico, y verá cómo el resultado cambia al momento.
 8. Vaya al **Paso 5** y descargue el informe en Word. Ábralo y compruebe que dice lo mismo que la pantalla.
 9. Abra **«Historial»** en la barra superior: su auditoría está guardada.
 
@@ -109,7 +110,38 @@ Ocho bloques de preguntas. Casi todas se contestan con **Sí / No / No lo sé**.
 **Consejos:**
 - **«No lo sé» es una respuesta válida.** La herramienta nunca la trata como un «no»: marca el punto como pendiente y la clasificación queda en «requiere revisión».
 - Si la aplicación trabaja en un ámbito del Anexo III pero solo hace una tarea limitada (por ejemplo, comprobar que una solicitud trae todos los documentos), indíquelo en **C**: puede acogerse a la excepción del Art. 6.3. Para ello debe describir los hechos y **no** debe valorar a personas.
-- Arriba se indica cuántas respuestas quedan sin contestar.
+- Si declara que el sistema **no** infiere sus resultados (bloque A), los bloques B a E se ocultan: no se le aplica el Reglamento de IA.
+
+### 6.1. Ayuda en cada pregunta
+
+Cada pregunta tiene un botón **«¿Qué significa?»** con una explicación en lenguaje sencillo, un ejemplo de «sí», un ejemplo de «no» y la norma de la que procede. Funciona sin IA.
+
+### 6.2. Encontrar lo que falta
+
+- Las preguntas sin contestar aparecen **resaltadas en ámbar** con la etiqueta «Sin contestar».
+- Cada bloque indica cuántas le quedan, o «Completo».
+- La barra fija de arriba dice cuántas quedan en total. Tiene **«Ir a la siguiente»**, que le lleva a la próxima pendiente, y la casilla **«Mostrar solo las pendientes»**, que oculta lo ya contestado.
+- El recuento solo incluye las preguntas que se ven: si una pregunta no aplica (por ejemplo, la base jurídica cuando no hay datos personales), no se cuenta.
+
+### 6.3. Sugerencias de respuesta
+
+Si no sabe una respuesta, puede pedir ayuda. **Las sugerencias nunca se aplican solas**: usted decide si las acepta.
+
+- **Con proveedor de IA:** botón **«Sugerir respuesta con IA»** bajo cada pregunta pendiente, o **«Sugerir para las pendientes»** en el recuadro «Ayuda para contestar». La IA lee la documentación del paso 1 y propone una respuesta con una cita y una explicación.
+- **Sin proveedor:** **«Buscar indicios en la documentación»** busca palabras clave (por ejemplo, «chatbot» o el nombre de un modelo) y propone una respuesta orientativa.
+
+Cada sugerencia indica de qué tipo es:
+
+| Tipo | Qué significa | Cómo se acepta |
+| :--- | :--- | :--- |
+| **Con cita comprobada** | La herramienta ha comprobado que la frase citada aparece en su documentación | Una a una, o todas a la vez con **«Aceptar las sugerencias con cita comprobada»** |
+| **Inferida** | No hay una frase que la respalde, o la cita no aparece en la documentación. Un «no» sobre prácticas prohibidas, datos sensibles o perfilado es siempre inferido: que la documentación no lo mencione no prueba que no ocurra | Solo una a una, después de revisarla |
+| **No consta** | La documentación no permite saberlo | No se acepta: la pregunta sigue en «No lo sé» |
+| **Decisión de la entidad** | Papel de la entidad, base jurídica, niveles del ENS: no están en ningún documento | La IA solo explica qué valorar en su caso («Explicar con mi caso»); decide usted |
+
+**Privacidad:** si el proveedor es un servicio externo, la herramienta le pedirá confirmación antes de enviar la documentación. Si ha declarado datos de salud o penales, no la enviará. Con un modelo local, nada sale de su organización.
+
+**Trazabilidad:** el informe incluye una tabla **«Origen de las respuestas»** con las que proceden de una sugerencia aceptada, el modelo que la generó y su cita. Si después cambia esa respuesta a mano, vuelve a constar como suya.
 
 Al terminar, pulse **«Emitir diagnóstico preliminar»**.
 
@@ -133,7 +165,18 @@ Al terminar, pulse **«Emitir diagnóstico preliminar»**.
 - **Motivos de revisión:** si el resultado es «requiere revisión», aquí se dice qué falta.
 - **Alertas para la revisión:** avisos que no cambian la clasificación pero deben atenderse. Por ejemplo, se declara que el modelo funciona en servidores propios, pero la documentación menciona Gemini.
 
-### 7.3. Cuadro de mando y requisitos
+### 7.3. Lo que falta: respuestas pendientes y requisitos por validar
+
+Arriba del diagnóstico hay dos recuadros que miden **cosas distintas**:
+
+| Recuadro | Qué cuenta | Cómo se reduce |
+| :--- | :--- | :--- |
+| **Respuestas pendientes en la entrevista** | Preguntas que siguen en «No lo sé» o sin contestar | Contestándolas. El panel **«Lo que falta por contestar»** permite hacerlo allí mismo, con «¿Qué significa?» y las sugerencias, o ir a la pregunta con «Ver en la entrevista» |
+| **Requisitos por validar** | Obligaciones y comprobaciones que, aunque estén contestadas, nadie ha validado todavía | Solo con **«Registrar validación humana»** en cada requisito. Contestar la entrevista **no** los reduce: es normal que este número no baje |
+
+**El diagnóstico se actualiza solo.** Si vuelve a la entrevista y cambia algo, el diagnóstico, el informe y su huella se recalculan al momento, aunque llegue por la barra de pasos. Un aviso azul le recuerda que hay cambios sin guardar en el historial: pulse **«Guardar revisión»** cuando termine.
+
+### 7.4. Cuadro de mando y requisitos
 
 Cuatro pilares: **Reglamento de IA**, **protección de datos**, **seguridad (ENS)** y **gobernanza pública**. Cada requisito tiene un estado:
 
@@ -147,13 +190,15 @@ Cuatro pilares: **Reglamento de IA**, **protección de datos**, **seguridad (ENS
 
 **Para validar un requisito,** pulse **«Registrar validación humana»** junto a él y anote el cargo de la persona y la evidencia (acta, informe, referencia del expediente). Si después cambia la entrevista, la validación deja de valer y hay que repetirla. Puede deshacerla con **«Retirar validación»**.
 
-### 7.4. Vistas por perfil
+### 7.5. Vistas por perfil
 
 En la parte superior puede elegir entre **vista completa**, **vista jurídica / DPD** y **vista técnica / CISO**. Cada vista muestra lo que interesa a ese perfil.
 
-### 7.5. Comentario de la IA (si hay proveedor)
+### 7.6. Comentario de la IA (si hay proveedor)
 
 Si configuró un modelo de IA, aparece un **comentario complementario**. Es orientativo, **no cambia la clasificación** y consta qué proveedor y modelo lo escribieron. Si el modelo cree que la clasificación debería ser más grave, aparece un aviso de «posible discrepancia», que debe revisarse.
+
+Si cambia las respuestas después, el comentario queda **desfasado**: deja de mostrarse y de incluirse en el informe. Pulse **«Actualizar diagnóstico y regenerar el comentario»** para obtener uno nuevo.
 
 ## 8. Paso 4 · Kit de código
 
@@ -256,7 +301,10 @@ Cada diagnóstico se guarda solo en **este navegador**.
 
 | Problema | Solución |
 | :--- | :--- |
-| El resultado siempre sale «requiere revisión» | Quedan respuestas en «No lo sé» o hay contradicciones. Mire los motivos en el paso 3. |
+| El resultado siempre sale «requiere revisión» | Quedan respuestas en «No lo sé» o hay contradicciones. Mire los motivos y el panel «Lo que falta por contestar» en el paso 3. |
+| He contestado todo y siguen saliendo «requisitos por validar» | Es lo esperado: contestar no acredita. Cada requisito se acredita con «Registrar validación humana» y su evidencia (§ 7.3). |
+| Una sugerencia no tiene botón «Aceptar» | Es de tipo «no consta» o «decisión de la entidad»: la documentación no permite responder, o le toca decidir a la entidad (§ 6.3). |
+| La aceptación en bloque no incluye algunas sugerencias | Solo incluye las de cita comprobada. Las inferidas se revisan y aceptan una a una. |
 | No aparecen modelos de Gemini | Revise la clave completa (empieza por `AIza`) o pulse «Actualizar lista desde la API». |
 | «No se pudo conectar» con Ollama | Compruebe que Ollama está abierto y la dirección es correcta. Si usa la versión de Vercel, configure `OLLAMA_ORIGINS`. |
 | Error 429 | Ha superado el límite de peticiones del nivel gratuito. Espere unos segundos; la herramienta reintenta sola. |
