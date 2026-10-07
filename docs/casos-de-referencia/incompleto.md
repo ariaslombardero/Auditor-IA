@@ -27,17 +27,17 @@
 
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
-| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | REQUIERE REVISIÓN (clasificación no concluyente) | 12 requisitos sin acreditar |
-| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 5 requisitos sin acreditar |
-| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos sin acreditar |
-| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 4 requisitos sin acreditar |
+| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | REQUIERE REVISIÓN (clasificación no concluyente) | 12 requisitos por validar |
+| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 5 requisitos por validar |
+| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
+| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 4 requisitos por validar |
 
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Caso sintético": la clasificación no es concluyente (2 motivos). Quedan 24 requisitos sin acreditar. Categoría ENS orientativa: BASICA. Deben completarse o revisarse las respuestas de la entrevista.
+Diagnóstico preliminar para "Caso sintético": la clasificación no es concluyente (2 motivos). Faltan 37 respuestas de la entrevista. Quedan 24 requisitos por validar (los acredita una persona con evidencia). Categoría ENS orientativa: BASICA. Deben completarse o revisarse las respuestas de la entrevista.
 
-**CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN.** 2 motivos impiden concluir: completar o corregir la entrevista. 24 requisitos sin acreditar.
+**CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN.** 2 motivos impiden concluir: completar o corregir la entrevista. Quedan 37 respuestas pendientes en la entrevista. 24 requisitos por validar.
 
 ### Recomendaciones
 - Completar o corregir las respuestas de la entrevista señaladas como desconocidas o contradictorias antes de extraer conclusiones.
@@ -244,7 +244,7 @@ Los preceptos citados proceden de la base de conocimiento de la herramienta (Reg
 
 - **Versión del motor:** 2.1.0
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 8789a329490edaf929dd9966bc524ae2fbe254649296e6e7330bdc63f2d7f048 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T18:03:44.432Z
+- **Fecha de generación:** 2026-10-07T21:26:37.407Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ---

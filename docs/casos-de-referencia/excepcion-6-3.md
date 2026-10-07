@@ -28,17 +28,17 @@
 
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
-| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | Riesgo Limitado (Exceptuado de Alto Riesgo vía Art. 6.3 RIA & Art. 50) | 12 requisitos sin acreditar |
-| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 2 requisitos sin acreditar |
-| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos sin acreditar |
-| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos sin acreditar |
+| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | Riesgo Limitado (Exceptuado de Alto Riesgo vía Art. 6.3 RIA & Art. 50) | 12 requisitos por validar |
+| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 2 requisitos por validar |
+| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
+| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos por validar |
 
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como Riesgo Limitado (Exceptuado de Alto Riesgo vía Art. 6.3 RIA & Art. 50). Quedan 20 requisitos sin acreditar. Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
+Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como Riesgo Limitado (Exceptuado de Alto Riesgo vía Art. 6.3 RIA & Art. 50). Quedan 20 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
 
-**PENDIENTE DE VALIDACIÓN.** 20 requisitos sin acreditar. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
+**PENDIENTE DE VALIDACIÓN HUMANA.** 20 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
 
 ### Recomendaciones
 - Documentar la evaluación del Art. 6.3 antes de la puesta en servicio y registrar el sistema en la base de datos de la UE (Arts. 6.4 y 49.2 RIA).
@@ -240,7 +240,7 @@ Los preceptos citados proceden de la base de conocimiento de la herramienta (Reg
 
 - **Versión del motor:** 2.1.0
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 002d3df1afdd8fe0ddfaed7949277987142dcff7833387ac9486006b8c6a44e2 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T18:03:44.424Z
+- **Fecha de generación:** 2026-10-07T21:26:37.396Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ---

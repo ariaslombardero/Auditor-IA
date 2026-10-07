@@ -27,15 +27,15 @@
 
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
-| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | RIESGO INADMISIBLE (Práctica Prohibida - Art. 5 RIA) | 11 requisitos sin acreditar |
-| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 2 requisitos sin acreditar |
-| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos sin acreditar |
-| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos sin acreditar |
+| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | RIESGO INADMISIBLE (Práctica Prohibida - Art. 5 RIA) | 11 requisitos por validar |
+| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 2 requisitos por validar |
+| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
+| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos por validar |
 
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como RIESGO INADMISIBLE (Práctica Prohibida - Art. 5 RIA). Quedan 19 requisitos sin acreditar. Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
+Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como RIESGO INADMISIBLE (Práctica Prohibida - Art. 5 RIA). Quedan 19 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
 
 **BLOQUEADO — PRÁCTICA PROHIBIDA DECLARADA.** Se ha declarado una práctica del Art. 5 del RIA. Requiere revisión jurídica antes de cualquier otra actuación.
 
@@ -222,7 +222,7 @@ Los preceptos citados proceden de la base de conocimiento de la herramienta (Reg
 
 - **Versión del motor:** 2.1.0
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** d925c43afcb64aa28b365cd2d73893cef30835a25d2202f97c493f1d296b3fe1 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T18:03:44.410Z
+- **Fecha de generación:** 2026-10-07T21:26:37.379Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ---

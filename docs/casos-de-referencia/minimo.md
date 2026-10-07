@@ -27,17 +27,17 @@
 
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
-| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | RIESGO MÍNIMO O NULO (Art. 95 RIA) | 10 requisitos sin acreditar |
+| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | RIESGO MÍNIMO O NULO (Art. 95 RIA) | 10 requisitos por validar |
 | **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | Sin requisitos evaluados |
-| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos sin acreditar |
-| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos sin acreditar |
+| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
+| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos por validar |
 
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como RIESGO MÍNIMO O NULO (Art. 95 RIA). Quedan 16 requisitos sin acreditar. Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
+Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como RIESGO MÍNIMO O NULO (Art. 95 RIA). Quedan 16 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
 
-**PENDIENTE DE VALIDACIÓN.** 16 requisitos sin acreditar. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
+**PENDIENTE DE VALIDACIÓN HUMANA.** 16 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
 
 ### Recomendaciones
 - Valorar la adhesión voluntaria a un código de conducta (Art. 95 RIA).
@@ -224,7 +224,7 @@ Los preceptos citados proceden de la base de conocimiento de la herramienta (Reg
 
 - **Versión del motor:** 2.1.0
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 1f8e10162e3cbbff8dfe84b02162d17446f255f3c025339faa75f396950341fe (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T18:03:44.430Z
+- **Fecha de generación:** 2026-10-07T21:26:37.403Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ---

@@ -27,17 +27,17 @@
 
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
-| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | REQUIERE REVISIÓN (clasificación no concluyente) | 11 requisitos sin acreditar |
+| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | REQUIERE REVISIÓN (clasificación no concluyente) | 11 requisitos por validar |
 | **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | Sin requisitos evaluados |
-| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos sin acreditar |
-| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Actuación Automatizada (Art. 41) | 4 requisitos sin acreditar |
+| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
+| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Actuación Automatizada (Art. 41) | 4 requisitos por validar |
 
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Caso sintético": la clasificación no es concluyente (1 motivo). Quedan 18 requisitos sin acreditar. Categoría ENS: BASICA. Deben completarse o revisarse las respuestas de la entrevista.
+Diagnóstico preliminar para "Caso sintético": la clasificación no es concluyente (1 motivo). Quedan 18 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Deben completarse o revisarse las respuestas de la entrevista.
 
-**CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN.** 1 motivo impide concluir: completar o corregir la entrevista. 18 requisitos sin acreditar.
+**CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN.** 1 motivo impide concluir: completar o corregir la entrevista. 18 requisitos por validar.
 
 ### Recomendaciones
 - Completar o corregir las respuestas de la entrevista señaladas como desconocidas o contradictorias antes de extraer conclusiones.
@@ -222,7 +222,7 @@ Los preceptos citados proceden de la base de conocimiento de la herramienta (Reg
 
 - **Versión del motor:** 2.1.0
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 8a57e63f50292394d722399978a03145a85cc357bd093a45c33c530336b23705 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T18:03:44.435Z
+- **Fecha de generación:** 2026-10-07T21:26:37.410Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ---
