@@ -85,7 +85,21 @@ ${
 ${diagnostic?.executiveSummary || 'Diagnóstico no disponible.'}
 
 **${verdict ? `${verdict.label.replace('VEREDICTO: ', '')}.** ${verdict.detail}` : 'Conclusión no disponible.**'}
-
+${
+  diagnostic?.redFlags?.length
+    ? `
+### ${isGl ? 'Alertas para a revisión' : 'Alertas para la revisión'}
+${diagnostic.redFlags.map((f) => `- ${f}`).join('\n')}
+`
+    : ''
+}${
+  diagnostic?.recommendations?.length
+    ? `
+### ${isGl ? 'Recomendacións' : 'Recomendaciones'}
+${diagnostic.recommendations.map((r) => `- ${r}`).join('\n')}
+`
+    : ''
+}
 ---
 
 ## 2. IDENTIFICACIÓN Y ARQUITECTURA TÉCNICA

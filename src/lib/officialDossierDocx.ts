@@ -357,6 +357,19 @@ export function buildOfficialDossierDocument(
             ],
             spacing: { after: 400 },
           }),
+          ...(diagnostic?.redFlags?.length
+            ? [
+                new Paragraph({ children: [new TextRun({ text: isGl ? 'Alertas para a revisión' : 'Alertas para la revisión', bold: true, color: 'B91C1C' })], spacing: { after: 100 } }),
+                ...diagnostic.redFlags.map((f) => makeBulletPoint(f)),
+              ]
+            : []),
+          ...(diagnostic?.recommendations?.length
+            ? [
+                new Paragraph({ children: [new TextRun({ text: isGl ? 'Recomendacións' : 'Recomendaciones', bold: true, color: COLOR_PRIMARY })], spacing: { before: 200, after: 100 } }),
+                ...diagnostic.recommendations.map((r) => makeBulletPoint(r)),
+                new Paragraph({ text: '', spacing: { after: 300 } }),
+              ]
+            : []),
 
           // SECCIÓN 2: DESCRIPCIÓN TÉCNICA Y SOBERANÍA DEL DATO
           makeSectionHeading('2. IDENTIFICACIÓN Y ARQUITECTURA DEL SISTEMA'),

@@ -1,0 +1,481 @@
+{
+  "schema_version": "2.0.0",
+  "audit_id": "EXP-IA-2026-2800",
+  "created_at": "2026-10-07T17:58:08.770Z",
+  "audit_date": "7/10/2026",
+  "traceability": {
+    "engine_version": "2.1.0",
+    "normative_snapshot": "Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)",
+    "input_fingerprint_sha256": "7ab475223a3cda321225f2ec66f73de84d079659379f6a3ba1bf81f4edb23251",
+    "ai_assistance": null
+  },
+  "entity": {
+    "name": "Administración Pública Promotora",
+    "department": "Área de Régimen Jurídico y Transformación Digital",
+    "functional_responsible": "Jefatura de Servicio Responsable",
+    "technical_responsible": "Dirección de Tecnologías de la Información",
+    "ciso_contact": "Responsable de Seguridad ENS (CISO)",
+    "dpo_contact": "Delegado de Protección de Datos (DPD / DPO)"
+  },
+  "application": {
+    "name": "Caso sintético",
+    "description": "Herramienta que resume convocatorias de subvenciones dirigidas a ayuntamientos",
+    "target_audience": "public_employees",
+    "tech_stack": "",
+    "declared_hosting_model": "local_on_premise",
+    "documentation_provided": {
+      "has_readme": false,
+      "has_agents_md": false
+    }
+  },
+  "governance_and_compliance": {
+    "ai_act": {
+      "risk_classification": "transparency_risk",
+      "risk_label": "Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA)",
+      "review_reasons": [],
+      "review_alerts": [],
+      "recommendations": [
+        "Implantar los avisos de transparencia (banner y pie de página) del Art. 50 del RIA.",
+        "Asegurar que las credenciales no viajen al navegador; priorizar modelos locales (Ollama/vLLM) en servidores corporativos.",
+        "Someter el expediente técnico a la revisión del Delegado de Protección de Datos (DPD) y del Responsable de Seguridad del ENS."
+      ],
+      "institutional_role": "ambos",
+      "classification_trace": [
+        {
+          "id": "ART-3-1",
+          "pregunta": "¿Infiere el sistema, a partir de la información de entrada, la manera de generar resultados de salida (predicciones, contenidos, recomendaciones o decisiones)?",
+          "respuesta": "Sí",
+          "conclusion": "Es un sistema de IA: se aplica el RIA.",
+          "regla": "Un sistema de IA es un sistema basado en una máquina que infiere de la información de entrada la manera de generar resultados de salida que pueden influir en entornos físicos o virtuales.",
+          "fuente": "Reglamento (UE) 2024/1689, Art. 3.1",
+          "limites": "Respuesta declarada. Debe contrastarse con las capacidades reales del sistema y con las Directrices de la Comisión sobre la definición de sistema de IA."
+        },
+        {
+          "id": "ART-5",
+          "pregunta": "¿Incurre el sistema en alguna de las prácticas prohibidas del Art. 5?",
+          "respuesta": "Declarado que no concurre ninguna",
+          "conclusion": "No se declara ninguna práctica prohibida.",
+          "regla": "Quedan prohibidas la introducción en el mercado, la puesta en servicio y la utilización de sistemas que incurran en las prácticas del Art. 5.1.",
+          "fuente": "Reglamento (UE) 2024/1689, Art. 5 (letras b bis y b ter añadidas por el Reglamento (UE) 2026/1744)",
+          "limites": "Respuestas declaradas. Los indicios de la documentación solo orientan la revisión: no deciden."
+        },
+        {
+          "id": "ANEXO-III",
+          "pregunta": "¿En qué ámbito del Anexo III se utiliza el sistema? ¿Evalúa la admisibilidad de personas físicas para prestaciones esenciales de asistencia pública?",
+          "respuesta": "Anexo III, punto 5.a): servicios y prestaciones esenciales de asistencia pública · No",
+          "conclusion": "Fuera del ámbito del Anexo III.",
+          "regla": "Son de alto riesgo los sistemas de IA mencionados en el Anexo III, salvo la excepción del Art. 6.3.",
+          "fuente": "Reglamento (UE) 2024/1689, Art. 6.2 y Anexo III",
+          "limites": "Solo se evalúa el punto 5.a) (prestaciones esenciales de asistencia pública a personas físicas). Los puntos 5.b) a 5.d) (solvencia, seguros, llamadas de emergencia) no están soportados por el motor."
+        },
+        {
+          "id": "ART-50",
+          "pregunta": "¿Interactúa directamente con personas físicas? ¿Genera contenido sintético (texto, imagen, audio o vídeo)?",
+          "respuesta": "Interacción: Sí · Contenido sintético: Sí",
+          "conclusion": "Se aplican obligaciones de transparencia.",
+          "regla": "Los sistemas destinados a interactuar con personas físicas deben informarles de que interactúan con una IA; el contenido sintético debe marcarse.",
+          "fuente": "Reglamento (UE) 2024/1689, Art. 50",
+          "limites": "Se acumula con el resto de obligaciones: no es una categoría alternativa al alto riesgo."
+        },
+        {
+          "id": "CLASIFICACION",
+          "pregunta": "Clasificación resultante",
+          "respuesta": "Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA)",
+          "conclusion": "Clasificación preliminar basada en lo declarado.",
+          "regla": "Orden de examen: definición de IA (Art. 3.1), prácticas prohibidas (Art. 5), alto riesgo (Art. 6 y Anexo III, con la excepción del Art. 6.3) y transparencia (Art. 50, acumulable). Las respuestas desconocidas o contradictorias impiden concluir.",
+          "fuente": "Reglamento (UE) 2024/1689, Arts. 3.1, 5, 6 y 50",
+          "limites": "No sustituye la calificación del órgano competente ni la revisión jurídica."
+        }
+      ],
+      "basis": "Clasificación preliminar basada en lo declarado. Reglamento (UE) 2024/1689, modificado por el Reglamento (UE) 2026/1744.",
+      "llm_dissent_alert": null,
+      "human_oversight": {
+        "declared_level": "pre_execution",
+        "declared_role": "Técnico de la unidad tramitadora"
+      }
+    },
+    "administrative_nature": {
+      "declared_direct_human_intervention": "si",
+      "declared_procedure": "El técnico revisa y corrige cada borrador antes de incorporarlo al expediente.",
+      "ley_40_2015_art_41_automated_act": false,
+      "verified": false
+    },
+    "ens_rd_311_2022": {
+      "indicative_category": "BASICA",
+      "reasoning": "Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.",
+      "declared_audit_logs_enabled": "si",
+      "declared_log_retention_months": 24
+    },
+    "gdpr_rgpd": {
+      "legal_basis": "No verificada: la base jurídica (Art. 6.1 RGPD) debe confirmarla el DPD.",
+      "declared_competence_norm": "Ley 39/2015",
+      "declared_personal_data": "no",
+      "declared_special_categories_art_9": "no",
+      "declared_criminal_data_art_10": "no",
+      "declared_rat_activity_name": "Apoyo a la gestión documental",
+      "dpia_eipd_screening": {
+        "status": "no_indicada",
+        "wp248_criteria_met": "1/9",
+        "aepd_list_criteria_met": "1/11",
+        "residual_risk": "no_calculado"
+      }
+    },
+    "requirements": [
+      {
+        "id": "RIA-ART-5-subliminal_manipulation",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Manipulación subliminal o engañosa que cause perjuicio",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.a RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-vulnerability_exploitation",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Explotación de vulnerabilidades por edad, discapacidad o situación socioeconómica",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.b RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-intimate_imagery_generation",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Generación o manipulación de imágenes, vídeos o audios íntimos realistas de personas identificables sin su consentimiento",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.b bis RIA (Reglamento (UE) 2026/1744)",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2026-12-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-child_sexual_abuse_material",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Generación o manipulación de material de abuso sexual infantil (Directiva 2011/93/UE)",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.b ter RIA (Reglamento (UE) 2026/1744)",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2026-12-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-social_scoring",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Puntuación social o clasificación ciudadana general por las autoridades",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.c RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-predictive_policing_individual",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Evaluación del riesgo penal de personas individuales sin hechos constatables",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.d RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-untargeted_facial_scraping",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Creación indiscriminada de bases de reconocimiento facial mediante raspado de internet o CCTV",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.e RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-emotion_recognition_workplace_education",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Inferencia de emociones en el lugar de trabajo o instituciones educativas",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.f RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-biometric_categorization_sensitive",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Categorización biométrica para deducir raza, opiniones políticas, creencias religiosas u orientación sexual",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.g RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-5-realtime_remote_biometric_identification",
+        "kind": "practica_prohibida",
+        "pillar": "ria",
+        "title": "Identificación biométrica remota en tiempo real en espacios de acceso público con fines de garantía del cumplimiento del Derecho",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 5.1.h RIA",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado por el promotor que no concurre. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Confirmar en la revisión jurídica que la práctica no concurre.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-4",
+        "kind": "obligacion",
+        "pillar": "gobernanza",
+        "title": "Medidas de apoyo a la alfabetización en IA del personal",
+        "norma": "Reglamento (UE) 2024/1689, modificado por el Reglamento (UE) 2026/1744",
+        "precepto": "Art. 4",
+        "aplicabilidad": "aplica",
+        "resultado": "no_verificado",
+        "origen": "comprobacion_automatica",
+        "hechos": "Proveedores y responsables del despliegue deben adoptar medidas para apoyar la alfabetización en IA de su personal. No se han aportado evidencias de esas medidas. Exigible desde el 2/2/2025.",
+        "accionRequerida": "Documentar la formación o las medidas adoptadas para el personal que usa el sistema.",
+        "exigibleDesde": "2025-02-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RIA-ART-50",
+        "kind": "obligacion",
+        "pillar": "ria",
+        "title": "Transparencia hacia las personas (interacción con IA y contenido sintético)",
+        "norma": "Reglamento (UE) 2024/1689",
+        "precepto": "Art. 50",
+        "aplicabilidad": "aplica",
+        "resultado": "pendiente",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado: el sistema interactúa con personas o genera contenido. La herramienta no comprueba que la información de transparencia esté implantada. Exigible desde el 2/8/2026.",
+        "accionRequerida": "Implantar el aviso de interacción con IA y el marcado del contenido generado, y conservar evidencia de su implantación.",
+        "exigibleDesde": "2026-08-02",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "SUPERVISION-HUMANA",
+        "kind": "obligacion",
+        "pillar": "gobernanza",
+        "title": "Supervisión humana de los resultados",
+        "norma": "Reglamento (UE) 2024/1689; RGPD; Ley 40/2015",
+        "precepto": "Art. 14 RIA (alto riesgo); Art. 22 RGPD; Art. 41 Ley 40/2015",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarada revisión humana previa por: Técnico de la unidad tramitadora. No se ha comprobado el funcionamiento real del procedimiento.",
+        "accionRequerida": "Documentar quién revisa, en qué momento y con qué capacidad de modificar o descartar el resultado.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "ENS-CATEGORIZACION",
+        "kind": "obligacion",
+        "pillar": "ens",
+        "title": "Categorización del sistema según el impacto en cada dimensión",
+        "norma": "ENS (RD 311/2022)",
+        "precepto": "Arts. 40 y 41; Anexo I",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.",
+        "accionRequerida": "El responsable de seguridad debe confirmar la valoración de las dimensiones.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "ENS-CREDENCIALES",
+        "kind": "obligacion",
+        "pillar": "ens",
+        "title": "Protección de las credenciales de acceso a servicios de IA",
+        "norma": "ENS (RD 311/2022), Anexo II",
+        "precepto": "[op.acc.5] y [op.acc.6] mecanismos de autenticación; [mp.sw.1] desarrollo de aplicaciones",
+        "aplicabilidad": "aplica",
+        "resultado": "no_verificado",
+        "origen": "comprobacion_automatica",
+        "hechos": "Las credenciales deben estar bajo control exclusivo y no exponerse en código cliente ni en repositorios. Esta evaluación no ha examinado el código del sistema auditado.",
+        "accionRequerida": "Revisar el código y la configuración del sistema auditado; trasladar las claves a un servidor o usar modelos locales.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "ENS-REGISTRO-ACTIVIDAD",
+        "kind": "obligacion",
+        "pillar": "ens",
+        "title": "Registro de la actividad y trazabilidad",
+        "norma": "ENS (RD 311/2022), Anexo II; Reglamento (UE) 2024/1689",
+        "precepto": "[op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo)",
+        "aplicabilidad": "aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado registro de actividad con conservación de 24 meses. No se ha comprobado su existencia ni su contenido.",
+        "accionRequerida": "Aportar evidencia del registro (usuario, fecha y hora, objeto, tipo y resultado del evento) y de su política de conservación.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RGPD-BASE-JURIDICA",
+        "kind": "obligacion",
+        "pillar": "rgpd",
+        "title": "Base jurídica del tratamiento",
+        "norma": "RGPD (UE 2016/679)",
+        "precepto": "Art. 6.1",
+        "aplicabilidad": "no_aplica",
+        "resultado": "no_evaluado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado que no se tratan datos personales.",
+        "accionRequerida": "El DPD debe verificar la base jurídica y la norma que la sustenta.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RGPD-ART-30",
+        "kind": "obligacion",
+        "pillar": "rgpd",
+        "title": "Registro de Actividades de Tratamiento",
+        "norma": "RGPD (UE 2016/679)",
+        "precepto": "Art. 30",
+        "aplicabilidad": "no_aplica",
+        "resultado": "no_evaluado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado que no se tratan datos personales.",
+        "accionRequerida": "El DPD debe verificar la inscripción en el RAT.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "RGPD-EIPD",
+        "kind": "obligacion",
+        "pillar": "rgpd",
+        "title": "Evaluación de impacto en la protección de datos",
+        "norma": "RGPD (UE 2016/679)",
+        "precepto": "Art. 35; lista de la AEPD (Art. 35.4)",
+        "aplicabilidad": "no_aplica",
+        "resultado": "no_evaluado",
+        "origen": "comprobacion_automatica",
+        "hechos": "Cribado preliminar: según lo declarado no concurren dos o más criterios.",
+        "accionRequerida": "Completar el borrador de EIPD con el asesoramiento del DPD.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "LEY-40-2015-ART-41",
+        "kind": "obligacion",
+        "pillar": "gobernanza",
+        "title": "Actuación administrativa automatizada",
+        "norma": "Ley 40/2015",
+        "precepto": "Art. 41",
+        "aplicabilidad": "no_aplica",
+        "resultado": "declarado",
+        "origen": "declaracion_promotor",
+        "hechos": "Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El técnico revisa y corrige cada borrador antes de incorporarlo al expediente.. No se ha verificado.",
+        "accionRequerida": "Describir el procedimiento real: quién interviene, en qué momento y con qué capacidad de decisión.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      },
+      {
+        "id": "LEY-15-2022-ART-23",
+        "kind": "obligacion",
+        "pillar": "gobernanza",
+        "title": "Minimización de sesgos y no discriminación algorítmica",
+        "norma": "Ley 15/2022",
+        "precepto": "Art. 23",
+        "aplicabilidad": "aplica",
+        "resultado": "no_evaluado",
+        "origen": "comprobacion_automatica",
+        "hechos": "Las administraciones públicas favorecerán mecanismos de minimización de sesgos, transparencia y rendición de cuentas, y se promoverán evaluaciones de impacto. No se han aportado evaluaciones de sesgo.",
+        "accionRequerida": "Valorar y documentar una evaluación del posible impacto discriminatorio del sistema.",
+        "fecha": "2026-10-07T17:58:08.769Z"
+      }
+    ],
+    "summary": {
+      "unaccredited_requirements": 17,
+      "verdict": "VEREDICTO: PENDIENTE DE VALIDACIÓN"
+    }
+  },
+  "normative_sources": {
+    "snapshot": "Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)",
+    "verified_at_emission": false,
+    "note": "Los preceptos proceden de la base de conocimiento de la herramienta; su vigencia no se ha verificado al emitir este manifiesto."
+  },
+  "generated_artifacts_manifest": [
+    {
+      "file_name": "Expediente_Conformidad_IA_caso_sint_tico.docx",
+      "file_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "description": "Informe técnico preliminar en formato Word, pendiente de revisión y firma",
+      "relative_path": "./Expediente_Conformidad_IA_caso_sint_tico.docx"
+    },
+    {
+      "file_name": "EIPD_AEPD_caso_sint_tico.docx",
+      "file_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "description": "Borrador de Evaluación de Impacto en la Protección de Datos para completar por el DPD",
+      "relative_path": "./EIPD_AEPD_caso_sint_tico.docx"
+    },
+    {
+      "file_name": "Expediente_Conformidad_IA_caso_sint_tico.md",
+      "file_type": "text/markdown",
+      "description": "Informe técnico preliminar en formato Markdown",
+      "relative_path": "./Expediente_Conformidad_IA_caso_sint_tico.md"
+    },
+    {
+      "file_name": "AGENTS.md",
+      "file_type": "text/markdown",
+      "description": "Directivas técnicas del agente declaradas por el promotor",
+      "relative_path": "./AGENTS.md"
+    },
+    {
+      "file_name": "BannerTransparencia.tsx",
+      "file_type": "application/typescript",
+      "description": "Componente visual en React para los avisos de transparencia (Art. 50 RIA)",
+      "relative_path": "./BannerTransparencia.tsx"
+    },
+    {
+      "file_name": "auditLogger.ts",
+      "file_type": "application/typescript",
+      "description": "Módulo Node.js (requiere servidor) de registro de actividad con huellas SHA-256 ([op.exp.8] ENS)",
+      "relative_path": "./auditLogger.ts"
+    }
+  ],
+  "executive_summary_text": "Diagnóstico preliminar para \"Caso sintético\": según lo declarado, el sistema se clasifica como Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA). Quedan 17 requisitos sin acreditar. Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.",
+  "full_markdown_dossier": "# INFORME TÉCNICO PRELIMINAR DE ADECUACIÓN NORMATIVA DE SISTEMA DE INTELIGENCIA ARTIFICIAL\n\n**Entidad Promotora:** Administración Pública Promotora\n**Departamento / Servicio:** Área de Régimen Jurídico y Transformación Digital\n**Software Evaluado:** \"Caso sintético\"\n**Fecha de Emisión:** 7/10/2026\n**Marco Normativo de Referencia:**\n- Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (RIA), modificado por el Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)\n- Real Decreto 729/2023, de 22 de agosto (Estatuto de la Agencia Española de Supervisión de Inteligencia Artificial - AESIA)\n- Ley 15/2022, de 12 de julio, integral para la igualdad de trato y la no discriminación (Art. 23)\n- Esquema Nacional de Seguridad (Real Decreto 311/2022 - ENS)\n- Ley 40/2015 de Régimen Jurídico del Sector Público (Arts. 32, 36, 41 y 43)\n- Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)\n\n> **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**\n> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.1.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*\n\n---\n\n## 1. RESUMEN EJECUTIVO Y CUADRO DE MANDO\n\n- **Clasificación RIA (preliminar, según lo declarado):** **Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA)**\n- **Categoría ENS orientativa (RD 311/2022):** **BASICA**\n- **Régimen de operación declarado (Ley 40/2015):** **Apoyo técnico con intervención directa de un empleado público**\n\n### Cuadro de mando (4 pilares)\n\n| Pilar | Fundamento | Estado / Nivel | Estado de acreditación |\n| :--- | :--- | :--- | :--- |\n| **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA) | 11 requisitos sin acreditar |\n| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | Sin requisitos evaluados |\n| **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos sin acreditar |\n| **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos sin acreditar |\n\n\n\n### Conclusión preliminar\nDiagnóstico preliminar para \"Caso sintético\": según lo declarado, el sistema se clasifica como Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA). Quedan 17 requisitos sin acreditar. Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.\n\n**PENDIENTE DE VALIDACIÓN.** 17 requisitos sin acreditar. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.\n\n### Recomendaciones\n- Implantar los avisos de transparencia (banner y pie de página) del Art. 50 del RIA.\n- Asegurar que las credenciales no viajen al navegador; priorizar modelos locales (Ollama/vLLM) en servidores corporativos.\n- Someter el expediente técnico a la revisión del Delegado de Protección de Datos (DPD) y del Responsable de Seguridad del ENS.\n\n---\n\n## 2. IDENTIFICACIÓN Y ARQUITECTURA TÉCNICA\n\n- **Denominación:** Caso sintético\n- **Objeto funcional:** Herramienta que resume convocatorias de subvenciones dirigidas a ayuntamientos\n- **Destinatarios principales:** public_employees\n- **Pila tecnológica declarada:** No especificada\n- **Documentación aportada:** README.md (documentación funcional y de usuario).\n- **Modelo de inferencia (declarado):**\n  Ejecución local en servidores propios (Ollama / vLLM). No se ha comprobado el proveedor efectivamente utilizado.\n\n\n---\n\n## 3. PRÁCTICAS PROHIBIDAS (ART. 5 RIA)\n\n«No evaluado» significa que la herramienta no ha examinado la práctica y que debe confirmarse en la revisión jurídica; «Pendiente» indica un indicio que requiere verificación.\n\n| Práctica (Art. 5 RIA) | Estado | Hechos |\n| :--- | :---: | :--- |\n| **Manipulación subliminal o engañosa que cause perjuicio** (Art. 5.1.a RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n| **Explotación de vulnerabilidades por edad, discapacidad o situación socioeconómica** (Art. 5.1.b RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n| **Generación o manipulación de imágenes, vídeos o audios íntimos realistas de personas identificables sin su consentimiento** (Art. 5.1.b bis RIA (Reglamento (UE) 2026/1744)) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio. |\n| **Generación o manipulación de material de abuso sexual infantil (Directiva 2011/93/UE)** (Art. 5.1.b ter RIA (Reglamento (UE) 2026/1744)) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio. |\n| **Puntuación social o clasificación ciudadana general por las autoridades** (Art. 5.1.c RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n| **Evaluación del riesgo penal de personas individuales sin hechos constatables** (Art. 5.1.d RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n| **Creación indiscriminada de bases de reconocimiento facial mediante raspado de internet o CCTV** (Art. 5.1.e RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n| **Inferencia de emociones en el lugar de trabajo o instituciones educativas** (Art. 5.1.f RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n| **Categorización biométrica para deducir raza, opiniones políticas, creencias religiosas u orientación sexual** (Art. 5.1.g RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n| **Identificación biométrica remota en tiempo real en espacios de acceso público con fines de garantía del cumplimiento del Derecho** (Art. 5.1.h RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |\n\n---\n\n## 4. CLASIFICACIÓN SEGÚN EL RIA (ANEXO III Y EXCEPCIÓN DEL ART. 6.3)\n\n- **Clasificación preliminar, basada en lo declarado:** **RIESGO DE TRANSPARENCIA (RIESGO LIMITADO - ART. 50 RIA)**\n\n### 4.1. Fundamento\n**Nivel 4 - Riesgo de Transparencia (Art. 50 RIA):** según lo declarado, el sistema interactúa con personas o genera contenido, por lo que debe informar de que se interactúa con una IA y marcar el contenido generado.\n\n\n\n### 4.3. Traza de la clasificación\n*Corte normativo: Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022).*\n\n| Paso | Pregunta | Respuesta | Conclusión | Regla y fuente | Límites |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| ART-3-1 | ¿Infiere el sistema, a partir de la información de entrada, la manera de generar resultados de salida (predicciones, contenidos, recomendaciones o decisiones)? | Sí | Es un sistema de IA: se aplica el RIA. | Un sistema de IA es un sistema basado en una máquina que infiere de la información de entrada la manera de generar resultados de salida que pueden influir en entornos físicos o virtuales. (Reglamento (UE) 2024/1689, Art. 3.1) | Respuesta declarada. Debe contrastarse con las capacidades reales del sistema y con las Directrices de la Comisión sobre la definición de sistema de IA. |\n| ART-5 | ¿Incurre el sistema en alguna de las prácticas prohibidas del Art. 5? | Declarado que no concurre ninguna | No se declara ninguna práctica prohibida. | Quedan prohibidas la introducción en el mercado, la puesta en servicio y la utilización de sistemas que incurran en las prácticas del Art. 5.1. (Reglamento (UE) 2024/1689, Art. 5 (letras b bis y b ter añadidas por el Reglamento (UE) 2026/1744)) | Respuestas declaradas. Los indicios de la documentación solo orientan la revisión: no deciden. |\n| ANEXO-III | ¿En qué ámbito del Anexo III se utiliza el sistema? ¿Evalúa la admisibilidad de personas físicas para prestaciones esenciales de asistencia pública? | Anexo III, punto 5.a): servicios y prestaciones esenciales de asistencia pública · No | Fuera del ámbito del Anexo III. | Son de alto riesgo los sistemas de IA mencionados en el Anexo III, salvo la excepción del Art. 6.3. (Reglamento (UE) 2024/1689, Art. 6.2 y Anexo III) | Solo se evalúa el punto 5.a) (prestaciones esenciales de asistencia pública a personas físicas). Los puntos 5.b) a 5.d) (solvencia, seguros, llamadas de emergencia) no están soportados por el motor. |\n| ART-50 | ¿Interactúa directamente con personas físicas? ¿Genera contenido sintético (texto, imagen, audio o vídeo)? | Interacción: Sí · Contenido sintético: Sí | Se aplican obligaciones de transparencia. | Los sistemas destinados a interactuar con personas físicas deben informarles de que interactúan con una IA; el contenido sintético debe marcarse. (Reglamento (UE) 2024/1689, Art. 50) | Se acumula con el resto de obligaciones: no es una categoría alternativa al alto riesgo. |\n| CLASIFICACION | Clasificación resultante | Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA) | Clasificación preliminar basada en lo declarado. | Orden de examen: definición de IA (Art. 3.1), prácticas prohibidas (Art. 5), alto riesgo (Art. 6 y Anexo III, con la excepción del Art. 6.3) y transparencia (Art. 50, acumulable). Las respuestas desconocidas o contradictorias impiden concluir. (Reglamento (UE) 2024/1689, Arts. 3.1, 5, 6 y 50) | No sustituye la calificación del órgano competente ni la revisión jurídica. |\n\n---\n\n## 5. SUPERVISIÓN HUMANA Y MARCO ESTATAL DE GOBERNANZA\n\n- **Supervisión humana (declarada):** previa; los resultados se presentan como borradores que revisa un empleado público antes de producir efectos. No se ha verificado el funcionamiento real del procedimiento.\n- **Rol del supervisor (declarado):** Técnico de la unidad tramitadora\n- **Deslinde con la actuación administrativa automatizada (Ley 40/2015, Art. 41):**\n  El promotor declara que un empleado público interviene de forma directa en cada actuación, por lo que no habría actuación administrativa automatizada. Esta afirmación no se ha verificado y debe contrastarse con el funcionamiento real del procedimiento.\n- **Responsabilidad patrimonial:**\n  Los particulares exigen directamente a la Administración Pública correspondiente la indemnización de las lesiones causadas por el funcionamiento de los servicios públicos, también cuando intervenga este sistema (Arts. 32.1 y 36.1 de la Ley 40/2015). La Administración solo puede exigir responsabilidad a sus autoridades y personal cuando haya concurrido dolo, o culpa o negligencia graves (Art. 36.2).\n- **No discriminación algorítmica (Ley 15/2022, Art. 23):**\n  Las administraciones públicas favorecerán mecanismos de minimización de sesgos, transparencia y rendición de cuentas, y se promoverán evaluaciones del posible impacto discriminatorio. No se han aportado evaluaciones de sesgo, por lo que este extremo figura como no evaluado.\n\n---\n\n## 6. MEDIDAS DE SEGURIDAD (ENS, RD 311/2022)\n\n- **Categoría ENS orientativa:** **BASICA**\n- **Fundamentación:** Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.\n\n### 6.1. Medidas del Anexo II relacionadas con el uso de servicios de IA\n1. **Arts. 40 y 41; Anexo I** — DECLARADO (sin verificar): Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.\n2. **[op.acc.5] y [op.acc.6] mecanismos de autenticación; [mp.sw.1] desarrollo de aplicaciones** — NO VERIFICADO: Las credenciales deben estar bajo control exclusivo y no exponerse en código cliente ni en repositorios. Esta evaluación no ha examinado el código del sistema auditado.\n3. **[op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo)** — DECLARADO (sin verificar): Declarado registro de actividad con conservación de 24 meses. No se ha comprobado su existencia ni su contenido.\n\n---\n\n## 7. OBLIGACIONES Y ESTADO DE ACREDITACIÓN\n\nSolo «Acreditado» equivale a cumplimiento y exige validación humana con evidencia. «Declarado» recoge lo afirmado por el promotor sin comprobar.\n\n### Medidas de apoyo a la alfabetización en IA del personal — **NO VERIFICADO**\n*Reglamento (UE) 2024/1689, modificado por el Reglamento (UE) 2026/1744 · Art. 4 · Comprobación automática · Exigible desde 2/2/2025*\n\nProveedores y responsables del despliegue deben adoptar medidas para apoyar la alfabetización en IA de su personal. No se han aportado evidencias de esas medidas. Exigible desde el 2/2/2025.\n\n**Acción:** Documentar la formación o las medidas adoptadas para el personal que usa el sistema.\n\n### Transparencia hacia las personas (interacción con IA y contenido sintético) — **PENDIENTE**\n*Reglamento (UE) 2024/1689 · Art. 50 · Declaración del promotor · Exigible desde 2/8/2026*\n\nDeclarado: el sistema interactúa con personas o genera contenido. La herramienta no comprueba que la información de transparencia esté implantada. Exigible desde el 2/8/2026.\n\n**Acción:** Implantar el aviso de interacción con IA y el marcado del contenido generado, y conservar evidencia de su implantación.\n\n### Supervisión humana de los resultados — **DECLARADO (sin verificar)**\n*Reglamento (UE) 2024/1689; RGPD; Ley 40/2015 · Art. 14 RIA (alto riesgo); Art. 22 RGPD; Art. 41 Ley 40/2015 · Declaración del promotor*\n\nDeclarada revisión humana previa por: Técnico de la unidad tramitadora. No se ha comprobado el funcionamiento real del procedimiento.\n\n**Acción:** Documentar quién revisa, en qué momento y con qué capacidad de modificar o descartar el resultado.\n\n### Categorización del sistema según el impacto en cada dimensión — **DECLARADO (sin verificar)**\n*ENS (RD 311/2022) · Arts. 40 y 41; Anexo I · Declaración del promotor*\n\nCategoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.\n\n**Acción:** El responsable de seguridad debe confirmar la valoración de las dimensiones.\n\n### Protección de las credenciales de acceso a servicios de IA — **NO VERIFICADO**\n*ENS (RD 311/2022), Anexo II · [op.acc.5] y [op.acc.6] mecanismos de autenticación; [mp.sw.1] desarrollo de aplicaciones · Comprobación automática*\n\nLas credenciales deben estar bajo control exclusivo y no exponerse en código cliente ni en repositorios. Esta evaluación no ha examinado el código del sistema auditado.\n\n**Acción:** Revisar el código y la configuración del sistema auditado; trasladar las claves a un servidor o usar modelos locales.\n\n### Registro de la actividad y trazabilidad — **DECLARADO (sin verificar)**\n*ENS (RD 311/2022), Anexo II; Reglamento (UE) 2024/1689 · [op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo) · Declaración del promotor*\n\nDeclarado registro de actividad con conservación de 24 meses. No se ha comprobado su existencia ni su contenido.\n\n**Acción:** Aportar evidencia del registro (usuario, fecha y hora, objeto, tipo y resultado del evento) y de su política de conservación.\n\n### Base jurídica del tratamiento — **No aplica**\n*RGPD (UE 2016/679) · Art. 6.1 · Declaración del promotor*\n\nDeclarado que no se tratan datos personales.\n\n**Acción:** El DPD debe verificar la base jurídica y la norma que la sustenta.\n\n### Registro de Actividades de Tratamiento — **No aplica**\n*RGPD (UE 2016/679) · Art. 30 · Declaración del promotor*\n\nDeclarado que no se tratan datos personales.\n\n**Acción:** El DPD debe verificar la inscripción en el RAT.\n\n### Evaluación de impacto en la protección de datos — **No aplica**\n*RGPD (UE 2016/679) · Art. 35; lista de la AEPD (Art. 35.4) · Comprobación automática*\n\nCribado preliminar: según lo declarado no concurren dos o más criterios.\n\n**Acción:** Completar el borrador de EIPD con el asesoramiento del DPD.\n\n### Actuación administrativa automatizada — **No aplica**\n*Ley 40/2015 · Art. 41 · Declaración del promotor*\n\nDeclarado que un empleado público interviene de forma directa. Funcionamiento descrito: El técnico revisa y corrige cada borrador antes de incorporarlo al expediente.. No se ha verificado.\n\n**Acción:** Describir el procedimiento real: quién interviene, en qué momento y con qué capacidad de decisión.\n\n### Minimización de sesgos y no discriminación algorítmica — **NO EVALUADO**\n*Ley 15/2022 · Art. 23 · Comprobación automática*\n\nLas administraciones públicas favorecerán mecanismos de minimización de sesgos, transparencia y rendición de cuentas, y se promoverán evaluaciones de impacto. No se han aportado evaluaciones de sesgo.\n\n**Acción:** Valorar y documentar una evaluación del posible impacto discriminatorio del sistema.\n\n\n### 7.1. Datos declarados en materia de protección de datos\n- **Norma competencial declarada:** *Ley 39/2015*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.\n- **Tratamiento de datos personales (declarado):** no.\n- **Actividad del Registro de Actividades de Tratamiento (declarada):** *Apoyo a la gestión documental*.\n- **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.\n- **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.\n\n\n\n---\n\n## NOTA SOBRE LAS FUENTES Y TRAZABILIDAD DEL DOCUMENTO\n\nLos preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.\n\n- **Versión del motor:** 2.1.0\n- **Huella SHA-256 de las entradas (ingesta y entrevista):** 7ab475223a3cda321225f2ec66f73de84d079659379f6a3ba1bf81f4edb23251 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)\n- **Fecha de generación:** 2026-10-07T17:58:08.770Z\n- **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.\n\n---\n\n## REVISIÓN Y FIRMA\n\n> *El presente documento es un informe técnico preliminar generado con una herramienta automatizada. No es un acto administrativo ni una actuación administrativa automatizada. Solo adquiere valor cuando lo revisan y firman los responsables competentes, que pueden modificar o rechazar sus conclusiones (firma electrónica del personal, Art. 43 de la Ley 40/2015).*\n\n| EL RESPONSABLE FUNCIONAL | EL RESPONSABLE DE SEGURIDAD (ENS) | EL DELEGADO DE PROTECCIÓN DE DATOS |\n| :---: | :---: | :---: |\n| *(Firma electrónica)* | *(Firma electrónica)* | *(Firma electrónica)* |\n| **Jefatura de Servicio Responsable** | **Responsable de Seguridad ENS (CISO)** | **Delegado de Protección de Datos (DPD / DPO)** |\n| Área de Régimen Jurídico y Transformación Digital | Centro de Sistemas y Ciberseguridad | Oficina de Protección de Datos |\n"
+}

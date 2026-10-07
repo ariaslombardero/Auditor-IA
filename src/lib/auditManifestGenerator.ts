@@ -42,6 +42,9 @@ export interface AuditManifestRecord {
   governance_and_compliance: {
     ai_act: {
       risk_classification: string;
+      /** Alertas del motor para la revisión (DOC-14). */
+      review_alerts: string[];
+      recommendations: string[];
       risk_label: string;
       review_reasons: string[];
       institutional_role: string;
@@ -161,6 +164,8 @@ export function buildAuditManifest(
         risk_classification: diagnostic?.riskClassification || 'sin_diagnostico',
         risk_label: diagnostic?.riskLabel || 'Sin diagnóstico',
         review_reasons: diagnostic?.reviewReasons || [],
+        review_alerts: diagnostic?.redFlags || [],
+        recommendations: diagnostic?.recommendations || [],
         institutional_role: diagnostic?.institutionalRole || 'desconocido',
         classification_trace: diagnostic?.classificationTrace || [],
         basis: 'Clasificación preliminar basada en lo declarado. Reglamento (UE) 2024/1689, modificado por el Reglamento (UE) 2026/1744.',

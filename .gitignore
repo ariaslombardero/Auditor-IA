@@ -14,3 +14,6 @@ scratch/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Compilación temporal del generador de ejemplos
+.ejemplos-build/

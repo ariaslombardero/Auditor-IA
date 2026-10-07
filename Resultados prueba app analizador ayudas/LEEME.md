@@ -1,18 +1,25 @@
-# Procedencia de estos ficheros
+# Resultados del analizador de ayudas
 
-**Estos resultados no fueron generados por el motor de la aplicación.** Los produjo el script
-`scripts/generateAuditOutputs.js`, que escribe textos fijos redactados a mano (por ejemplo, las filas
-«✅ CONFORME» del Art. 5 o el estado «CONFORME» de la medida IA-01 para claves alojadas en el cliente).
+Estos ficheros los genera **el motor de la aplicación** con `npm run ejemplos` (`scripts/generarEjemplos.ts`), a partir del caso de referencia `analizador-ayudas` (`src/test/referenceCases.ts`):
 
-Por tanto:
+| Fichero | Contenido |
+| :--- | :--- |
+| `Expediente_Analizador_Ayudas.docx` | Informe técnico preliminar (Word) |
+| `Expediente_Analizador_Ayudas.md` | El mismo informe en Markdown |
+| `Expediente_Analizador_Ayudas.manifest.json` | Manifiesto con entradas, traza, requisitos y huella |
+| `EIPD_Borrador_Analizador_Ayudas.docx` | Borrador de evaluación de impacto, para completar por el responsable del tratamiento con el DPD |
 
-- No deben presentarse como resultado de una auditoría ejecutada con `auditor-ia-app`.
-- Algunas de sus afirmaciones contradicen los criterios actuales de la herramienta (claves en el
-  cliente como «conforme», medidas «IA-xx» atribuidas a la Guía CCN-STIC 884D, verificación normativa
-  «en tiempo real», responsabilidad atribuida «única y exclusivamente» a los funcionarios).
-- Se conservan sin modificar para mantener su procedencia (línea base `48956a6`).
+**Entradas:**
+- la documentación pública del analizador (`historico-no-motor/AGENTS.md`);
+- una entrevista declarada para el caso de prueba: herramienta de apoyo al personal técnico, fuera del Anexo III, sin datos personales y con ejecución local declarada.
 
-En la Fase 4 del plan de saneamiento se regenerarán los resultados ejecutando el motor real; estos
-ficheros pasarán a una subcarpeta de histórico.
+**Resultado:** riesgo de transparencia (Art. 50 RIA), con una alerta. Se declara ejecución local, pero la documentación cita la API de Gemini, así que debe comprobarse qué proveedor procesa realmente los datos.
 
-Más información: `docs/auditoria/matriz-hallazgos.md` (hallazgo DOC-09).
+**Límites:**
+- No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
+- Es un informe técnico preliminar basado en lo declarado. No es un acto administrativo ni acredita el cumplimiento.
+- La fecha y la huella de generación cambian en cada ejecución.
+
+La carpeta `historico-no-motor/` conserva los ficheros anteriores, escritos a mano por un script que **no** ejecutaba el motor. Se mantienen solo como registro de procedencia.
+
+Los demás casos de referencia están en `docs/casos-de-referencia/`.

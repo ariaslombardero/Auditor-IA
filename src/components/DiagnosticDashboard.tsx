@@ -569,7 +569,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#b91c1c', marginBottom: '0.75rem' }}>
             <AlertTriangle style={{ width: 20, height: 20 }} />
             <h3 style={{ fontSize: '1.0625rem', fontWeight: 700 }}>
-              Puntos Críticos y Alertas de Infracción Detectadas ({diagnostic.redFlags.length})
+              Alertas para la revisión ({diagnostic.redFlags.length})
             </h3>
           </div>
           <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

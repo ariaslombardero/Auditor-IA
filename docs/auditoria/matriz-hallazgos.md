@@ -7,6 +7,7 @@
 > **Fase 3 · entrega 3.1** (07/10/2026): **111 pruebas, 102 en verde y 9 en rojo**. Los 9 en rojo son de custodia (ALM-01 a ALM-04, entrega 3.2) y red teaming (RT-01 a RT-05, entrega 3.3). Arquitectura de proveedores y credenciales igual que *Opositor transparente* (ADR 001). El selector de modelo deja de usar listas fijas: muestra solo los modelos que devuelve el proveedor para la clave o el servidor indicados. La prueba SEG-07 de la Fase 0 se adapta: la CSP se comprueba en la página compilada, porque en desarrollo la impediría el refresco en caliente de Vite.
 > **Fase 3 · entrega 3.2** (07/10/2026): **118 pruebas, 113 en verde y 5 en rojo** (RT-01 a RT-05, entrega 3.3). Historial con revisiones, errores de guardado comunicados, importación validada y política de conservación documentada. La prueba ALM-01 de la Fase 0 se conserva: sin expediente indicado, cada guardado abre uno nuevo.
 > **Cierre de la Fase 3** (07/10/2026): **125 pruebas, 125 en verde**. Entrega 3.3: ensayos adversarios juzgados por efectos observables, estados `demostracion` y `no_ejecutada`, batería de agentes y alcance declarado. Categorías OWASP cotejadas con la lista oficial de 2025 (la extracción de instrucciones pasa a LLM07 y la exfiltración por Markdown se atribuye también a LLM05). La prueba RT-01 de la Fase 0 se conserva y se añaden pruebas de efectos, detectores y alcance.
+> **Fase 4 · entregas 4.1 y 4.2** (07/10/2026): **148 pruebas en verde**. 11 casos de referencia (`src/test/referenceCases.ts`) con resultado esperado y concordancia de DOCX, Markdown y manifiesto; generador `npm run ejemplos` que ejecuta el motor real. Los casos de referencia revelaron DOC-14.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -68,11 +69,12 @@
 | DOC-06 | Las tres salidas expresan la misma etiqueta de clasificación | C | Se mantiene | 1 | 🟢 |
 | DOC-07 | «CSV» aleatorio no verificable y diligencia que «certifica» | C+G | «Identificador interno», sin certificación | 1 | 🟢 |
 | DOC-08 | Texto del LLM incrustado en el DOCX sin marca de procedencia | C | Rotulado como análisis asistido no verificado | 1 | 🟢 |
-| DOC-09 | Carpeta `Resultados prueba…` generada por script con textos fijos (incluye IA-01 «CONFORME» para claves en cliente) | C | Rotular procedencia; regenerar con el motor | 1 y 4 | 🟢 |
+| DOC-09 | Carpeta `Resultados prueba…` generada por script con textos fijos (incluye IA-01 «CONFORME» para claves en cliente) | C | Resultados regenerados por el motor (`npm run ejemplos`); los antiguos, con su script, en `historico-no-motor/` | 1 y 4 | 🟢 |
 | DOC-10 | Formato, firma y metadatos sin ajustar a la política institucional (NTI) | C (+G matiz) | Decisión de interoperabilidad documentada | 4 | ⚪ |
 | DOC-11 | Los documentos no identificaban versión del motor, corte normativo ni entradas utilizadas | G | Versión, corte normativo y huella SHA-256 de las entradas en DOCX, Markdown y manifiesto | 1 | 🟢 |
 | DOC-12 | Cada exportador reconstruía sus propias conformidades (el manifiesto fijaba además `ley_40_2015_art_41_automated_act: false`) | C+G | Cuadro de mando, DOCX, Markdown y manifiesto consumen el mismo modelo y expresan el mismo veredicto | 1 | 🟢 |
 | DOC-13 | El cuadro de mando mostraba un banner fijo «Sincronización Normativa Telemática Activa · Normas vigentes verificadas» | C (en Fase 2) | Banner de consulta que indica el corte normativo y remite a las fuentes oficiales | 2 | 🟢 |
+| DOC-14 | Las alertas y recomendaciones del motor solo se mostraban en el panel: ningún documento exportado las recogía | C (en Fase 4, casos de referencia) | Sección «Alertas para la revisión» y «Recomendaciones» en DOCX y Markdown; `review_alerts` y `recommendations` en el manifiesto; el panel deja de hablar de «alertas de infracción» | 4 | 🟢 |
 
 ## D. EIPD (`src/lib/eipdGenerator.ts`)
 

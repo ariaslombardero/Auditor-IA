@@ -10,10 +10,17 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 describe('Procedencia de los resultados de ejemplo', () => {
-  it('DOC-09 · la carpeta de resultados de ejemplo declara que no la generó el motor', () => {
-    const leeme = resolve(root, 'Resultados prueba app analizador ayudas', 'LEEME.md');
+  it('DOC-09 · los resultados antiguos, escritos a mano, quedan en un histórico que lo declara', () => {
+    const leeme = resolve(root, 'Resultados prueba app analizador ayudas', 'historico-no-motor', 'LEEME.md');
     expect(existsSync(leeme)).toBe(true);
     expect(readFileSync(leeme, 'utf8')).toMatch(/no (fue |fueron )?generad[oa]s? por el motor/i);
+  });
+
+  it('DOC-09 · los resultados vigentes los genera el motor y se indica cómo regenerarlos', () => {
+    const leeme = readFileSync(resolve(root, 'Resultados prueba app analizador ayudas', 'LEEME.md'), 'utf8');
+    expect(leeme).toMatch(/npm run ejemplos/);
+    expect(existsSync(resolve(root, 'Resultados prueba app analizador ayudas', 'Expediente_Analizador_Ayudas.md'))).toBe(true);
+    expect(existsSync(resolve(root, 'scripts', 'generateAuditOutputs.js'))).toBe(false);
   });
 });
 
