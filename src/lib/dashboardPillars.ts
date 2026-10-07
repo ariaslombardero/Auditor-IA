@@ -42,7 +42,7 @@ function pendingText(requirements: RequirementAssessment[], pillar: RequirementP
   const inPillar = requirementsByPillar(requirements, pillar).filter((r) => r.aplicabilidad !== 'no_aplica');
   if (inPillar.length === 0) return 'Sin requisitos evaluados';
   const pending = unaccreditedRequirements(inPillar).length;
-  return pending === 0 ? 'Requisitos acreditados' : `${pending} requisito${pending === 1 ? '' : 's'} sin acreditar`;
+  return pending === 0 ? 'Requisitos acreditados' : `${pending} requisito${pending === 1 ? '' : 's'} por validar`;
 }
 
 /**
@@ -102,6 +102,9 @@ export function computeExecutivePillars(diagnostic: DiagnosticResult): Executive
 export function computeExecutiveVerdict(diagnostic: DiagnosticResult): ExecutiveVerdict {
   const unaccredited = unaccreditedRequirements(diagnostic.requirements);
   const breaches = unaccredited.filter((r) => r.resultado === 'incumple');
+  const faltan = diagnostic.pendingAnswers ?? 0;
+  const respuestas = faltan === 0 ? '' : `Queda${faltan === 1 ? '' : 'n'} ${faltan} respuesta${faltan === 1 ? '' : 's'} pendiente${faltan === 1 ? '' : 's'} en la entrevista. `;
+  const porValidar = `${unaccredited.length} requisito${unaccredited.length === 1 ? '' : 's'} por validar`;
 
   if (diagnostic.riskClassification === 'prohibited') {
     return {
@@ -114,7 +117,7 @@ export function computeExecutiveVerdict(diagnostic: DiagnosticResult): Executive
     return {
       level: 'conditioned',
       label: 'VEREDICTO: CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN',
-      detail: `${diagnostic.reviewReasons.length} motivo${diagnostic.reviewReasons.length === 1 ? '' : 's'} impide${diagnostic.reviewReasons.length === 1 ? '' : 'n'} concluir: completar o corregir la entrevista. ${unaccredited.length} requisitos sin acreditar.`,
+      detail: `${diagnostic.reviewReasons.length} motivo${diagnostic.reviewReasons.length === 1 ? '' : 's'} impide${diagnostic.reviewReasons.length === 1 ? '' : 'n'} concluir: completar o corregir la entrevista. ${respuestas}${porValidar}.`,
     };
   }
   if (breaches.length > 0) {
@@ -127,8 +130,8 @@ export function computeExecutiveVerdict(diagnostic: DiagnosticResult): Executive
   if (unaccredited.length > 0) {
     return {
       level: 'conditioned',
-      label: 'VEREDICTO: PENDIENTE DE VALIDACIÓN',
-      detail: `${unaccredited.length} requisito${unaccredited.length === 1 ? '' : 's'} sin acreditar. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.`,
+      label: faltan > 0 ? 'VEREDICTO: FALTAN RESPUESTAS Y VALIDACIÓN HUMANA' : 'VEREDICTO: PENDIENTE DE VALIDACIÓN HUMANA',
+      detail: `${respuestas}${porValidar}: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.`,
     };
   }
   return {

@@ -11,7 +11,8 @@ import type {
   TriState,
 } from '../types';
 import { PROHIBITED_SYSTEMS_CATALOG } from '../lib/legalKnowledgeBase';
-import { ENS_DIMENSIONS, ENS_DIMENSION_LABELS, countUnknownAnswers } from '../lib/answersModel';
+import { ENS_DIMENSIONS, ENS_DIMENSION_LABELS } from '../lib/answersModel';
+import { pendingQuestions } from '../lib/interviewCatalog';
 import { aiUsageHint, annexIIIHints, prohibitedPracticeHints } from '../lib/documentHints';
 import { ANNEX_III_LABELS, ARTICLE_63_CONDITIONS } from '../lib/engine/evaluators';
 
@@ -23,6 +24,8 @@ interface LegalInterviewViewProps {
   onAnalyze: () => void;
   isAnalyzing: boolean;
   idioma: AppIdioma;
+  /** Si ya se emitió un diagnóstico: los cambios lo actualizan al momento. */
+  hasDiagnostic?: boolean;
 }
 
 const TRI_OPTIONS: Array<{ value: TriState; label: string }> = [
@@ -151,12 +154,13 @@ const ENS_LEVEL_OPTIONS: Array<{ value: EnsLevel; label: string }> = [
   { value: 'alto', label: 'Alto (perjuicio muy grave)' },
 ];
 
-export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers, ingest, onChange, onBack, onAnalyze, isAnalyzing }) => {
+export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers, ingest, onChange, onBack, onAnalyze, isAnalyzing, hasDiagnostic }) => {
   const set = <K extends keyof LegalEnrichmentAnswers>(key: K, value: LegalEnrichmentAnswers[K]) => onChange({ ...answers, [key]: value });
   const pHints = prohibitedPracticeHints(ingest);
   const aHints = annexIIIHints(ingest);
   const aiHint = aiUsageHint(ingest);
-  const pending = countUnknownAnswers(answers);
+  const pending = pendingQuestions(answers).length;
+  const esIA = answers.infersOutputs !== 'no';
   const inAnnexArea = answers.annexIIIArea !== 'ninguno' && answers.annexIIIArea !== 'desconocido';
   const personalRelevant = answers.processesPersonalData !== 'no';
 
@@ -171,8 +175,13 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
           Contesta «No lo sé» cuando no conste: el resultado será <strong>«requiere revisión»</strong> en lugar de presumir que no hay riesgo.
         </p>
         <p style={{ fontSize: '0.8125rem', fontWeight: 700, marginTop: '0.5rem', color: pending ? '#92400e' : '#166534' }}>
-          {pending ? pending === 1 ? 'Queda 1 respuesta sin contestar.' : `Quedan ${pending} respuestas sin contestar.` : 'Todas las preguntas principales están contestadas.'}
+          {pending ? pending === 1 ? 'Queda 1 respuesta sin contestar.' : `Quedan ${pending} respuestas sin contestar.` : 'Todas las preguntas están contestadas.'}
         </p>
+        {hasDiagnostic && (
+          <p style={{ fontSize: '0.8125rem', marginTop: '0.35rem', color: '#1e3a8a' }}>
+            El diagnóstico ya emitido se actualiza al momento con cada cambio.
+          </p>
+        )}
       </div>
 
       <Section icon={<Cpu style={{ width: 18, height: 18 }} />} title="A. ¿Es un sistema de IA? (Art. 3.1 RIA)">
@@ -185,6 +194,13 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
         />
       </Section>
 
+      {!esIA && (
+        <div className="card" style={{ background: '#f8fafc', fontSize: '0.875rem', color: '#475569' }}>
+          Has indicado que el sistema no infiere sus resultados: no sería un sistema de IA y no se le aplica el Reglamento de IA. Por eso se ocultan los bloques B a E. Contesta los bloques F a H, que siguen aplicándose.
+        </div>
+      )}
+
+      {esIA && (<>
       <Section
         icon={<Ban style={{ width: 18, height: 18 }} />}
         title="B. Prácticas prohibidas (Art. 5 RIA)"
@@ -275,6 +291,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
       <Section icon={<Building2 style={{ width: 18, height: 18 }} />} title="E. Papel de la entidad (Art. 3, puntos 3 y 4, RIA)" subtitle="De este papel dependen las obligaciones: el proveedor responde del sistema; el responsable del despliegue, de su uso.">
         <SelectField label="¿Qué papel tiene la entidad respecto del sistema?" value={answers.institutionalRole} options={ROLE_OPTIONS} onChange={(v) => set('institutionalRole', v)} />
       </Section>
+      </>)}
 
       <Section icon={<UserCheck style={{ width: 18, height: 18 }} />} title="F. Supervisión humana y actuación administrativa automatizada (Art. 41 Ley 40/2015)">
         <SelectField
@@ -377,7 +394,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
           <span>Volver a la ingesta</span>
         </button>
         <button type="button" onClick={onAnalyze} className="btn-primary" disabled={isAnalyzing}>
-          <span>{isAnalyzing ? 'Analizando...' : 'Emitir diagnóstico preliminar'}</span>
+          <span>{isAnalyzing ? 'Analizando...' : hasDiagnostic ? 'Actualizar diagnóstico y guardar' : 'Emitir diagnóstico preliminar'}</span>
           <ArrowRight style={{ width: 16, height: 16 }} />
         </button>
       </div>

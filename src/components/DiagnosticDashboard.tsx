@@ -22,6 +22,7 @@ import {
   originLabel,
   prohibitedPractices,
   resultLabel,
+  unaccreditedRequirements,
 } from '../lib/assessmentModel';
 
 const RESULT_STYLE: Record<RequirementResult, { badge: string; background: string; border: string }> = {
@@ -49,6 +50,8 @@ interface DiagnosticDashboardProps {
   validations?: Record<string, HumanValidation>;
   onValidateRequirement?: (requirementId: string, revisadoPor: string, evidencia: string) => void;
   onRevokeValidation?: (requirementId: string) => void;
+  /** Vuelve a emitir el diagnóstico para regenerar el comentario de IA desfasado. */
+  onRegenerateAi?: () => void;
 }
 
 /** Registro y retirada de la validación humana documentada de un requisito. */
@@ -138,7 +141,10 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
   validations = {},
   onValidateRequirement,
   onRevokeValidation,
+  onRegenerateAi,
 }) => {
+  const respuestasPendientes = diagnostic.pendingAnswers ?? 0;
+  const requisitosPorValidar = unaccreditedRequirements(diagnostic.requirements).length;
   const getBadgeClass = (risk: DiagnosticResult['riskClassification']) => {
     switch (risk) {
       case 'prohibited':
@@ -392,6 +398,33 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
             <FileCheck style={{ width: 14, height: 14 }} />
             <span>Descargar informe (.docx)</span>
           </button>
+        </div>
+      </div>
+
+      {/* Lo que falta: respuestas de la entrevista y validaciones humanas son cosas distintas */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <div className="card" style={{ marginBottom: 0, border: `1px solid ${respuestasPendientes ? '#fcd34d' : '#bbf7d0'}`, background: respuestasPendientes ? '#fffbeb' : '#f0fdf4' }}>
+          <div style={{ fontWeight: 800, fontSize: '0.9rem', color: respuestasPendientes ? '#92400e' : '#166534' }}>
+            Respuestas pendientes en la entrevista: {respuestasPendientes}
+          </div>
+          <p style={{ fontSize: '0.8rem', color: '#475569', margin: '0.35rem 0 0.5rem' }}>
+            {respuestasPendientes
+              ? 'Preguntas que siguen en «No lo sé» o sin contestar. Al contestarlas, este diagnóstico se actualiza al momento.'
+              : 'Todas las preguntas de la entrevista están contestadas.'}
+          </p>
+          {respuestasPendientes > 0 && (
+            <button type="button" className="btn-secondary" style={{ fontSize: '0.8rem' }} onClick={onBackToInterview}>
+              Ir a contestarlas
+            </button>
+          )}
+        </div>
+        <div className="card" style={{ marginBottom: 0, border: '1px solid #cbd5e1', background: '#f8fafc' }}>
+          <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#334155' }}>
+            Requisitos por validar: {requisitosPorValidar}
+          </div>
+          <p style={{ fontSize: '0.8rem', color: '#475569', margin: '0.35rem 0 0' }}>
+            Contestar la entrevista no los acredita. Cada requisito pasa a «acreditado» cuando una persona responsable registra la validación con su evidencia (botón «Registrar validación humana» en cada requisito). Es normal que este número no baje al contestar.
+          </p>
         </div>
       </div>
 
@@ -723,6 +756,13 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
       {diagnostic.aiAssistance && diagnostic.aiAssistance.estado !== 'no_configurada' && (
         <div className="card" style={{ border: `1px solid ${diagnostic.aiAssistance.estado === 'usada' ? '#e2e8f0' : '#fcd34d'}`, background: diagnostic.aiAssistance.estado === 'usada' ? '#f8fafc' : '#fffbeb', marginTop: '1.5rem', fontSize: '0.8125rem', color: '#334155' }}>
           <strong>Asistencia de IA:</strong> {describirAsistencia(diagnostic.aiAssistance)}
+          {diagnostic.aiAssistance.estado === 'desfasada' && onRegenerateAi && (
+            <div style={{ marginTop: '0.5rem' }}>
+              <button type="button" className="btn-secondary" style={{ fontSize: '0.8rem' }} onClick={onRegenerateAi}>
+                Actualizar diagnóstico y regenerar el comentario
+              </button>
+            </div>
+          )}
         </div>
       )}
 

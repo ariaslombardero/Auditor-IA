@@ -28,6 +28,7 @@ import { generateCodeKit } from './lib/codeKitGenerator';
 import { registroAsistencia, restriccionEnvio } from './lib/proveedorEfectivo';
 import { formatApiError } from './lib/apiService';
 import { getStoredAudits, saveAuditRecord, type SaveOutcome } from './lib/auditHistoryService';
+import { currentAiComment, recomputeAudit } from './lib/auditState';
 import type {
   AppIdioma,
   FullAuditState,
@@ -53,6 +54,8 @@ export const App: React.FC = () => {
   // Expediente en curso: sus nuevas versiones se guardan como revisiones, sin sobrescribir.
   const [currentAuditId, setCurrentAuditId] = useState<string | undefined>(undefined);
   const [custodyNotice, setCustodyNotice] = useState<{ tipo: 'error' | 'aviso'; texto: string } | null>(null);
+  // Huella de las entradas de la última revisión guardada en el historial.
+  const [savedInputsKey, setSavedInputsKey] = useState<string | undefined>(undefined);
 
   const { config, isConfigured } = useApiConfig();
 
@@ -82,6 +85,7 @@ export const App: React.FC = () => {
       setLlmCritique(undefined);
       setCurrentAuditId(undefined);
       setCustodyNotice(null);
+      setSavedInputsKey(undefined);
       setCurrentStep('ingesta');
     }
   };
@@ -96,6 +100,7 @@ export const App: React.FC = () => {
       return;
     }
     setCurrentAuditId(outcome.record.auditId);
+    setSavedInputsKey(inputsKey(next));
     setHistoryCount(getStoredAudits().length);
     setCustodyNotice(
       outcome.retirados.length > 0
@@ -133,12 +138,16 @@ export const App: React.FC = () => {
       }
     }
 
+    // El diagnóstico y el comentario de IA quedan ligados a las entradas con que se calcularon.
+    const key = inputsKey(state);
+    const dissentAlert = dissentDetected ? LLM_DISSENT_NOTICE : undefined;
     const updatedFullState: FullAuditState = {
       ...state,
       diagnostic: {
         ...baselineDiagnostic,
-        aiAssistance,
-        ...(dissentDetected ? { pericialDissentAlert: LLM_DISSENT_NOTICE } : {}),
+        inputsKey: key,
+        aiAssistance: { ...aiAssistance, inputsKey: key, ...(dissentAlert ? { dissentAlert } : {}) },
+        ...(dissentAlert ? { pericialDissentAlert: dissentAlert } : {}),
       },
       codeKit,
     };
@@ -156,8 +165,17 @@ export const App: React.FC = () => {
   // Validación humana documentada de un requisito (queda ligada a las entradas actuales)
   const persistState = (next: FullAuditState) => {
     setState(next);
-    saveRevision(next, llmCritique);
+    saveRevision(next, currentAiComment(next, llmCritique));
   };
+
+  /** Cambios en la ingesta o la entrevista: el diagnóstico ya emitido se recalcula al momento. */
+  const updateInputs = (patch: Partial<Pick<FullAuditState, 'ingest' | 'answers'>>) => {
+    setState((p) => recomputeAudit({ ...p, ...patch }));
+  };
+
+  // Comentario de IA solo si corresponde a las respuestas actuales.
+  const aiComment = currentAiComment(state, llmCritique);
+  const unsavedChanges = Boolean(state.diagnostic && savedInputsKey && savedInputsKey !== inputsKey(state));
 
   const handleValidateRequirement = (requirementId: string, revisadoPor: string, evidencia: string) => {
     persistState({
@@ -182,6 +200,7 @@ export const App: React.FC = () => {
     });
     setLlmCritique(record.llmCritique);
     setCurrentAuditId(record.auditId);
+    setSavedInputsKey(inputsKey(record.state));
     setCustodyNotice(null);
     setCurrentStep('diagnostico');
     setShowHistoryModal(false);
@@ -232,6 +251,30 @@ export const App: React.FC = () => {
             <button type="button" onClick={() => setCustodyNotice(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontWeight: 700 }} aria-label="Cerrar aviso">×</button>
           </div>
         )}
+        {unsavedChanges && (
+          <div
+            role="status"
+            style={{
+              margin: '1rem 0 0',
+              padding: '0.6rem 1rem',
+              borderRadius: 8,
+              fontSize: '0.8125rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.75rem',
+              flexWrap: 'wrap',
+              background: '#eff6ff',
+              border: '1px solid #93c5fd',
+              color: '#1e3a8a',
+            }}
+          >
+            <span>Has cambiado respuestas desde la última revisión guardada. El diagnóstico ya está actualizado; guárdalo en el historial cuando termines.</span>
+            <button type="button" className="btn-secondary" style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }} onClick={() => saveRevision(state, aiComment)}>
+              Guardar revisión
+            </button>
+          </div>
+        )}
         {/* Stepper Navigation */}
         <nav className="stepper-nav" aria-label="Progreso de auditoría">
           {stepsList.map((s, index) => {
@@ -268,7 +311,7 @@ export const App: React.FC = () => {
         {currentStep === 'ingesta' && (
           <IngestionView
             data={state.ingest}
-            onChange={(newIngest) => setState((p) => ({ ...p, ingest: newIngest }))}
+            onChange={(newIngest) => updateInputs({ ingest: newIngest })}
             onProceed={() => setCurrentStep('entrevista')}
             onOpenPurpose={() => setShowPurposeModal(true)}
             idioma={idioma}
@@ -279,7 +322,8 @@ export const App: React.FC = () => {
           <LegalInterviewView
             answers={state.answers}
             ingest={state.ingest}
-            onChange={(newAnswers) => setState((p) => ({ ...p, answers: newAnswers }))}
+            onChange={(newAnswers) => updateInputs({ answers: newAnswers })}
+            hasDiagnostic={Boolean(state.diagnostic)}
             onBack={() => setCurrentStep('ingesta')}
             onAnalyze={handleStartAnalysis}
             isAnalyzing={isAnalyzing}
@@ -294,7 +338,8 @@ export const App: React.FC = () => {
             onValidateRequirement={handleValidateRequirement}
             onRevokeValidation={handleRevokeValidation}
             appName={state.ingest.appName}
-            llmCritique={llmCritique}
+            llmCritique={aiComment}
+            onRegenerateAi={handleStartAnalysis}
             onGoToCodeKit={() => setCurrentStep('codigo')}
             onOpenDossier={() => setCurrentStep('expediente')}
             onBackToInterview={() => setCurrentStep('entrevista')}
@@ -321,7 +366,7 @@ export const App: React.FC = () => {
             onUpdateMetadata={(newMeta) => setState((p) => ({ ...p, metadata: newMeta }))}
             onBackToCodeKit={() => setCurrentStep('codigo')}
             onGoToHardening={() => setCurrentStep('blindaje')}
-            llmCritique={llmCritique}
+            llmCritique={aiComment}
             idioma={idioma}
           />
         )}

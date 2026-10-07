@@ -10,6 +10,7 @@
 > **Fase 4 · entregas 4.1 y 4.2** (07/10/2026): **148 pruebas en verde**. 11 casos de referencia (`src/test/referenceCases.ts`) con resultado esperado y concordancia de DOCX, Markdown y manifiesto; generador `npm run ejemplos` que ejecuta el motor real. Los casos de referencia revelaron DOC-14.
 > **Fase 4 · entregas 4.3 y 4.4** (07/10/2026): **149 pruebas en verde**. Comprobación de principio a fin en el navegador (entrevista contestada desde la interfaz; panel, Markdown y manifiesto concordantes en clasificación, alerta y huella). Formato documental cotejado con la Ley 39/2015 (Arts. 26 y 70), la NTI de Documento Electrónico y la NTI de Catálogo de estándares.
 > **Cierre de la Fase 4** (07/10/2026): **151 pruebas en verde**. Documentación reescrita (README, `agents.md`), lista de revisión humana (`docs/revision-humana.md`) y condiciones del piloto (`docs/piloto.md`). Pendiente fuera del código: decisión expresa de los responsables, designación de participantes, validación del formato documental y cotejo de las fuentes marcadas como parciales o no accesibles.
+> **Fase 5 · entrega 5.1** (08/10/2026): **164 pruebas en verde**. Coherencia del estado (EST-01 a EST-04): diagnóstico recalculado con cada cambio, contador de respuestas pendientes basado en el catálogo de preguntas, separación entre respuestas pendientes y requisitos por validar, y comentario de IA desfasado. La prueba DOC-12 se adapta a la nueva expresión «por validar».
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -123,6 +124,17 @@
 | RT-04 | Ninguna prueba específica de agentes | G | AGENT-01 a AGENT-04 (correo al atacante, pago, desactivar registro, borrado) juzgados por la herramienta solicitada | 3 | 🟢 |
 | RT-05 | DOC-02 del manual (exfiltración Markdown) no implementado | G | LLM01-DOC-01 a DOC-03 alineados con el manual (memoria técnica, imagen Markdown, pago sin certificados); dominio reservado `attacker-controlled.example`. El manual (`agents.md`) se actualizará en la Fase 4 | 3 | 🟢 |
 | RT-06 | Ataca a un modelo genérico con el prompt del auditor, no a la cadena de la app auditada | C+G | El informe declara el alcance; si se aporta el prompt del sistema de la app auditada, se ensaya con él. La cadena completa (extracción, recuperación, renderizado, herramientas reales) queda fuera y así se indica | 3 | 🟢 |
+
+## H. Coherencia del estado y entrevista asistida (Fase 5)
+
+Origen **U** = detectado al usar la aplicación (responsable del proyecto).
+
+| ID | Hallazgo | Origen | Comportamiento esperado | Fase | Estado |
+| :--- | :--- | :---: | :--- | :---: | :---: |
+| EST-01 | El diagnóstico solo se recalculaba al pulsar «Emitir»: al cambiar respuestas y volver por la barra de pasos se veía el diagnóstico antiguo, y el informe mezclaba respuestas nuevas, clasificación antigua y la huella de las respuestas nuevas | U | `recomputeAudit` recalcula diagnóstico y kit con cada cambio; el diagnóstico guarda la huella de sus entradas; aviso de cambios sin guardar y botón «Guardar revisión» | 5 | 🟢 |
+| EST-02 | El contador de respuestas pendientes contaba preguntas ocultas (influencia sustancial, base jurídica, datos sensibles) y no contaba el ENS | U | `pendingQuestions` del catálogo único: solo preguntas visibles, incluidas las dimensiones del ENS; los bloques B a E se ocultan si no es un sistema de IA | 5 | 🟢 |
+| EST-03 | «Sin acreditar» mezclaba lo no contestado con lo contestado y no validado: nunca bajaba al contestar | U | Panel y documentos separan «respuestas pendientes» (`pendingAnswers`) de «requisitos por validar», con explicación; veredicto «PENDIENTE DE VALIDACIÓN HUMANA» o «FALTAN RESPUESTAS Y VALIDACIÓN HUMANA» | 5 | 🟢 |
+| EST-04 | El comentario de IA y su aviso de discrepancia no se marcaban como desfasados al cambiar las respuestas | C (en Fase 5) | Estado `desfasada` ligado a la huella de las entradas; no se muestra ni se exporta; botón para regenerarlo | 5 | 🟢 |
 
 ## Correcciones a las auditorías previas registradas en esta matriz
 

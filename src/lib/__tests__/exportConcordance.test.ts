@@ -72,7 +72,7 @@ describe('Identificación y concordancia del documento', () => {
     }
   });
 
-  it('DOC-12 · cuadro de mando, DOCX, Markdown y manifiesto expresan el mismo veredicto y el mismo número de requisitos sin acreditar', async () => {
+  it('DOC-12 · cuadro de mando, DOCX, Markdown y manifiesto expresan el mismo veredicto y el mismo número de requisitos por validar', async () => {
     for (const [, build] of ALL_CASES) {
       const state = build();
       const verdict = computeExecutiveVerdict(state.diagnostic!);
@@ -83,7 +83,7 @@ describe('Identificación y concordancia del documento', () => {
       const shortLabel = verdict.label.replace('VEREDICTO: ', '');
       expect(await officialDossierText(state)).toContain(shortLabel);
       expect(generateOfficialDossierMarkdown(state)).toContain(shortLabel);
-      expect(state.diagnostic!.executiveSummary).toContain(`Quedan ${pending} requisitos sin acreditar`);
+      expect(state.diagnostic!.executiveSummary).toContain(`Quedan ${pending} requisitos por validar`);
     }
   });
 });

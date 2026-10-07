@@ -23,8 +23,13 @@ export interface AiAssistanceRecord {
   proveedor: string;
   modelo: string;
   ubicacion: ProviderLocation;
-  estado: 'usada' | 'no_configurada' | 'bloqueada' | 'fallida';
+  /** «desfasada»: el comentario se generó con respuestas distintas de las actuales. */
+  estado: 'usada' | 'no_configurada' | 'bloqueada' | 'fallida' | 'desfasada';
   motivo?: string;
+  /** Huella de las entradas con las que se generó el comentario. */
+  inputsKey?: string;
+  /** Aviso de posible discrepancia que dio el modelo con esas entradas. */
+  dissentAlert?: string;
 }
 
 export type AppIdioma = 'castellano' | 'galego';
@@ -232,6 +237,10 @@ export interface DiagnosticResult {
   requirements: RequirementAssessment[];
   /** Versión del motor que produjo este diagnóstico. */
   engineVersion: string;
+  /** Huella de las entradas (ingesta y entrevista) con las que se calculó este diagnóstico. */
+  inputsKey?: string;
+  /** Preguntas visibles de la entrevista que siguen sin contestar. */
+  pendingAnswers?: number;
   redFlags: string[];
   recommendations: string[];
   executiveSummary: string;

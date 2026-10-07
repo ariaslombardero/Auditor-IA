@@ -110,27 +110,5 @@ export function normalizeAnswers(raw: unknown): LegalEnrichmentAnswers {
   return migrated;
 }
 
-/** Cuenta las respuestas pendientes de la entrevista (para orientar al usuario). */
-export function countUnknownAnswers(a: LegalEnrichmentAnswers): number {
-  const tri = [
-    a.infersOutputs,
-    a.performsProfiling,
-    a.materialInfluence,
-    a.interactsWithPersons,
-    a.generatesSyntheticContent,
-    a.directHumanIntervention,
-    a.processesPersonalData,
-    a.processesSpecialCategoryData,
-    a.processesCriminalData,
-    a.auditLogsEnabled,
-    ...Object.values(a.prohibitedPractices),
-  ];
-  return (
-    tri.filter((v) => v === 'desconocido').length +
-    (a.annexIIIArea === 'desconocido' ? 1 : 0) +
-    (a.institutionalRole === 'desconocido' ? 1 : 0) +
-    (a.legalBasis === 'desconocida' ? 1 : 0) +
-    (a.humanOversightLevel === 'desconocido' ? 1 : 0) +
-    (a.hostingModel === 'desconocido' ? 1 : 0)
-  );
-}
+// El recuento de respuestas pendientes está en interviewCatalog.ts (pendingQuestions):
+// solo cuenta las preguntas que la entrevista muestra.

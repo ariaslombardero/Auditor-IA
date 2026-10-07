@@ -74,6 +74,8 @@ export function describirAsistencia(a: AiAssistanceRecord | undefined): string {
       return `Comentario complementario generado con ${destino}. No altera la clasificación.`;
     case 'bloqueada':
       return `No se envió la documentación a ${destino}. ${a.motivo ?? ''}`.trim();
+    case 'desfasada':
+      return `El comentario de ${destino} se generó con respuestas anteriores: no se incluye. Actualice el diagnóstico para regenerarlo.`;
     case 'fallida':
       return `Se intentó usar ${destino}, pero la llamada falló${a.motivo ? `: ${a.motivo}` : ''}. El diagnóstico procede solo del motor determinista.`;
   }

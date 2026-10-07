@@ -12,6 +12,7 @@ import {
   evaluateTransparency,
 } from './evaluators';
 import { buildObligations, evaluateEns } from './obligations';
+import { pendingQuestions } from '../interviewCatalog';
 
 export interface EngineOptions {
   /** Fecha de referencia (AAAA-MM-DD) para valorar la exigibilidad. Por defecto, hoy. */
@@ -160,10 +161,13 @@ export function evaluateRulesDeterministically(
   const redFlags = buildRedFlags(answers, ingest);
   const recommendations = buildRecommendations(classification, isArticle63Derogation, answers, ingest);
   const pendingCount = unaccreditedRequirements(requirements).length;
+  const pendingAnswers = pendingQuestions(answers).length;
+  const respuestas = pendingAnswers === 0 ? '' : `Falta${pendingAnswers === 1 ? '' : 'n'} ${pendingAnswers} respuesta${pendingAnswers === 1 ? '' : 's'} de la entrevista. `;
+  const porValidar = `Quedan ${pendingCount} requisitos por validar (los acredita una persona con evidencia).`;
   const executiveSummary =
     classification === 'requires_review'
-      ? `Diagnóstico preliminar para "${ingest.appName}": la clasificación no es concluyente (${reviewReasons.length} motivo${reviewReasons.length === 1 ? '' : 's'}). Quedan ${pendingCount} requisitos sin acreditar. Categoría ENS${ens.orientative ? ' orientativa' : ''}: ${ens.category}. Deben completarse o revisarse las respuestas de la entrevista.`
-      : `Diagnóstico preliminar para "${ingest.appName}": según lo declarado, el sistema se clasifica como ${riskLabel}. Quedan ${pendingCount} requisitos sin acreditar. Categoría ENS${ens.orientative ? ' orientativa' : ''}: ${ens.category}. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.`;
+      ? `Diagnóstico preliminar para "${ingest.appName}": la clasificación no es concluyente (${reviewReasons.length} motivo${reviewReasons.length === 1 ? '' : 's'}). ${respuestas}${porValidar} Categoría ENS${ens.orientative ? ' orientativa' : ''}: ${ens.category}. Deben completarse o revisarse las respuestas de la entrevista.`
+      : `Diagnóstico preliminar para "${ingest.appName}": según lo declarado, el sistema se clasifica como ${riskLabel}. ${respuestas}${porValidar} Categoría ENS${ens.orientative ? ' orientativa' : ''}: ${ens.category}. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.`;
 
   return {
     riskClassification: classification,
@@ -184,6 +188,7 @@ export function evaluateRulesDeterministically(
     ensCategoryIsOrientative: ens.orientative,
     requirements,
     engineVersion: ENGINE_VERSION,
+    pendingAnswers,
     redFlags,
     recommendations,
     executiveSummary,
