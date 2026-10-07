@@ -233,7 +233,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
                 border: '1px solid var(--color-border)',
               }}
             >
-              🔍 Vista Pericial Completa
+              🔍 Vista completa
             </button>
             <button
               type="button"
@@ -271,9 +271,9 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
         </div>
 
         <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-          {roleView === 'juridico' && 'Mostrando dictamen, EIPD, RAT y fundamentación legal.'}
+          {roleView === 'juridico' && 'Mostrando el diagnóstico, la EIPD, el RAT y la fundamentación jurídica.'}
           {roleView === 'tecnico' && 'Mostrando medidas de ciberseguridad del ENS y defensas de código.'}
-          {roleView === 'completo' && 'Mostrando informe pericial exhaustivo multidimensional.'}
+          {roleView === 'completo' && 'Mostrando el informe completo.'}
         </div>
       </div>
 
@@ -412,7 +412,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-              Dictamen de Conformidad para: {appName}
+              Diagnóstico preliminar de: {appName}
             </span>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-text)', marginTop: '0.25rem' }}>
               {diagnostic.riskLabel}

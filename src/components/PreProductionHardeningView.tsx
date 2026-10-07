@@ -213,14 +213,14 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
               <Sparkles style={{ width: 18, height: 18, color: '#7c3aed' }} />
               <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#7c3aed' }}>
-                Fase de Blindaje Avanzado & Auditoría Activa
+                Laboratorio de pruebas antes de la puesta en servicio
               </span>
             </div>
             <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1e1b4b' }}>
               Paso 6: Laboratorio de Ensayos Pre-Producción y Gobernanza
             </h2>
             <p style={{ fontSize: '0.875rem', color: '#4b5563', marginTop: '0.25rem', maxWidth: 750 }}>
-              Batería interactiva de pruebas de ciberseguridad, red teaming en vivo, generación de la EIPD oficial (AEPD),
+              Batería interactiva de pruebas de ciberseguridad, red teaming en vivo, borrador de EIPD (AEPD),
               sanitización de prompts, buscador normativo offline y sellado criptográfico para AutoFirma.
             </p>
           </div>
@@ -698,7 +698,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                 style={{ background: '#059669', borderColor: '#059669', padding: '0.6rem 1.25rem', fontSize: '0.875rem' }}
               >
                 <Download style={{ width: 16, height: 16 }} />
-                <span>{downloadingEipd ? 'Generando EIPD...' : 'Descargar EIPD Oficial (.DOCX)'}</span>
+                <span>{downloadingEipd ? 'Generando EIPD...' : 'Descargar borrador de EIPD (.DOCX)'}</span>
               </button>
             </div>
 
@@ -1055,7 +1055,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
                   Generar Huella Digital y Código Seguro de Verificación (CSV)
                 </h4>
                 <p style={{ fontSize: '0.8125rem', color: '#64748b', maxWidth: 500, margin: '0.5rem auto 1.25rem' }}>
-                  Se calculará el hash criptográfico SHA-256 nativo sobre el expediente oficial de conformidad de {state.ingest.appName || 'la aplicación'}.
+                  Se calculará el hash criptográfico SHA-256 nativo sobre el informe técnico de {state.ingest.appName || 'la aplicación'}.
                 </p>
                 <button
                   type="button"
@@ -1113,7 +1113,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.8125rem' }}>
                   <div style={{ padding: '0.65rem 0.85rem', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6 }}>
-                    <strong>Paso 1:</strong> Descargar el expediente oficial en Word (.DOCX) generado en el Paso 5.
+                    <strong>Paso 1:</strong> Descargar el informe en Word (.DOCX) generado en el paso 5 y revisarlo.
                   </div>
                   <div style={{ padding: '0.65rem 0.85rem', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6 }}>
                     <strong>Paso 2:</strong> Abrir el cliente de escritorio oficial <strong>AutoFirma</strong> (Ministerio para la Transformación Digital y de la Función Pública).
@@ -1131,7 +1131,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
 
                 {/* Texto de la Diligencia */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8125rem', fontWeight: 700 }}>Texto Oficial de la Diligencia Técnica:</span>
+                  <span style={{ fontSize: '0.8125rem', fontWeight: 700 }}>Texto propuesto para la diligencia técnica:</span>
                   <button
                     type="button"
                     onClick={() => {

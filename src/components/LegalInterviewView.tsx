@@ -377,7 +377,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
           <span>Volver a la ingesta</span>
         </button>
         <button type="button" onClick={onAnalyze} className="btn-primary" disabled={isAnalyzing}>
-          <span>{isAnalyzing ? 'Analizando...' : 'Emitir Diagnóstico y Dictamen'}</span>
+          <span>{isAnalyzing ? 'Analizando...' : 'Emitir diagnóstico preliminar'}</span>
           <ArrowRight style={{ width: 16, height: 16 }} />
         </button>
       </div>

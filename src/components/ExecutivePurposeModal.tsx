@@ -196,16 +196,16 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
 
             <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem', color: '#1e293b' }}>
               <li>
-                <strong>1. El Expediente Oficial de Conformidad en Word (.docx)</strong>: Formateado con membrete corporativo, articulado legal contrastado con el BOE/DOUE y casillas para las 3 firmas obligatorias: <em>Responsable Funcional, CISO y Delegado de Protección de Datos</em>.
+                <strong>1. Un informe técnico preliminar en Word (.docx) y Markdown</strong>: con la traza de la clasificación, las fuentes normativas y espacio para la revisión y firma de <em>Responsable Funcional, Responsable de Seguridad y Delegado de Protección de Datos</em>. No es un acto administrativo ni acredita el cumplimiento.
               </li>
               <li>
-                <strong>2. Kit de Código de Blindaje</strong>: Banners de transparencia según el Art. 50 RIA y módulos de logs listos para copiar y pegar en tu proyecto.
+                <strong>2. Kit de código</strong>: Banners de transparencia según el Art. 50 RIA y módulos de logs listos para copiar y pegar en tu proyecto.
               </li>
               <li>
-                <strong>3. Evaluación de Impacto de la AEPD (EIPD)</strong>: Documento pericial de mitigación de riesgos para salvaguarda de tu organismo.
+                <strong>3. Evaluación de Impacto de la AEPD (EIPD)</strong>: Borrador para que el responsable del tratamiento lo complete con el DPD.
               </li>
               <li>
-                <strong>4. Simulador de Ataques y Blindaje (Red Teaming)</strong>: Pruebas de inyección de prompts y jailbreak para comprobar que tu IA es resistente.
+                <strong>4. Pruebas adversarias (red teaming)</strong>: ensayos de inyección de instrucciones, fuga de datos y agencia excesiva sobre el modelo configurado, juzgados por su efecto. Superarlos no demuestra la ausencia de vulnerabilidades.
               </li>
             </ul>
           </div>

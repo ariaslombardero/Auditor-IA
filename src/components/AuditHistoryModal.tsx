@@ -589,7 +589,7 @@ export const AuditHistoryModal: React.FC<AuditHistoryModalProps> = ({
                           alignItems: 'center',
                           gap: '0.35rem',
                         }}
-                        title="Descargar directamente el expediente oficial en Word (.docx)"
+                        title="Descargar el informe de esta revisión en Word (.docx)"
                       >
                         <FileText style={{ width: 14, height: 14, color: '#2563eb' }} />
                         <span>DOCX</span>

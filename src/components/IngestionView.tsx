@@ -286,7 +286,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
           }}
         >
           <Bot style={{ width: 14, height: 14 }} />
-          <span>2. AGENTS.md / CLAUDE.md (Directivas del Modelo · Nivel Pericial)</span>
+          <span>2. AGENTS.md / CLAUDE.md (directivas del modelo)</span>
           {data.agentsMdContent?.trim() && (
             <span style={{ fontSize: '0.6875rem', background: activeDocTab === 'agents' ? 'rgba(255,255,255,0.25)' : '#dcfce7', color: activeDocTab === 'agents' ? 'white' : '#15803d', padding: '1px 6px', borderRadius: '999px', fontWeight: 700 }}>✓</span>
           )}
@@ -323,7 +323,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
         <div className="form-group" style={{ marginTop: '0.75rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
-              <label style={{ margin: 0, fontWeight: 600 }}>Contenido de AGENTS.md o CLAUDE.md (Directivas del Modelo · Nivel Pericial)</label>
+              <label style={{ margin: 0, fontWeight: 600 }}>Contenido de AGENTS.md o CLAUDE.md (directivas del modelo)</label>
               <span style={{ fontSize: '0.75rem', color: 'var(--brand-muted-light)', display: 'block' }}>
                 Documenta los system prompts, grado de autonomía de las herramientas y modo de inferencia.
               </span>
@@ -546,7 +546,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--brand-ink)' }}>
             <Scale style={{ width: 16, height: 16, color: '#0284c7' }} />
-            <span><strong>Marco Legal:</strong> Esta auditoría genera el expediente administrativo y el blindaje técnico que exige la ley.</span>
+            <span><strong>Marco Legal:</strong> Esta auditoría genera un informe técnico preliminar y propuestas de adaptación, que deben revisar los responsables.</span>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onOpenPurpose && (
@@ -849,7 +849,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
                     {/* Detección de AGENTS.md */}
                     {githubScanSuccess.hasAgentsFile ? (
                       <div style={{ marginTop: '0.375rem', fontWeight: 600, color: '#15803d' }}>
-                        🎉 ¡Archivo de directivas (AGENTS.md / CLAUDE.md) detectado e importado! Cobertura Pericial activa.
+                        🎉 ¡Archivo de directivas (AGENTS.md / CLAUDE.md) detectado e importado! La auditoría podrá examinar las directivas del modelo.
                       </div>
                     ) : (
                       <div style={{
@@ -867,7 +867,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
                         <div>
                           <strong style={{ color: '#6d28d9' }}>⚠️ No se detectó <code>AGENTS.md</code> en el repositorio.</strong>
                           <div style={{ fontSize: '0.6875rem', color: '#581c87' }}>
-                            Para una auditoría pericial completa de inferencia y salvaguardas éticas, puedes generarlo con IA a partir del código:
+                            Para examinar también las directivas del modelo y sus salvaguardas, puedes generarlo con IA a partir del código:
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
@@ -1171,13 +1171,13 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
           <div>
             <strong style={{ fontSize: '0.8125rem', color: hasAgentsMd ? '#15803d' : '#334155' }}>
               {hasAgentsMd
-                ? '🛡️ Nivel Pericial Completo (README Funcional + AGENTS.md Gobernanza)'
+                ? '🛡️ Documentación completa (README funcional + AGENTS.md de gobernanza)'
                 : '📄 Nivel Documental Estándar (README.md Funcional)'}
             </strong>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--brand-muted-light)' }}>
               {hasAgentsMd
                 ? 'El expediente auditará tanto la operativa funcional como los system prompts y la soberanía de inferencia.'
-                : 'Se auditará la funcionalidad del sistema. Para una auditoría pericial completa de los prompts, añade un AGENTS.md.'}
+                : 'Se auditará la funcionalidad del sistema. Para examinar también los prompts, añade un AGENTS.md.'}
             </p>
           </div>
         </div>

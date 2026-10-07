@@ -9,6 +9,7 @@
 > **Cierre de la Fase 3** (07/10/2026): **125 pruebas, 125 en verde**. Entrega 3.3: ensayos adversarios juzgados por efectos observables, estados `demostracion` y `no_ejecutada`, batería de agentes y alcance declarado. Categorías OWASP cotejadas con la lista oficial de 2025 (la extracción de instrucciones pasa a LLM07 y la exfiltración por Markdown se atribuye también a LLM05). La prueba RT-01 de la Fase 0 se conserva y se añaden pruebas de efectos, detectores y alcance.
 > **Fase 4 · entregas 4.1 y 4.2** (07/10/2026): **148 pruebas en verde**. 11 casos de referencia (`src/test/referenceCases.ts`) con resultado esperado y concordancia de DOCX, Markdown y manifiesto; generador `npm run ejemplos` que ejecuta el motor real. Los casos de referencia revelaron DOC-14.
 > **Fase 4 · entregas 4.3 y 4.4** (07/10/2026): **149 pruebas en verde**. Comprobación de principio a fin en el navegador (entrevista contestada desde la interfaz; panel, Markdown y manifiesto concordantes en clasificación, alerta y huella). Formato documental cotejado con la Ley 39/2015 (Arts. 26 y 70), la NTI de Documento Electrónico y la NTI de Catálogo de estándares.
+> **Cierre de la Fase 4** (07/10/2026): **151 pruebas en verde**. Documentación reescrita (README, `agents.md`), lista de revisión humana (`docs/revision-humana.md`) y condiciones del piloto (`docs/piloto.md`). Pendiente fuera del código: decisión expresa de los responsables, designación de participantes, validación del formato documental y cotejo de las fuentes marcadas como parciales o no accesibles.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -76,6 +77,7 @@
 | DOC-12 | Cada exportador reconstruía sus propias conformidades (el manifiesto fijaba además `ley_40_2015_art_41_automated_act: false`) | C+G | Cuadro de mando, DOCX, Markdown y manifiesto consumen el mismo modelo y expresan el mismo veredicto | 1 | 🟢 |
 | DOC-13 | El cuadro de mando mostraba un banner fijo «Sincronización Normativa Telemática Activa · Normas vigentes verificadas» | C (en Fase 2) | Banner de consulta que indica el corte normativo y remite a las fuentes oficiales | 2 | 🟢 |
 | DOC-14 | Las alertas y recomendaciones del motor solo se mostraban en el panel: ningún documento exportado las recogía | C (en Fase 4, casos de referencia) | Sección «Alertas para la revisión» y «Recomendaciones» en DOCX y Markdown; `review_alerts` y `recommendations` en el manifiesto; el panel deja de hablar de «alertas de infracción» | 4 | 🟢 |
+| DOC-15 | La guía de usuario seguía afirmando que el paso 6 genera «un CSV oficial conforme al Art. 42» y prometía una «auditoría pericial al 100 % de fiabilidad»; README, `agents.md` y el dossier para el DPD describían funciones y normas ya corregidas | C (en Fase 4) | Textos de interfaz, README y `agents.md` reescritos según lo implementado; dossier antiguo a `docs/historico/` con aviso; prueba de enlaces y de afirmaciones prohibidas en la documentación pública | 4 | 🟢 |
 
 ## D. EIPD (`src/lib/eipdGenerator.ts`)
 

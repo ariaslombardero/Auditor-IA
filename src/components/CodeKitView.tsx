@@ -145,7 +145,7 @@ export const CodeKitView: React.FC<CodeKitViewProps> = ({
       {/* Disclaimers Card */}
       <div className="card">
         <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--color-primary)' }}>
-          Textos Legales Homologados para Interfaces y Documentos
+          Textos de aviso propuestos para interfaces y documentos
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1rem' }}>
           <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
@@ -176,7 +176,7 @@ export const CodeKitView: React.FC<CodeKitViewProps> = ({
           className="btn-primary"
           style={{ padding: '0.75rem 1.75rem', fontSize: '0.9375rem' }}
         >
-          <span>Generar Expediente Administrativo Oficial</span>
+          <span>Generar el informe técnico</span>
           <ArrowRight style={{ width: 16, height: 16 }} />
         </button>
       </div>

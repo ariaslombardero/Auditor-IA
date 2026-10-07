@@ -47,7 +47,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
       await exportEipdDocx(state, idioma);
     } catch (err) {
       console.error('Error generando EIPD:', err);
-      alert('Error al generar la EIPD oficial. Revisa la consola.');
+      alert('Error al generar el borrador de EIPD. Revisa la consola.');
     } finally {
       setDownloadingEipd(false);
     }
@@ -113,7 +113,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-primary)' }}>
-              Paso 5: Expediente Técnico y Dictamen Oficial de Conformidad
+              Paso 5: Informe técnico preliminar
             </h2>
             <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
               Documento formal exhaustivo con citas legales, delimitación del Anexo III, análisis ENS y diligencias de firma para el órgano colegiado y el DPD.
@@ -145,10 +145,10 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
                 background: '#ecfdf5',
                 fontWeight: 600,
               }}
-              title="Descargar Evaluación de Impacto en Protección de Datos oficial (metodología AEPD / Art. 35 RGPD en Word)"
+              title="Descargar el borrador de evaluación de impacto (Art. 35 RGPD) en Word, para completar con el DPD"
             >
               <Shield style={{ width: 15, height: 15, color: '#059669' }} />
-              <span>{downloadingEipd ? 'Generando EIPD...' : 'EIPD Oficial (.docx)'}</span>
+              <span>{downloadingEipd ? 'Generando EIPD...' : 'Borrador de EIPD (.docx)'}</span>
             </button>
 
             <button
@@ -257,7 +257,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
           fontSize: '0.8125rem',
           fontWeight: 600,
         }}>
-          <span>Vista Previa del Dictamen Formal</span>
+          <span>Vista previa del informe</span>
           <button
             type="button"
             onClick={handleCopyMd}
@@ -317,7 +317,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
               }}
             >
               <Sparkles style={{ width: 16, height: 16 }} />
-              <span>Continuar a Blindaje Pre-Producción (Paso 6)</span>
+              <span>Continuar al laboratorio de pruebas (paso 6)</span>
             </button>
           )}
         </div>

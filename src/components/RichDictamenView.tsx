@@ -41,7 +41,7 @@ export const RichDictamenView: React.FC<RichDictamenViewProps> = ({ content }) =
     const lines = content.split('\n');
     const result: ParsedSection[] = [];
     let currentSection: ParsedSection = {
-      title: 'Dictamen Pericial de Conformidad Técnica y Jurídica',
+      title: 'Comentario complementario generado con IA (no vinculante)',
       items: [],
     };
 
@@ -50,7 +50,7 @@ export const RichDictamenView: React.FC<RichDictamenViewProps> = ({ content }) =
       if (!line || line === '---' || line === '***') continue;
 
       if (line.startsWith('#')) {
-        if (currentSection.items.length > 0 || currentSection.title !== 'Dictamen Pericial de Conformidad Técnica y Jurídica') {
+        if (currentSection.items.length > 0 || currentSection.title !== 'Comentario complementario generado con IA (no vinculante)') {
           result.push(currentSection);
         }
         const cleanTitle = line.replace(/^#{1,4}\s*/, '').replace(/\*\*/g, '').trim();
@@ -162,7 +162,7 @@ export const RichDictamenView: React.FC<RichDictamenViewProps> = ({ content }) =
           </div>
           <div>
             <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 800, color: 'var(--color-text)' }}>
-              Dictamen Especializado de Auditoría Asistida
+              Comentario asistido por IA: no modifica la clasificación
             </h4>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
               Análisis asistido por IA, no verificado (RIA, RGPD, ENS y Ley 40/2015)

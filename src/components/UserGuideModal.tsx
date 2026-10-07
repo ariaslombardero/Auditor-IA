@@ -380,7 +380,7 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({
                 <div style={{ padding: '0.75rem 1rem', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 'var(--radius-md)', display: 'flex', gap: '0.75rem' }}>
                   <span style={{ fontWeight: 800, color: '#7c3aed', fontSize: '0.875rem' }}>Paso 6:</span>
                   <div>
-                    <strong>Laboratorio de Blindaxe Pre-Produción:</strong> Simulador de ataques adversarios (Red Teaming en vivo), xerador da EIPD oficial da AEPD, escáner Prompt-Guard, RAG normativo offline e preparación para AutoFirma.
+                    <strong>Laboratorio de probas:</strong> ensaios adversarios sobre o modelo configurado, borrador de EIPD, escáner Prompt-Guard, RAG normativo offline e preparación para AutoFirma.
                   </div>
                 </div>
               </div>
@@ -408,8 +408,8 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({
                 </h4>
                 <p style={{ fontSize: '0.8125rem', color: '#047857' }}>
                   {isGl
-                    ? 'A aplicación funciona perfectamente cun README estándar. Porén, se queres acadar unha Auditoría Pericial ao 100% de fiabilidade, podes pedirlle á túa IA de programación (Cursor, Claude, ChatGPT, Windsurf) que che xere este arquivo en 30 segundos usando o seguinte prompt:'
-                    : 'La aplicación funciona perfectamente con un README estándar. Sin embargo, si quieres alcanzar una Auditoría Pericial al 100% de fiabilidad, puedes pedirle a tu IA de programación (Cursor, Claude, ChatGPT, Windsurf) que te genere este archivo en 30 segundos usando el siguiente prompt:'}
+                    ? 'A aplicación funciona perfectamente cun README estándar. Porén, se queres que a auditoría examine tamén as directivas do modelo, podes pedirlle á túa IA de programación (Cursor, Claude, ChatGPT, Windsurf) que che xere este arquivo en 30 segundos usando o seguinte prompt:'
+                    : 'La aplicación funciona perfectamente con un README estándar. Sin embargo, si quieres que la auditoría examine también las directivas del modelo, puedes pedirle a tu IA de programación (Cursor, Claude, ChatGPT, Windsurf) que te genere este archivo en 30 segundos usando el siguiente prompt:'}
                 </p>
               </div>
 
@@ -444,19 +444,19 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({
               </h3>
               <p style={{ color: '#475569', marginBottom: '1rem' }}>
                 {isGl
-                  ? 'Un informe en Word ou Markdown carece de eficacia legal nun procedemento administrativo se non conta cun selado criptográfico inmutable e unha sinatura electrónica recoñecida.'
-                  : 'Un informe en Word o Markdown carece de eficacia legal en un procedimiento administrativo si no cuenta con un sellado criptográfico inmutable y una firma electrónica reconocida.'}
+                  ? 'O informe que xera a ferramenta é un borrador: só produce efectos nun procedemento cando o persoal competente o revisa, o asina electronicamente e se incorpora ao expediente.'
+                  : 'El informe que genera la herramienta es un borrador: solo produce efectos en un procedimiento cuando el personal competente lo revisa, lo firma electrónicamente y se incorpora al expediente.'}
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
                 <div style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-                  <strong>1. Código Seguro de Verificación (CSV):</strong> O Paso 6 calcula a pegada SHA-256 e xera un CSV oficial conforme ao Art. 42 da Lei 40/2015.
+                  <strong>{isGl ? '1. Pegada e identificador interno:' : '1. Huella e identificador interno:'}</strong> {isGl ? 'O paso 6 calcula a pegada SHA-256 do informe e un identificador interno. Non é un código seguro de verificación (CSV): o CSV asígnao a sede electrónica da entidade.' : 'El paso 6 calcula la huella SHA-256 del informe y un identificador interno. No es un código seguro de verificación (CSV): el CSV lo asigna la sede electrónica de la entidad.'}
                 </div>
                 <div style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-                  <strong>2. Asinatura en AutoFirma (@firma):</strong> Permite abrir o arquivo oficial dende a app oficial de escritorio do Ministerio e asinalo con DNIe ou Certificado FNMT de Empregado Público nos formatos regulamentarios <code>CAdES-BES</code> ou <code>PAdES-BES</code>.
+                  <strong>{isGl ? '2. Sinatura con AutoFirma:' : '2. Firma con AutoFirma:'}</strong> {isGl ? 'O informe revisado pode asinarse con certificado de empregado público ou DNIe (por exemplo, en formato PAdES sobre a súa versión PDF).' : 'El informe revisado puede firmarse con certificado de empleado público o DNIe (por ejemplo, en formato PAdES sobre su versión PDF).'}
                 </div>
                 <div style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-                  <strong>3. Dilixencia de Custodia:</strong> O arquivo asinado incorpórase ao Xestor de Expedientes da Sede Electrónica municipal ou autonómica como anexo técnico preceptivo para a posta en servizo.
+                  <strong>{isGl ? '3. Incorporación ao expediente:' : '3. Incorporación al expediente:'}</strong> {isGl ? 'O documento asinado incorpórase ao xestor de expedientes, que engade os metadatos do documento electrónico e o CSV (ver docs/formato-documental.md).' : 'El documento firmado se incorpora al gestor de expedientes, que añade los metadatos del documento electrónico y el CSV (ver docs/formato-documental.md).'}
                 </div>
               </div>
             </div>

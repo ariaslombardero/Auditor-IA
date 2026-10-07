@@ -1,3 +1,5 @@
+> **Documento histórico (versión 1.0, sustituido).** Contiene afirmaciones que se corrigieron durante el saneamiento: «auxilio técnico instrumental amparado por el Ómnibus», medidas de la Guía CCN-STIC 884D no cotejadas, claves custodiadas en `localStorage` y consulta normativa «en tiempo real», entre otras. No debe usarse como descripción de la herramienta. La información vigente para el DPD está en [revision-humana.md](../revision-humana.md), [piloto.md](../piloto.md), [ADR 001](../adr/001-credenciales-inferencia.md) y [custodia-historial.md](../custodia-historial.md); los hallazgos, en la [matriz](../auditoria/matriz-hallazgos.md).
+
 # DOSSIER TÉCNICO-METODOLÓGICO PARA EL DELEGADO DE PROTECCIÓN DE DATOS (DPD / DPO)
 ## Arquitectura, Base Normativa, Funcionamiento y Garantías de Soberanía de "Auditor IA · Sector Público"
 

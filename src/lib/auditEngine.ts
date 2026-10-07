@@ -67,10 +67,10 @@ ${ingest.agentsMdContent.slice(0, 3500)}
   * Categoría ENS: ${baseline.ensCategory}
 
 Genera un informe con 3 secciones claramente delimitadas:
-### 1. DICTAMEN DE RIESGO Y ADECUACIÓN NORMATIVA
-(Análisis pericial motivado:
+### 1. VALORACIÓN DEL RIESGO Y ADECUACIÓN NORMATIVA
+(Análisis motivado:
  - ${baseline.riskClassification === 'not_ai_system' ? 'Valora si la declaración de que no es un sistema de IA (Art. 3.1) es verosímil a la vista de la documentación.' : 'Examina si aplica el Anexo III punto 4(a) o 5(a) del RIA, si procede la excepción motivada del Art. 6.3 o el régimen de transparencia del Art. 50.'}
- - CONTROL PERICIAL DE DISCREPANCIA: Si detectas que la aplicación en la práctica realiza baremación de candidatos, asignación de ayudas a personas o decisiones sustantivas no detectadas en las reglas preliminares, incluye destacadamente:
+ - CONTROL DE DISCREPANCIA: Si detectas que la aplicación en la práctica realiza baremación de candidatos, asignación de ayudas a personas o decisiones sustantivas no detectadas en las reglas preliminares, incluye destacadamente:
    "> ⚠️ **[${LLM_DISSENT_MARKER}: Posible Alto Riesgo Anexo III]**" motivando la reclasificación.
  - Delimita el Art. 41 de la Ley 40/2015 (actuación sin intervención directa de un empleado público) frente al apoyo técnico, indicando qué aspectos son declarados y cuáles deberían verificarse.)
 

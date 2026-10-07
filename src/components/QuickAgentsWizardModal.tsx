@@ -152,7 +152,7 @@ ${agencyDesc}
                 Asistente Rápido de Directivas de Agente (AGENTS.md)
               </h2>
               <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--brand-muted-light)' }}>
-                Configura en 4 pasos el manifiesto técnico del modelo para alcanzar la Cobertura Pericial Completa.
+                Configura en 4 pasos el manifiesto técnico del modelo para que la auditoría pueda examinarlas.
               </p>
             </div>
           </div>
@@ -380,7 +380,7 @@ ${agencyDesc}
         }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--brand-muted-light)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <ShieldCheck style={{ width: 15, height: 15, color: '#16a34a' }} />
-            <span>Genera automáticamente el manifiesto pericial conforme a RIA y ENS.</span>
+            <span>Genera un borrador de AGENTS.md con la información que necesita la auditoría.</span>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button

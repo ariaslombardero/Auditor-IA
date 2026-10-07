@@ -40,3 +40,25 @@ describe('Endurecimiento de la página', () => {
     expect(meta.content).not.toContain('frame-ancestors');
   });
 });
+
+describe('Documentación pública (DOC-15)', () => {
+  const leer = (f: string) => readFileSync(resolve(root, f), 'utf8');
+  const documentos = ['README.md', 'agents.md', 'docs/piloto.md', 'docs/revision-humana.md', 'docs/formato-documental.md', 'docs/custodia-historial.md', 'docs/adr/001-credenciales-inferencia.md'];
+
+  it('los enlaces relativos de la documentación apuntan a ficheros existentes', () => {
+    for (const doc of documentos) {
+      const base = resolve(root, doc, '..');
+      for (const [, destino] of leer(doc).matchAll(/\]\(((?!https?:|#|mailto:)[^)\s]+)\)/g)) {
+        const ruta = resolve(base, decodeURI(destino.split('#')[0]));
+        expect(existsSync(ruta), `${doc} → ${destino}`).toBe(true);
+      }
+    }
+  });
+
+  it('el README y la guía de usuario no prometen certificaciones, CSV ni dictámenes oficiales', () => {
+    const textos = [leer('README.md'), leer('src/components/UserGuideModal.tsx'), leer('src/components/ExecutivePurposeModal.tsx')];
+    for (const t of textos) {
+      expect(t).not.toMatch(/dictamen oficial|expediente oficial|CSV oficial|100\s?% de fiabilidad|apto para producci[oó]n|Producci%C3%B3n%20%2F%20Activo/i);
+    }
+  });
+});
