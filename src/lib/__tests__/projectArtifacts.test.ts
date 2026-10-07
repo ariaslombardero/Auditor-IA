@@ -43,7 +43,7 @@ describe('Endurecimiento de la página', () => {
 
 describe('Documentación pública (DOC-15)', () => {
   const leer = (f: string) => readFileSync(resolve(root, f), 'utf8');
-  const documentos = ['README.md', 'agents.md', 'docs/piloto.md', 'docs/revision-humana.md', 'docs/formato-documental.md', 'docs/custodia-historial.md', 'docs/adr/001-credenciales-inferencia.md'];
+  const documentos = ['README.md', 'agents.md', 'docs/guia-de-uso.md', 'docs/piloto.md', 'docs/revision-humana.md', 'docs/formato-documental.md', 'docs/custodia-historial.md', 'docs/adr/001-credenciales-inferencia.md'];
 
   it('los enlaces relativos de la documentación apuntan a ficheros existentes', () => {
     for (const doc of documentos) {

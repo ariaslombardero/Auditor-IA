@@ -301,7 +301,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
             style={{ padding: '0.75rem 1.25rem', fontSize: '0.9375rem' }}
           >
             <FileDown style={{ width: 16, height: 16 }} />
-            <span>{downloadingDocx ? 'Descargando...' : 'Descargar Expediente (.DOCX)'}</span>
+            <span>{downloadingDocx ? 'Descargando...' : 'Descargar informe (.DOCX)'}</span>
           </button>
 
           {onGoToHardening && (

@@ -390,7 +390,7 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
             }}
           >
             <FileCheck style={{ width: 14, height: 14 }} />
-            <span>Descargar Expediente (.docx)</span>
+            <span>Descargar informe (.docx)</span>
           </button>
         </div>
       </div>

@@ -77,6 +77,7 @@ Las pautas para agentes de IA y para quien contribuya están en [agents.md](agen
 
 | Documento | Contenido |
 | :--- | :--- |
+| [docs/guia-de-uso.md](docs/guia-de-uso.md) | **Guía de uso completa** (para personas sin formación técnica) |
 | [docs/alcance-piloto.md](docs/alcance-piloto.md) | Alcance del uso habilitado |
 | [docs/piloto.md](docs/piloto.md) | Condiciones del piloto interno |
 | [docs/revision-humana.md](docs/revision-humana.md) | Lista de comprobación para asesoría jurídica, Responsable de Seguridad, DPD y responsable funcional |
