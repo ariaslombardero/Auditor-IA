@@ -152,3 +152,24 @@ describe('EIPD (criterios WP248)', () => {
     expect(c9.title).not.toMatch(/transferencias/i);
   });
 });
+
+describe('Metadatos de los documentos Word (DOC-10)', () => {
+  const coreXml = async (doc: import('docx').Document) => {
+    const { Packer } = await import('docx');
+    const JSZip = (await import('jszip')).default;
+    const zip = await JSZip.loadAsync(await Packer.toBuffer(doc));
+    return zip.file('docProps/core.xml')!.async('string');
+  };
+
+  it('el expediente y la EIPD se identifican como informe y borrador de una herramienta de apoyo', async () => {
+    const state = CASES.asistenteRedaccion();
+    const { buildOfficialDossierDocument } = await import('../officialDossierDocx');
+    const expediente = await coreXml(buildOfficialDossierDocument(state));
+    expect(expediente).not.toContain('Un-named');
+    expect(expediente).toMatch(/<dc:title>[^<]*Informe técnico preliminar/);
+    expect(expediente).toMatch(/<dc:description>[^<]*no es un acto administrativo/i);
+    const eipd = await coreXml(buildEipdDocument(state));
+    expect(eipd).not.toContain('Un-named');
+    expect(eipd).toMatch(/<dc:title>[^<]*Borrador de evaluación de impacto/);
+  });
+});

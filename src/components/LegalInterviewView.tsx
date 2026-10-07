@@ -171,7 +171,7 @@ export const LegalInterviewView: React.FC<LegalInterviewViewProps> = ({ answers,
           Contesta «No lo sé» cuando no conste: el resultado será <strong>«requiere revisión»</strong> en lugar de presumir que no hay riesgo.
         </p>
         <p style={{ fontSize: '0.8125rem', fontWeight: 700, marginTop: '0.5rem', color: pending ? '#92400e' : '#166534' }}>
-          {pending ? `Quedan ${pending} respuestas sin contestar.` : 'Todas las preguntas principales están contestadas.'}
+          {pending ? pending === 1 ? 'Queda 1 respuesta sin contestar.' : `Quedan ${pending} respuestas sin contestar.` : 'Todas las preguntas principales están contestadas.'}
         </p>
       </div>
 

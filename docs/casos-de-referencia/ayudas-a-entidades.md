@@ -224,7 +224,7 @@ Los preceptos citados proceden de la base de conocimiento de la herramienta (Reg
 
 - **Versión del motor:** 2.1.0
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 7ab475223a3cda321225f2ec66f73de84d079659379f6a3ba1bf81f4edb23251 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T17:58:08.770Z
+- **Fecha de generación:** 2026-10-07T18:03:44.422Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ---

@@ -61,6 +61,12 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
   const screening = eipdScreening(state);
 
   return new Document({
+    title: `Borrador de evaluación de impacto en la protección de datos: ${ingest.appName || 'sistema de IA'}`,
+    subject: 'Borrador de EIPD (Art. 35 RGPD) para completar por el responsable del tratamiento con el asesoramiento del DPD',
+    creator: 'Auditor IA, herramienta de apoyo',
+    lastModifiedBy: 'Auditor IA, herramienta de apoyo',
+    description: 'Borrador: no contiene el dictamen del DPD ni la decisión del responsable del tratamiento.',
+    keywords: 'EIPD; Art. 35 RGPD; borrador',
     styles: {
       default: {
         document: {

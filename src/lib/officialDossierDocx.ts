@@ -61,6 +61,13 @@ export function buildOfficialDossierDocument(
   const verdict = diagnostic ? computeExecutiveVerdict(diagnostic) : null;
 
   return new Document({
+    // Metadatos del fichero. Los metadatos ENI del documento electrónico (NTI) los añade el gestor de expedientes.
+    title: `Informe técnico preliminar de adecuación normativa: ${ingest.appName || 'sistema de IA'}`,
+    subject: 'Diagnóstico preliminar de un sistema de IA (RIA, RGPD, ENS y Ley 40/2015)',
+    creator: `Auditor IA, herramienta de apoyo (motor v${diagnostic?.engineVersion || ENGINE_VERSION})`,
+    lastModifiedBy: 'Auditor IA, herramienta de apoyo',
+    description: 'Informe técnico preliminar generado a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: requiere la revisión y firma de los responsables competentes.',
+    keywords: 'RIA; Reglamento (UE) 2024/1689; ENS; RGPD; informe preliminar',
     styles: {
       default: {
         document: {
