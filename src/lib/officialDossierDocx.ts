@@ -22,6 +22,7 @@ import type { FullAuditState, AppIdioma, RequirementAssessment, RequirementResul
 import { obligations, prohibitedPractices, requirementsByPillar, resultLabel, originLabel, applicabilityLabel } from './assessmentModel';
 import { computeExecutivePillars, computeExecutiveVerdict, type PillarStatus } from './dashboardPillars';
 import { effectiveDiagnostic } from './validations';
+import { describirAsistencia } from './proveedorEfectivo';
 import { buildDocumentTraceability, ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 const FONT_BODY = 'Calibri';
@@ -649,6 +650,7 @@ export function buildOfficialDossierDocument(
           makeBulletPoint(`${isGl ? 'Versión do motor' : 'Versión del motor'}: ${traceability?.engineVersion || diagnostic?.engineVersion || ENGINE_VERSION}`),
           makeBulletPoint(`${isGl ? 'Pegada SHA-256 das entradas (inxesta e entrevista)' : 'Huella SHA-256 de las entradas (ingesta y entrevista)'}: ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED}`),
           makeBulletPoint(`${isGl ? 'Data de xeración' : 'Fecha de generación'}: ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}`),
+          makeBulletPoint(`${isGl ? 'Asistencia de IA' : 'Asistencia de IA'}: ${describirAsistencia(diagnostic?.aiAssistance)}`),
           new Paragraph({ text: '', spacing: { before: 200 } }),
 
           // DILIGENCIA DE FIRMAS

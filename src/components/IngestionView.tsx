@@ -147,7 +147,7 @@ export const IngestionView: React.FC<IngestionViewProps> = ({
 
   const handleGenerateAgentsLlm = async () => {
     if (!isConfigured || !config) {
-      alert('Configura primero una clave de API (Gemini, Ollama, Groq, OpenRouter...) en la cabecera superior para usar la IA de Auditoría, o abre el Asistente Rápido de 4 Preguntas.');
+      alert('Configura primero un proveedor de IA (Gemini, una API compatible con OpenAI o un modelo local) en la cabecera superior para usar la IA de Auditoría, o abre el Asistente Rápido de 4 Preguntas.');
       return;
     }
     if (!data.appName.trim() || !data.readmeContent.trim()) {

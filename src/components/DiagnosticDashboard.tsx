@@ -1,3 +1,4 @@
+import { describirAsistencia } from '../lib/proveedorEfectivo';
 import React from 'react';
 import {
   ShieldAlert,
@@ -717,6 +718,13 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Proveedor efectivo: qué modelo procesó la documentación, o por qué no se usó */}
+      {diagnostic.aiAssistance && diagnostic.aiAssistance.estado !== 'no_configurada' && (
+        <div className="card" style={{ border: `1px solid ${diagnostic.aiAssistance.estado === 'usada' ? '#e2e8f0' : '#fcd34d'}`, background: diagnostic.aiAssistance.estado === 'usada' ? '#f8fafc' : '#fffbeb', marginTop: '1.5rem', fontSize: '0.8125rem', color: '#334155' }}>
+          <strong>Asistencia de IA:</strong> {describirAsistencia(diagnostic.aiAssistance)}
+        </div>
+      )}
 
       {/* Discrepancia señalada por el análisis asistido */}
       {diagnostic.pericialDissentAlert && (

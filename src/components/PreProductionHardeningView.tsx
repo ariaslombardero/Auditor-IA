@@ -21,9 +21,11 @@ import {
 } from 'lucide-react';
 import type { FullAuditState, AppIdioma } from '../types';
 import { useApiConfig } from '../context/ApiConfigContext';
+import { describirProveedor } from '../lib/apiService';
 import {
   runAdversarialSuite,
   scanForExposedSecrets,
+  buildSecretsScanInput,
   type AdversarialSuiteReport,
   type AttackCategory,
 } from '../lib/adversarialSimulator';
@@ -68,8 +70,9 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
   const [copiedReport, setCopiedReport] = useState(false);
 
   // Escáner de secretos (credenciales expuestas, ENS [op.acc.5])
-  const rawContentToScan = `${state.ingest.readmeContent} ${state.ingest.agentsMdContent || ''} ${state.ingest.techStack || ''}`;
-  const secretsScan = scanForExposedSecrets(rawContentToScan);
+  const [aportedCode, setAportedCode] = useState('');
+  const scanInput = buildSecretsScanInput(state.ingest, aportedCode);
+  const secretsScan = scanForExposedSecrets(scanInput.text);
 
   const handleRunRedTeaming = async () => {
     setIsRunningRedTeaming(true);
@@ -463,14 +466,29 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             ) : (
               <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.65rem 1rem', borderRadius: 8, marginBottom: '1rem', color: '#166534', fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <CheckCircle2 style={{ width: 16, height: 16, color: '#16a34a' }} />
-                <span><strong>Sin coincidencias:</strong> no se han encontrado patrones de claves en el README ni en el AGENTS.md. El código del repositorio no se ha analizado.</span>
+                <span><strong>Sin coincidencias</strong> en lo analizado.</span>
               </div>
             )}
+            <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '-0.5rem', marginBottom: '0.75rem', lineHeight: 1.5 }}>
+              <div><strong>Analizado:</strong> {scanInput.analizado.join(', ') || 'nada (no se ha aportado contenido)'}.</div>
+              <div><strong>No analizado:</strong> {scanInput.noAnalizado.join(', ')}.</div>
+              <details style={{ marginTop: '0.35rem' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Aportar código o configuración del cliente para analizar</summary>
+                <textarea
+                  value={aportedCode}
+                  onChange={(e) => setAportedCode(e.target.value)}
+                  className="input-field"
+                  rows={5}
+                  placeholder="Pegue aquí ficheros del frontend, .env de ejemplo o configuración. Se analiza solo en este navegador."
+                  style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginTop: '0.35rem', width: '100%' }}
+                />
+              </details>
+            </div>
 
             {/* Provider info alert */}
             <div style={{ padding: '0.65rem 0.85rem', background: '#f8fafc', borderRadius: 6, border: '1px solid #e2e8f0', fontSize: '0.75rem', color: '#475569', marginBottom: '1.25rem' }}>
               <strong>Proveedor activo para el test:</strong>{' '}
-              {isConfigured ? `${config?.provider.toUpperCase()} (${config?.model})` : 'Modo demostración (sin proveedor configurado)'}
+              {isConfigured && config ? `${describirProveedor(config)} · ${config.model}` : 'Modo demostración (sin proveedor configurado)'}
             </div>
 
             {/* Progress bar when running */}

@@ -1,5 +1,5 @@
 import { saveAs } from 'file-saver';
-import type { FullAuditState, AppIdioma, RequirementAssessment, DiagnosticResult } from '../types';
+import type { FullAuditState, AppIdioma, RequirementAssessment, DiagnosticResult, AiAssistanceRecord } from '../types';
 import { generateOfficialDossierMarkdown } from './officialDossierMd';
 import { unaccreditedRequirements } from './assessmentModel';
 import { effectiveDiagnostic } from './validations';
@@ -16,6 +16,8 @@ export interface AuditManifestRecord {
     engine_version: string;
     normative_snapshot: string;
     input_fingerprint_sha256: string | null;
+    /** Proveedor de IA que asistió al auditor (sin claves) o motivo por el que no se usó. */
+    ai_assistance: AiAssistanceRecord | null;
   };
   entity: {
     name: string;
@@ -133,6 +135,7 @@ export function buildAuditManifest(
       engine_version: traceability?.engineVersion || diagnostic?.engineVersion || ENGINE_VERSION,
       normative_snapshot: NORMATIVE_SNAPSHOT,
       input_fingerprint_sha256: traceability?.inputFingerprint || null,
+      ai_assistance: diagnostic?.aiAssistance ?? null,
     },
     entity: {
       name: metadata.entityName || 'Administración Pública Promotora',

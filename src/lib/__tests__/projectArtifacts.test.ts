@@ -18,9 +18,18 @@ describe('Procedencia de los resultados de ejemplo', () => {
 });
 
 describe('Endurecimiento de la página', () => {
-  it('SEG-07 · index.html no carga tipografías de terceros y declara una política CSP', () => {
+  it('SEG-07 · index.html no carga tipografías de terceros y la página compilada declara una política CSP', async () => {
     const html = readFileSync(resolve(root, 'index.html'), 'utf8');
     expect(html).not.toContain('fonts.googleapis.com');
-    expect(html).toMatch(/http-equiv="Content-Security-Policy"/i);
+    // La CSP se inyecta como <meta> al compilar (en desarrollo la impediría el refresco en caliente de Vite).
+    const { default: config } = await import('../../../vite.config');
+    const plugin = (config.plugins ?? []).flat().find((p) => p && typeof p === 'object' && 'name' in p && p.name === 'csp-en-compilacion') as
+      | { apply?: string; transformIndexHtml: () => Array<{ attrs: Record<string, string> }> }
+      | undefined;
+    expect(plugin?.apply).toBe('build');
+    const meta = plugin!.transformIndexHtml()[0].attrs;
+    expect(meta['http-equiv']).toBe('Content-Security-Policy');
+    expect(meta.content).toContain("script-src 'self'");
+    expect(meta.content).not.toContain('frame-ancestors');
   });
 });

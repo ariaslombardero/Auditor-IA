@@ -25,6 +25,8 @@ import { normalizeDiagnostic } from './lib/assessmentModel';
 import { normalizeAnswers } from './lib/answersModel';
 import { effectiveDiagnostic, inputsKey } from './lib/validations';
 import { generateCodeKit } from './lib/codeKitGenerator';
+import { registroAsistencia, restriccionEnvio } from './lib/proveedorEfectivo';
+import { formatApiError } from './lib/apiService';
 import { getStoredAudits, saveAuditRecord } from './lib/auditHistoryService';
 import type {
   AppIdioma,
@@ -89,22 +91,32 @@ export const App: React.FC = () => {
     let critiqueText: string | undefined = undefined;
     let dissentDetected = false;
 
-    // 2. AI enrichment if configured (no altera la clasificación; solo puede señalar una discrepancia)
+    // 2. Comentario complementario de IA si hay proveedor (no altera la clasificación; solo puede
+    //    señalar una discrepancia). Se registra qué proveedor se usó o por qué no se usó.
+    let aiAssistance = registroAsistencia(null, 'no_configurada');
     if (isConfigured && config) {
-      try {
-        const llmResult = await analyzeWithLLM(config, state.ingest, state.answers, baselineDiagnostic);
-        critiqueText = llmResult.enrichedSummary;
-        dissentDetected = llmResult.dissentDetected;
-      } catch (err: any) {
-        console.warn('Fallo en análisis opcional de IA:', err?.message || err);
+      const restriccion = restriccionEnvio(config, state.answers);
+      if (!restriccion.permitido) {
+        aiAssistance = registroAsistencia(config, 'bloqueada', restriccion.motivo);
+      } else {
+        try {
+          const llmResult = await analyzeWithLLM(config, state.ingest, state.answers, baselineDiagnostic);
+          critiqueText = llmResult.enrichedSummary;
+          dissentDetected = llmResult.dissentDetected;
+          aiAssistance = registroAsistencia(config, 'usada');
+        } catch (err: unknown) {
+          aiAssistance = registroAsistencia(config, 'fallida', formatApiError(err, idioma));
+        }
       }
     }
 
     const updatedFullState: FullAuditState = {
       ...state,
-      diagnostic: dissentDetected
-        ? { ...baselineDiagnostic, pericialDissentAlert: LLM_DISSENT_NOTICE }
-        : baselineDiagnostic,
+      diagnostic: {
+        ...baselineDiagnostic,
+        aiAssistance,
+        ...(dissentDetected ? { pericialDissentAlert: LLM_DISSENT_NOTICE } : {}),
+      },
       codeKit,
     };
 
@@ -302,13 +314,7 @@ export const App: React.FC = () => {
         </div>
       </footer>
 
-      {showApiModal && (
-        <ApiConfigModal
-          isOpen={showApiModal}
-          onClose={() => setShowApiModal(false)}
-          idioma={idioma}
-        />
-      )}
+      <ApiConfigModal open={showApiModal} onOpenChange={setShowApiModal} idioma={idioma} />
 
       {showGuide && (
         <UserGuideModal

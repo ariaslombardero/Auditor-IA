@@ -2,6 +2,7 @@ import { ShieldCheck, Cpu, Key, Globe, RefreshCw, BookOpen, Scale, HelpCircle, H
 import { useApiConfig } from '../context/ApiConfigContext';
 import type { AppIdioma } from '../types';
 import { t } from '../lib/i18n';
+import { describirProveedor } from '../lib/apiService';
 
 interface NavbarProps {
   idioma: AppIdioma;
@@ -28,10 +29,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { config, isConfigured } = useApiConfig();
 
-  const providerLabel = isConfigured
-    ? ['ollama', 'llamacpp', 'vllm', 'custom'].includes(config?.provider || '')
-      ? `${config?.provider.toUpperCase()} (${config?.model || 'Local'})`
-      : `${config?.provider.toUpperCase()} (${config?.model})`
+  const providerLabel = isConfigured && config
+    ? `${describirProveedor(config)} · ${config.model}`
     : t('provider_status_offline', idioma);
 
   return (

@@ -2,6 +2,7 @@ import type { FullAuditState, AppIdioma, RequirementAssessment } from '../types'
 import { applicabilityLabel, obligations, originLabel, prohibitedPractices, requirementsByPillar, resultLabel } from './assessmentModel';
 import { computeExecutivePillars, computeExecutiveVerdict } from './dashboardPillars';
 import { effectiveDiagnostic } from './validations';
+import { describirAsistencia } from './proveedorEfectivo';
 import { ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 /** Escapa los separadores de tabla para que un texto no rompa la tabla Markdown. */
@@ -231,6 +232,7 @@ ${
 - **Versión del motor:** ${engineVersion}
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** ${traceability?.inputFingerprint || TRACEABILITY_NOT_COMPUTED}
 - **Fecha de generación:** ${traceability?.generatedAt || TRACEABILITY_NOT_COMPUTED}
+- **Asistencia de IA:** ${describirAsistencia(diagnostic?.aiAssistance)}
 
 ---
 

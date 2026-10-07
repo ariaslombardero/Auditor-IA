@@ -2,15 +2,29 @@
  * Core Type Definitions for Auditor IA · Sector Público
  */
 
-export type ProviderType = 'gemini' | 'openrouter' | 'groq' | 'ollama' | 'llamacpp' | 'vllm' | 'custom';
+/**
+ * Proveedor de inferencia. Misma arquitectura que Opositor transparente: Gemini, cualquier API
+ * compatible con OpenAI (la URL decide el destino) y servidores locales (Ollama, llama.cpp, vLLM).
+ */
+export type Provider = 'gemini' | 'compatible' | 'ollama' | 'llamacpp' | 'vllm';
 
 export interface ApiConfig {
-  provider: ProviderType;
+  provider: Provider;
   apiKey?: string;
   model: string;
   endpoint?: string;
-  baseUrl?: string;
-  temperature?: number;
+}
+
+/** Dónde se procesa lo que el auditor envía al modelo, según la dirección del proveedor. */
+export type ProviderLocation = 'local' | 'red_interna' | 'externo' | 'ninguno';
+
+/** Asistencia de IA empleada por el propio auditor en un diagnóstico (sin claves). */
+export interface AiAssistanceRecord {
+  proveedor: string;
+  modelo: string;
+  ubicacion: ProviderLocation;
+  estado: 'usada' | 'no_configurada' | 'bloqueada' | 'fallida';
+  motivo?: string;
 }
 
 export type AppIdioma = 'castellano' | 'galego';
@@ -207,6 +221,8 @@ export interface DiagnosticResult {
   isArticle63Derogation?: boolean; // True si aplica la excepción tasada del Art. 6.3 del RIA
   article63Justification?: string; // Motivación preceptiva conforme al Art. 6.4 del RIA
   pericialDissentAlert?: string; // Alerta en caso de discrepancia entre heurística y semántica LLM
+  /** Proveedor de IA que asistió al auditor en este diagnóstico, o motivo por el que no se usó. */
+  aiAssistance?: AiAssistanceRecord;
   isAutomatedAdministrativeAct: boolean;
   ensCategory: 'BASICA' | 'MEDIA' | 'ALTA';
   ensReasoning: string;

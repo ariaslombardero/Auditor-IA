@@ -5,7 +5,7 @@
  */
 
 import { callApi } from './apiService';
-import type { ApiConfig } from '../types';
+import type { ApiConfig, AppIngestData } from '../types';
 
 export type AttackCategory =
   | 'LLM01_PROMPT_INJECTION'
@@ -263,18 +263,26 @@ export function scanForExposedSecrets(content: string): {
   leaks: ExposedSecretFinding[];
 } {
   const leaks: ExposedSecretFinding[] = [];
+  // Primero los patrones más específicos: una misma clave solo se notifica una vez.
   const rules = [
-    { type: 'OpenAI API Key', regex: /\b(sk-[a-zA-Z0-9_-]{20,})\b/g },
+    { type: 'Anthropic Claude API Key', regex: /\b(sk-ant-[a-zA-Z0-9_-]{30,})\b/g },
+    { type: 'OpenRouter API Key', regex: /\b(sk-or-v1-[a-zA-Z0-9]{32,})\b/g },
+    { type: 'OpenAI API Key', regex: /\b(sk-(?:proj-)?[a-zA-Z0-9_-]{20,})\b/g },
     { type: 'Google Gemini API Key', regex: /\b(AIzaSy[a-zA-Z0-9_-]{33})\b/g },
     { type: 'Groq API Key', regex: /\b(gsk_[a-zA-Z0-9]{35,})\b/g },
-    { type: 'Anthropic Claude API Key', regex: /\b(sk-ant-[a-zA-Z0-9_-]{30,})\b/g },
-    { type: 'GitHub Personal Access Token', regex: /\b(ghp_[a-zA-Z0-9]{36})\b/g },
+    { type: 'Hugging Face Token', regex: /\b(hf_[a-zA-Z0-9]{30,})\b/g },
+    { type: 'GitHub Personal Access Token', regex: /\b(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{50,})\b/g },
     { type: 'Bearer Token Hardcodeado', regex: /bearer\s+["']?[a-zA-Z0-9_\-\.]{25,}["']?/gi },
   ];
 
+  const ocupados: Array<[number, number]> = [];
   for (const rule of rules) {
     let match;
     while ((match = rule.regex.exec(content)) !== null) {
+      const inicio = match.index;
+      const fin = inicio + match[0].length;
+      if (ocupados.some(([a, b]) => inicio < b && fin > a)) continue;
+      ocupados.push([inicio, fin]);
       leaks.push({
         type: rule.type,
         pattern: match[0].slice(0, 8) + '...',
@@ -286,6 +294,31 @@ export function scanForExposedSecrets(content: string): {
   return {
     found: leaks.length > 0,
     leaks,
+  };
+}
+
+/**
+ * Texto que analiza el escáner de secretos y alcance declarado del análisis.
+ * Solo se examina lo aportado: el escáner no accede al repositorio ni al paquete desplegado.
+ */
+export function buildSecretsScanInput(
+  ingest: AppIngestData,
+  aportedCode = ''
+): { text: string; analizado: string[]; noAnalizado: string[] } {
+  const partes: Array<[string, string | undefined]> = [
+    ['README', ingest.readmeContent],
+    ['AGENTS.md', ingest.agentsMdContent],
+    ['prompt del sistema', ingest.systemPrompt],
+    ['pila tecnológica declarada', ingest.techStack],
+    ['código aportado', aportedCode],
+  ];
+  const presentes = partes.filter(([, t]) => t && t.trim());
+  const noAnalizado = ['el resto del repositorio', 'el paquete desplegado en el navegador', 'el historial de git'];
+  if (!aportedCode.trim()) noAnalizado.unshift('el código fuente (no se ha aportado)');
+  return {
+    text: presentes.map(([, t]) => t).join('\n'),
+    analizado: presentes.map(([n]) => n),
+    noAnalizado,
   };
 }
 

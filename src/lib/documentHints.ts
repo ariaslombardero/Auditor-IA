@@ -85,3 +85,24 @@ export function aiUsageHint(ingest: AppIngestData): DocumentHint | null {
   const evidence = findAffirmed(documentationText(ingest), AI_PATTERN);
   return evidence ? { target: 'ai', evidence } : null;
 }
+
+/** Servicios de inferencia en la nube citados en la documentación (para contrastar con el alojamiento declarado). */
+const CLOUD_PROVIDER_PATTERNS: Array<[string, RegExp]> = [
+  ['Google Gemini', /(@google\/genai|generativelanguage\.googleapis|google ai studio|api de gemini|gemini api|gemini-[\d.]+-(pro|flash))/],
+  ['OpenAI', /(api\.openai\.com|\bopenai api\b|api de openai|\bgpt-(4|5)\w*)/],
+  ['Anthropic', /(api\.anthropic\.com|@anthropic-ai\/sdk|api de anthropic)/],
+  ['OpenRouter', /\bopenrouter\b/],
+  ['Groq', /(api\.groq\.com|\bgroq cloud\b|groqcloud)/],
+  ['Azure OpenAI', /(openai\.azure\.com|azure openai)/],
+  ['AWS Bedrock', /\bbedrock\b/],
+];
+
+export function cloudProviderHints(ingest: AppIngestData): DocumentHint[] {
+  const text = documentationText(ingest);
+  const hints: DocumentHint[] = [];
+  for (const [name, pattern] of CLOUD_PROVIDER_PATTERNS) {
+    const evidence = findAffirmed(text, pattern);
+    if (evidence) hints.push({ target: name, evidence });
+  }
+  return hints;
+}

@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { scanForExposedSecrets } from '../adversarialSimulator';
+import { buildSecretsScanInput, scanForExposedSecrets } from '../adversarialSimulator';
 import { fetchAvailableModels } from '../apiService';
+import { makeIngest } from '../../test/fixtures';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 /**
  * Seguridad del propio auditor y de su escáner de secretos.
@@ -36,5 +39,52 @@ describe('Comunicaciones con proveedores', () => {
     for (const c of calls) {
       expect(c.url).not.toContain(FAKE_GEMINI_KEY);
     }
+  });
+});
+
+describe('Alcance del escáner de secretos (SEG-06)', () => {
+  it('SEG-02 · una clave de OpenRouter se notifica una vez y con su tipo', () => {
+    const leaks = scanForExposedSecrets('KEY=sk-or-v1-' + 'c'.repeat(64)).leaks;
+    expect(leaks).toHaveLength(1);
+    expect(leaks[0].type).toContain('OpenRouter');
+  });
+
+  it('SEG-06 · analiza el prompt del sistema y el código aportado, y declara lo que no ha analizado', () => {
+    const ingest = makeIngest('App', { systemPrompt: 'token hf_' + 'd'.repeat(34) });
+    const sinCodigo = buildSecretsScanInput(ingest);
+    expect(scanForExposedSecrets(sinCodigo.text).found).toBe(true);
+    expect(sinCodigo.noAnalizado.join(' ')).toMatch(/código/i);
+    const conCodigo = buildSecretsScanInput(makeIngest('App'), 'const k = "AIzaSy' + 'E'.repeat(33) + '";');
+    expect(scanForExposedSecrets(conCodigo.text).found).toBe(true);
+    expect(conCodigo.analizado.join(' ')).toMatch(/código aportado/i);
+  });
+});
+
+describe('Despliegue público (SEG-07 y SEG-08)', () => {
+  const raiz = resolve(__dirname, '../../..');
+  const leer = (f: string) => readFileSync(resolve(raiz, f), 'utf8');
+
+  it('SEG-07 · sin fuentes de Google: la tipografía se sirve desde la propia aplicación', () => {
+    expect(leer('index.html')).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
+    expect(leer('src/main.tsx')).toMatch(/@fontsource/);
+  });
+
+  it('SEG-07 · vercel.json fija una CSP que impide scripts externos, marcos y envío de formularios', () => {
+    const vercel = JSON.parse(leer('vercel.json'));
+    const cabeceras: Array<{ key: string; value: string }> = vercel.headers[0].headers;
+    const csp = cabeceras.find((h) => h.key === 'Content-Security-Policy')?.value ?? '';
+    expect(csp).toContain("script-src 'self'");
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).toContain("form-action 'none'");
+    expect(csp).toContain("object-src 'none'");
+    expect(csp).toMatch(/connect-src[^;]*http:\/\/localhost:\*/);
+    expect(cabeceras.some((h) => h.key === 'X-Content-Type-Options' && h.value === 'nosniff')).toBe(true);
+    expect(cabeceras.some((h) => h.key === 'Referrer-Policy' && h.value === 'no-referrer')).toBe(true);
+  });
+
+  it('SEG-08 · la consulta de legislación de EUR-Lex tiene ruta también fuera del servidor de desarrollo', () => {
+    const vercel = JSON.parse(leer('vercel.json'));
+    expect(vercel.rewrites.some((r: { source: string; destination: string }) => r.source.startsWith('/api/cellar') && r.destination.startsWith('https://publications.europa.eu/resource/celex'))).toBe(true);
+    expect(leer('vite.config.ts')).toMatch(/preview:/);
   });
 });

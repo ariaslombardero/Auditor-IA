@@ -4,6 +4,7 @@
 > **Línea base:** commit `48956a6` · `npm test` el 05/10/2026: **50 pruebas, 49 en rojo, 1 en verde** (DOC-06). Los hallazgos ⚪ dependen de decisiones de diseño de su fase (modelo de requisitos, papeles, calendario, ADR 001) y su prueba se escribirá al inicio de esa fase, antes de corregir.
 > **Cierre de la Fase 1** (05/10/2026): **55 pruebas, 29 en verde y 26 en rojo**. Las 26 en rojo corresponden a hallazgos asignados a las Fases 2 y 3. Se añaden NOR-10, DOC-11, DOC-12, ALM-06 y EIPD-04, detectados o introducidos durante la fase.
 > **Cierre de la Fase 2** (05/10/2026): **69 pruebas, 56 en verde y 13 en rojo**. Las 13 en rojo son hallazgos de la Fase 3 (ALM, RT y SEG). Las pruebas del motor se reescribieron para la entrevista v2 («sí / no / desconocido») conservando la intención de cada una; se añaden MOT-23 a MOT-26, EIPD-05 y DOC-13.
+> **Fase 3 · entrega 3.1** (07/10/2026): **111 pruebas, 102 en verde y 9 en rojo**. Los 9 en rojo son de custodia (ALM-01 a ALM-04, entrega 3.2) y red teaming (RT-01 a RT-05, entrega 3.3). Arquitectura de proveedores y credenciales igual que *Opositor transparente* (ADR 001). El selector de modelo deja de usar listas fijas: muestra solo los modelos que devuelve el proveedor para la clave o el servidor indicados. La prueba SEG-07 de la Fase 0 se adapta: la CSP se comprueba en la página compilada, porque en desarrollo la impediría el refresco en caliente de Vite.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -96,14 +97,14 @@
 
 | ID | Hallazgo | Origen | Comportamiento esperado | Fase | Estado |
 | :--- | :--- | :---: | :--- | :---: | :---: |
-| SEG-01 | Escáner sin patrón `hf_` | C+G | Detectar | 3 | 🔴 |
-| SEG-02 | Claves `sk-ant-` notificadas dos veces | G | Una sola notificación | 3 | 🔴 |
-| SEG-03 | Clave de Gemini en la URL | C | Cabecera, nunca URL | 3 | 🔴 |
-| SEG-04 | Claves persistidas en claro en `localStorage` | C+G | Según ADR 001 | 3 | ⚪ |
-| SEG-05 | El alojamiento declarado no se vincula al proveedor efectivo | G | Registrar proveedor efectivo; contradicción → revisión | 3 | ⚪ |
-| SEG-06 | El escáner solo analiza README/AGENTS.md, no código | C+G | Alcance declarado y ficheros de código aportados | 3 | ⚪ |
-| SEG-07 | Conexiones a Google Fonts y sin CSP | G | Fuentes autoalojadas; CSP | 3 | 🔴 |
-| SEG-08 | Consulta de legislación dependiente del proxy de desarrollo de Vite | C | Funcionar en producción o declararlo | 3 | ⚪ |
+| SEG-01 | Escáner sin patrón `hf_` | C+G | Detectar `hf_`, OpenRouter (`sk-or-v1-`) y `github_pat_` | 3 | 🟢 |
+| SEG-02 | Claves `sk-ant-` notificadas dos veces | G | Patrones de más a menos específicos; una coincidencia por posición | 3 | 🟢 |
+| SEG-03 | Clave de Gemini en la URL | C | Cabecera `x-goog-api-key`; SDK oficial para la generación | 3 | 🟢 |
+| SEG-04 | Claves persistidas en claro en `localStorage` | C+G | ADR 001: `sessionStorage` por defecto, `localStorage` solo con «Recordar»; la clave antigua pasa a la sesión y se borra del equipo | 3 | 🟢 |
+| SEG-05 | El alojamiento declarado no se vincula al proveedor efectivo | G | Proveedor, modelo y ubicación registrados en el diagnóstico y en los documentos; no se envían datos de los Arts. 9/10 RGPD a proveedores externos; alerta si se declara ejecución local y la documentación cita APIs en la nube (alerta y no «requiere revisión», porque el alojamiento no cambia la clasificación del RIA) | 3 | 🟢 |
+| SEG-06 | El escáner solo analiza README/AGENTS.md, no código | C+G | Analiza también el prompt del sistema y el código aportado; declara lo analizado y lo no analizado | 3 | 🟢 |
+| SEG-07 | Conexiones a Google Fonts y sin CSP | G | Inter autoalojada; CSP y cabeceras en `vercel.json`, `<meta>` en la compilación y cabeceras en `vite preview` | 3 | 🟢 |
+| SEG-08 | Consulta de legislación dependiente del proxy de desarrollo de Vite | C | Ruta `/api/cellar` también en `vite preview` y en Vercel (`rewrites`) | 3 | 🟢 |
 
 ## G. Ensayos adversarios (`src/lib/adversarialSimulator.ts`)
 

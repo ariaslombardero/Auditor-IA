@@ -1,6 +1,6 @@
 import type { AppIngestData, ClassificationStep, DiagnosticResult, LegalEnrichmentAnswers, RiskClassification } from '../../types';
 import { normalizeAnswers } from '../answersModel';
-import { annexIIIHints, aiUsageHint, prohibitedPracticeHints } from '../documentHints';
+import { annexIIIHints, aiUsageHint, cloudProviderHints, prohibitedPracticeHints } from '../documentHints';
 import { referenceDate } from '../regulatoryCalendar';
 import { ENGINE_VERSION, NORMATIVE_SNAPSHOT } from '../traceability';
 import { unaccreditedRequirements } from '../assessmentModel';
@@ -230,6 +230,12 @@ function buildRedFlags(answers: LegalEnrichmentAnswers, ingest: AppIngestData): 
   }
   if ((answers.processesSpecialCategoryData === 'si' || answers.processesCriminalData === 'si') && answers.hostingModel !== 'local_on_premise') {
     flags.push('Datos Sensibles en Nube Externa: el tratamiento de categorías especiales (Art. 9 RGPD) o de datos penales (Art. 10 RGPD) debería realizarse prioritariamente en servidores propios con modelos locales.');
+  }
+  if (answers.hostingModel === 'local_on_premise') {
+    const cloud = cloudProviderHints(ingest);
+    if (cloud.length > 0) {
+      flags.push(`Alojamiento declarado y documentación discrepantes: se declara que el modelo se ejecuta en servidores propios, pero la documentación cita servicios en la nube (${cloud.map((h) => h.target).join(', ')}). Debe comprobarse qué proveedor procesa realmente los datos antes de aplicar las conclusiones sobre transferencias y ENS.`);
+    }
   }
   if (ingest.agentsMdContent && ingest.agentsMdContent.trim().length > 0) {
     const agentsLower = ingest.agentsMdContent.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();

@@ -1,48 +1,43 @@
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import type { ApiConfig } from '../types';
+import { cargarConfigInicial, guardarConfig } from '../lib/almacenConfig';
+import { PROVEEDORES_LOCALES } from '../lib/apiService';
 
 interface ApiConfigContextType {
   config: ApiConfig | null;
-  setConfig: (config: ApiConfig | null) => void;
+  /** true si la configuración (con su clave) se guarda en este equipo entre sesiones */
+  recordar: boolean;
+  setConfig: (config: ApiConfig | null, recordar?: boolean) => void;
   isConfigured: boolean;
 }
 
 const ApiConfigContext = createContext<ApiConfigContextType>({
   config: null,
+  recordar: false,
   setConfig: () => {},
   isConfigured: false,
 });
 
-const STORAGE_KEY = 'auditor_ia_api_config';
-
 export const ApiConfigProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [config, setConfigState] = useState<ApiConfig | null>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [estado, setEstado] = useState(cargarConfigInicial);
 
-  const setConfig = (newConfig: ApiConfig | null) => {
-    setConfigState(newConfig);
-    if (newConfig) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newConfig));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+  const setConfig = (newConfig: ApiConfig | null, recordar = estado.recordar) => {
+    setEstado({ config: newConfig, recordar });
+    // Por defecto la clave solo vive mientras dure la pestaña.
+    guardarConfig(newConfig, recordar);
   };
 
+  const { config } = estado;
   const isConfigured = Boolean(
-    config && (
-      (['ollama', 'llamacpp', 'vllm', 'custom'].includes(config.provider) && config.model) ||
-      (config.apiKey && config.apiKey.trim().length > 0)
+    config && config.model.trim() && (
+      PROVEEDORES_LOCALES.includes(config.provider) ||
+      config.provider === 'compatible' ||
+      Boolean(config.apiKey?.trim())
     )
   );
 
   return (
-    <ApiConfigContext.Provider value={{ config, setConfig, isConfigured }}>
+    <ApiConfigContext.Provider value={{ config, recordar: estado.recordar, setConfig, isConfigured }}>
       {children}
     </ApiConfigContext.Provider>
   );
