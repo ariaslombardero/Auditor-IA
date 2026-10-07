@@ -79,7 +79,7 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
             </div>
             <div>
               <h2 style={{ fontSize: '1.125rem', fontWeight: 800, margin: 0, color: 'white' }}>
-                ¿Por qué es obligatoria esta auditoría?
+                ¿Por qué revisar un sistema de IA antes de usarlo?
               </h2>
               <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
                 Guía ejecutiva para directivos, responsables de servicio, DPDs y CISOs sobre la gobernanza de la IA.
@@ -120,14 +120,14 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
             <p style={{ fontSize: '0.85rem', color: '#334155', lineHeight: 1.6, margin: 0 }}>
               Imagina que en tu organismo o empresa quieres implantar un <strong>chatbot de atención al ciudadano</strong>, un <strong>asistente para resumir expedientes</strong> o una <strong>herramienta para clasificar solicitudes de subvenciones</strong>.
               <br /><br />
-              No basta con conectar una API o instalar un modelo: <strong>el marco regulatorio europeo y español prohíbe poner en producción sistemas de IA sin un expediente administrativo formal</strong> que acredite que no vulnera derechos, que no toma decisiones a ciegas y que sus datos están blindados.
+              No basta con conectar una API o instalar un modelo. <strong>Según lo que haga el sistema, la entidad tendrá obligaciones distintas</strong>: algunos usos están prohibidos, otros son de alto riesgo y casi todos exigen transparencia, protección de datos y seguridad. Conviene saberlo antes de ponerlo en servicio y dejarlo documentado.
             </p>
           </div>
 
           {/* El Cuarteto Normativo Explicado de Forma Sencilla */}
           <div>
             <h4 style={{ fontSize: '0.875rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Las 4 Leyes que tu IA debe cumplir obligatoriamente:
+              Los cuatro marcos que se revisan:
             </h4>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.875rem' }}>
@@ -139,7 +139,7 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
                   <strong style={{ fontSize: '0.875rem', color: '#0369a1' }}>1. AI Act (Reglamento UE 2024/1689)</strong>
                 </div>
                 <p style={{ fontSize: '0.8125rem', color: '#0c4a6e', lineHeight: 1.5, margin: 0 }}>
-                  Exige clasificar el nivel de riesgo del sistema. Si interactúa con personas físicas, debes avisarles de que hablan con una máquina (Art. 50) y garantizar la <strong>supervisión humana efectiva</strong> (Art. 14).
+                  Clasifica el sistema según su riesgo. Si interactúa con personas, hay que avisarles de que hablan con una IA (Art. 50). Si es de <strong>alto riesgo</strong>, se exigen además, entre otras cosas, gestión de riesgos y <strong>supervisión humana efectiva</strong> (Art. 14).
                 </p>
               </div>
 
@@ -150,7 +150,7 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
                   <strong style={{ fontSize: '0.875rem', color: '#15803d' }}>2. RGPD y LOPDGDD 3/2018</strong>
                 </div>
                 <p style={{ fontSize: '0.8125rem', color: '#14532d', lineHeight: 1.5, margin: 0 }}>
-                  El Artículo 22 prohíbe adoptar actos administrativos o resoluciones que afecten a derechos basándose <em>únicamente</em> en algoritmos. Debe inscribirse en el Registro de Tratamientos (RAT) y realizarse una EIPD.
+                  Si hay datos personales: base jurídica, inscripción en el Registro de Actividades de Tratamiento y, cuando concurran los criterios, evaluación de impacto (Art. 35). El Art. 22 limita las decisiones basadas <em>únicamente</em> en un tratamiento automatizado que produzcan efectos jurídicos.
                 </p>
               </div>
 
@@ -161,7 +161,7 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
                   <strong style={{ fontSize: '0.875rem', color: '#c2410c' }}>3. Ley 40/2015 (Régimen Jurídico)</strong>
                 </div>
                 <p style={{ fontSize: '0.8125rem', color: '#7c2d12', lineHeight: 1.5, margin: 0 }}>
-                  El Artículo 41 exige delimitar si la IA es una <strong>"actuación automatizada"</strong> (que requiere decreto de programación) o mero <strong>"auxilio técnico instrumental"</strong> para el funcionario tramitador.
+                  El Artículo 41 regula la <strong>actuación administrativa automatizada</strong> (sin intervención directa de un empleado público), que exige establecer previamente los órganos responsables. Hay que comprobar si el sistema actúa así o si solo prepara trabajo que revisa el personal.
                 </p>
               </div>
 
@@ -188,10 +188,10 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
           }}>
             <h4 style={{ fontSize: '0.9375rem', fontWeight: 800, color: '#0369a1', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <FileCheck style={{ width: 20, height: 20, color: '#0284c7' }} />
-              ¿Qué hace esta aplicación por ti? (El resultado en 5 minutos)
+              ¿Qué hace esta aplicación?
             </h4>
             <p style={{ fontSize: '0.85rem', color: '#334155', lineHeight: 1.6, margin: '0 0 0.875rem 0' }}>
-              En lugar de contratar una consultoría externa de semanas, esta aplicación automatiza todo el proceso de auditoría y te entrega:
+              Te guía en una entrevista estructurada y te entrega un primer diagnóstico, que después deben revisar los responsables:
             </p>
 
             <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem', color: '#1e293b' }}>
@@ -199,7 +199,7 @@ export const ExecutivePurposeModal: React.FC<ExecutivePurposeModalProps> = ({
                 <strong>1. Un informe técnico preliminar en Word (.docx) y Markdown</strong>: con la traza de la clasificación, las fuentes normativas y espacio para la revisión y firma de <em>Responsable Funcional, Responsable de Seguridad y Delegado de Protección de Datos</em>. No es un acto administrativo ni acredita el cumplimiento.
               </li>
               <li>
-                <strong>2. Kit de código</strong>: Banners de transparencia según el Art. 50 RIA y módulos de logs listos para copiar y pegar en tu proyecto.
+                <strong>2. Kit de código</strong>: avisos de transparencia (Art. 50 RIA) para interfaces y documentos, y pautas para proteger las claves.
               </li>
               <li>
                 <strong>3. Evaluación de Impacto de la AEPD (EIPD)</strong>: Borrador para que el responsable del tratamiento lo complete con el DPD.

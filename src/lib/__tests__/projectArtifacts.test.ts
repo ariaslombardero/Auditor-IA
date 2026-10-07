@@ -56,9 +56,16 @@ describe('Documentación pública (DOC-15)', () => {
   });
 
   it('el README y la guía de usuario no prometen certificaciones, CSV ni dictámenes oficiales', () => {
-    const textos = [leer('README.md'), leer('src/components/UserGuideModal.tsx'), leer('src/components/ExecutivePurposeModal.tsx')];
+    const textos = [
+      leer('README.md'),
+      leer('src/components/UserGuideModal.tsx'),
+      leer('src/components/ExecutivePurposeModal.tsx'),
+      leer('src/components/IngestionView.tsx'),
+    ];
     for (const t of textos) {
       expect(t).not.toMatch(/dictamen oficial|expediente oficial|CSV oficial|100\s?% de fiabilidad|apto para producci[oó]n|Producci%C3%B3n%20%2F%20Activo/i);
+      // Afirmaciones jurídicas corregidas en el saneamiento
+      expect(t).not.toMatch(/auxilio t[ée]cnico instrumental|decreto de programaci[oó]n|proh[íi]be poner en producci[oó]n|Sincronizaci[oó]n Telem[áa]tica/i);
     }
   });
 });

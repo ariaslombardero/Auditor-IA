@@ -428,10 +428,10 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
               </div>
               <div>
                 <h2 style={{ fontSize: '1.125rem', fontWeight: 800, margin: 0, color: 'white', letterSpacing: '-0.01em' }}>
-                  Marco de Conformidad Obligatorio para Sistemas de IA
+                  Antes de poner en servicio un sistema de IA
                 </h2>
                 <p style={{ margin: '2px 0 0 0', fontSize: '0.8125rem', color: '#94a3b8' }}>
-                  ¿Vas a implantar un chatbot, asistente o automatización en tu organismo? Antes de ponerlo en servicio debes acreditar que cumple 4 normativas vinculantes.
+                  ¿Vas a implantar un chatbot, asistente o automatización con IA en tu organismo? Esta herramienta te ayuda a preparar un diagnóstico preliminar frente a cuatro marcos normativos. El resultado es un borrador que deben revisar los responsables.
                 </p>
               </div>
             </div>
@@ -456,7 +456,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
                   }}
                 >
                   <HelpCircle style={{ width: 14, height: 14 }} />
-                  <span>Guía Directiva Completa</span>
+                  <span>¿Por qué revisarlo?</span>
                 </button>
               )}
               <button
@@ -494,10 +494,10 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8', fontWeight: 700, fontSize: '0.75rem', marginBottom: '2px' }}>
                 <Scale style={{ width: 13, height: 13 }} />
-                <span>1. AI Act (UE 2024/1689)</span>
+                <span>1. Reglamento de IA (UE 2024/1689)</span>
               </div>
               <div style={{ fontSize: '0.72rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-                Supervisión humana previa (Art. 14) y deber de información activa (Art. 50).
+                Clasifica el sistema: prohibido (Art. 5), alto riesgo (Anexo III), transparencia (Art. 50) o riesgo mínimo.
               </div>
             </div>
 
@@ -507,7 +507,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
                 <span>2. RGPD y LOPDGDD</span>
               </div>
               <div style={{ fontSize: '0.72rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-                Prohíbe actos con efectos jurídicos basados únicamente en algoritmos (Art. 22).
+                Datos personales: base jurídica, decisiones automatizadas (Art. 22) y evaluación de impacto cuando proceda (Art. 35).
               </div>
             </div>
 
@@ -517,7 +517,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
                 <span>3. Ley 40/2015 (Art. 41)</span>
               </div>
               <div style={{ fontSize: '0.72rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-                Acredita que es auxilio técnico instrumental y no acto administrativo automatizado.
+                Distingue el apoyo al personal de la actuación administrativa automatizada, que exige órganos responsables previamente establecidos.
               </div>
             </div>
 
@@ -527,7 +527,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
                 <span>4. ENS (RD 311/2022)</span>
               </div>
               <div style={{ fontSize: '0.72rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-                Custodia estricta de API keys, trazabilidad de logs y soberanía del dato.
+                Categoría de seguridad (básica, media o alta) y medidas como la protección de credenciales y el registro de actividad.
               </div>
             </div>
           </div>
@@ -622,7 +622,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
               </span>
             </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--brand-muted-light)' }}>
-              Pega la URL de tu repositorio público y la app extrae el README, el código y los agentes en 1 clic.
+              Pega la URL de tu repositorio público: la app lee el README, el AGENTS.md o CLAUDE.md y la lista de dependencias.
             </div>
           </button>
 
@@ -653,7 +653,7 @@ Stack: Python, FastAPI, OpenAI GPT-4o.`,
               </span>
             </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--brand-muted-light)' }}>
-              ¿No tienes código ni GitHub? Responde 4 preguntas guiadas sobre tu asistente y la IA hace el resto.
+              ¿No tienes código ni GitHub? Responde 4 preguntas guiadas y se redacta un borrador de AGENTS.md, sin necesidad de IA.
             </div>
           </button>
 
