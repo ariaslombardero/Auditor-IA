@@ -18,6 +18,13 @@ import { generateOfficialDossierMarkdown } from '../src/lib/officialDossierMd';
 import { buildAuditManifest } from '../src/lib/auditManifestGenerator';
 import { buildOfficialDossierDocument } from '../src/lib/officialDossierDocx';
 import { buildEipdDocument } from '../src/lib/eipdGenerator';
+import { eipdScreening, type EipdScreening } from '../src/lib/eipdCriteria';
+
+const EIPD_LABEL: Record<EipdScreening, string> = {
+  necesaria: 'necesaria',
+  no_indicada: 'no indicada',
+  por_determinar: 'por determinar',
+};
 
 const raiz = process.cwd();
 const dirCasos = resolve(raiz, 'docs', 'casos-de-referencia');
@@ -26,6 +33,7 @@ mkdirSync(dirCasos, { recursive: true });
 mkdirSync(dirAnalizador, { recursive: true });
 
 const filas: string[] = [];
+const reales: string[] = [];
 let discrepancias = 0;
 
 for (const caso of REFERENCE_CASES) {
@@ -38,7 +46,14 @@ for (const caso of REFERENCE_CASES) {
   writeFileSync(resolve(dirCasos, `${caso.id}.md`), md);
   writeFileSync(resolve(dirCasos, `${caso.id}.manifest.json`), JSON.stringify(manifiesto, null, 2));
 
-  const coincide = d.riskClassification === caso.esperado.clasificacion && Boolean(d.isArticle63Derogation) === Boolean(caso.esperado.excepcion63);
+  const eipd = eipdScreening(state);
+  const coincide =
+    d.riskClassification === caso.esperado.clasificacion &&
+    Boolean(d.isArticle63Derogation) === Boolean(caso.esperado.excepcion63) &&
+    (!caso.esperado.eipd || caso.esperado.eipd === eipd);
+  if (caso.real) {
+    reales.push(`| \`${caso.id}\` | [${caso.real.repositorio.replace('https://github.com/', '')}](${caso.real.repositorio}) | [\`${caso.real.commit.slice(0, 7)}\`](${caso.real.repositorio}/tree/${caso.real.commit}) | ${EIPD_LABEL[eipd]} |`);
+  }
   if (!coincide) discrepancias++;
   filas.push(
     `| \`${caso.id}\` | ${caso.titulo} | ${caso.esperado.clasificacion}${caso.esperado.excepcion63 ? ' (Art. 6.3)' : ''} | ${d.riskLabel} | ${coincide ? 'Sí' : '**NO**'} | ${caso.fundamento} | \`${traza.inputFingerprint.slice(0, 12)}…\` |`
@@ -60,12 +75,22 @@ writeFileSync(
 > Generado por \`npm run ejemplos\` (\`scripts/generarEjemplos.ts\`) el ${fecha}, con el motor v${ENGINE_VERSION}.
 > Corte normativo: ${NORMATIVE_SNAPSHOT}.
 > Los diagnósticos proceden solo del motor determinista, sin ningún modelo de IA. Las entradas son sintéticas,
-> salvo el caso \`analizador-ayudas\`, que usa la documentación pública de esa aplicación.
+> salvo en los casos de aplicaciones reales, que usan la documentación pública de sus repositorios.
 > Las mismas comprobaciones se ejecutan como pruebas en \`src/lib/__tests__/referenceCases.test.ts\`.
 
 | Caso | Descripción | Resultado esperado | Resultado del motor | Coincide | Fundamento | Huella de las entradas |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 ${filas.join('\n')}
+
+## Aplicaciones reales
+
+La documentación de cada aplicación (README y dependencias) se guarda en \`src/test/casos-reales/\` tal como
+estaba en el commit indicado. Las respuestas de la entrevista son un **borrador** hecho a partir de esa
+documentación: debe confirmarlas el autor de cada aplicación antes de dar el resultado por bueno.
+
+| Caso | Repositorio | Commit | Cribado de la EIPD |
+| :--- | :--- | :--- | :--- |
+${reales.join('\n')}
 
 Cada caso tiene su informe (\`<caso>.md\`) y su manifiesto (\`<caso>.manifest.json\`). Son informes técnicos
 preliminares para probar la herramienta: no son actos administrativos ni acreditan el cumplimiento.

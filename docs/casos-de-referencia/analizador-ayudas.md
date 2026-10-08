@@ -3,7 +3,7 @@
 **Entidad Promotora:** Administración Pública Promotora
 **Departamento / Servicio:** Área de Régimen Jurídico y Transformación Digital
 **Software Evaluado:** "Analizador de convocatorias de ayudas y subvenciones"
-**Fecha de Emisión:** 8/10/2026
+**Fecha de Emisión:** 9/10/2026
 **Marco Normativo de Referencia:**
 - Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (RIA), modificado por el Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)
 - Real Decreto 729/2023, de 22 de agosto (Estatuto de la Agencia Española de Supervisión de Inteligencia Artificial - AESIA)
@@ -55,7 +55,7 @@ Diagnóstico preliminar para "Analizador de convocatorias de ayudas y subvencion
 - **Denominación:** Analizador de convocatorias de ayudas y subvenciones
 - **Objeto funcional:** Asistente que extrae plazos, requisitos y criterios de convocatorias de ayudas y propone ideas de proyecto para la entidad local.
 - **Destinatarios principales:** public_employees
-- **Pila tecnológica declarada:** No especificada
+- **Pila tecnológica declarada:** @google/genai, @radix-ui/react-dialog, @radix-ui/react-slot, @radix-ui/react-tabs, clsx, docx, file-saver, lucide-react, mammoth, marked, pdfjs-dist, react, react-dom, react-markdown, remark-gfm, tailwind-merge
 - **Documentación aportada:** README.md y AGENTS.md / CLAUDE.md (directivas del agente). Ambos son declaraciones del promotor.
 - **Modelo de inferencia (declarado):**
   Ejecución local en servidores propios (Ollama / vLLM). No se ha comprobado el proveedor efectivamente utilizado.
@@ -117,7 +117,7 @@ El **Analizador de Ayudas y Subvenciones** es una solución de software asistido
 
 | Paso | Pregunta | Respuesta | Conclusión | Regla y fuente | Límites |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| INDICIOS | ¿Qué sugiere la documentación aportada? | Uso de IA: «s una solucion de software asistido por inteligencia artificial disenada exclusivamente para prestar **» · Ámbito empleo: «ntajes de cofinanciacion y criterios de baremacion. --- ## 2. arquitectura de modelos e» · Ámbito biometria: «liacion sindical, origen racial o datos biometricos. - **prohibicion de datos personales id» | Indicios para orientar la entrevista. | Los indicios por palabras clave nunca deciden la clasificación ni el estado de un requisito. (Documentación aportada (README, AGENTS.md, descripción)) | Coincidencias de texto con normalización de tildes y exclusión de negaciones; pueden existir falsos positivos y negativos. |
+| INDICIOS | ¿Qué sugiere la documentación aportada? | Uso de IA: «style=for-the-badge&logo=tailwindcss) ![gemini ai](https://img.shields.io/badge/google» · Ámbito empleo: «ntajes de cofinanciacion y criterios de baremacion. --- ## 2. arquitectura de modelos e» · Ámbito biometria: «liacion sindical, origen racial o datos biometricos. - **prohibicion de datos personales id» | Indicios para orientar la entrevista. | Los indicios por palabras clave nunca deciden la clasificación ni el estado de un requisito. (Documentación aportada (README, AGENTS.md, descripción)) | Coincidencias de texto con normalización de tildes y exclusión de negaciones; pueden existir falsos positivos y negativos. |
 | ART-3-1 | ¿Infiere el sistema, a partir de la información de entrada, la manera de generar resultados de salida (predicciones, contenidos, recomendaciones o decisiones)? | Sí | Es un sistema de IA: se aplica el RIA. | Un sistema de IA es un sistema basado en una máquina que infiere de la información de entrada la manera de generar resultados de salida que pueden influir en entornos físicos o virtuales. (Reglamento (UE) 2024/1689, Art. 3.1) | Respuesta declarada. Debe contrastarse con las capacidades reales del sistema y con las Directrices de la Comisión sobre la definición de sistema de IA. |
 | ART-5 | ¿Incurre el sistema en alguna de las prácticas prohibidas del Art. 5? | Declarado que no concurre ninguna | No se declara ninguna práctica prohibida. | Quedan prohibidas la introducción en el mercado, la puesta en servicio y la utilización de sistemas que incurran en las prácticas del Art. 5.1. (Reglamento (UE) 2024/1689, Art. 5 (letras b bis y b ter añadidas por el Reglamento (UE) 2026/1744)) | Respuestas declaradas. Los indicios de la documentación solo orientan la revisión: no deciden. |
 | ANEXO-III | ¿En qué ámbito del Anexo III se utiliza el sistema? | Ninguno | Fuera del ámbito del Anexo III. | Son de alto riesgo los sistemas de IA mencionados en el Anexo III, salvo la excepción del Art. 6.3. (Reglamento (UE) 2024/1689, Art. 6.2 y Anexo III) | Se valora el ámbito declarado; no se comprueban por separado las letras de cada punto del Anexo III. |
@@ -239,6 +239,7 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *No indicada*.
 - **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
 - **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.
+- **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** declarado que NO se tratan.
 
 
 
@@ -249,8 +250,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.1.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** 3d6105e3026971d946f76d1c0582482abce4138a29022a5712863389623e1513 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T23:04:28.335Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** 934183224ab0851f8aedc0729e73eea956c9d882c8b76c9a8ce662117b0a9086 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-08T22:25:13.936Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

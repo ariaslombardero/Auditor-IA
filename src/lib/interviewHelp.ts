@@ -171,6 +171,12 @@ export const INTERVIEW_HELP: Record<string, QuestionHelp> = {
     ejemploNo: 'Datos que no se refieren a condenas ni infracciones penales.',
     norma: 'RGPD, Art. 10',
   },
+  processesSolvencyData: {
+    queSignifica: 'Datos que muestran si una persona física puede pagar sus deudas: concursos de acreedores, embargos, impagos o ficheros de morosidad. Que procedan de una fuente pública, como los edictos del BOE, no los saca del RGPD. Los datos de empresas (personas jurídicas) no son datos personales, pero los de empresarios individuales y autónomos sí.',
+    ejemploSi: 'Extraer de los edictos concursales del BOE el nombre y el DNI de los deudores que son personas físicas.',
+    ejemploNo: 'Consultar solo concursos de sociedades mercantiles, sin datos de personas físicas.',
+    norma: 'Lista de la AEPD de tratamientos que requieren EIPD (Art. 35.4 RGPD), criterio 4',
+  },
   biometricIdentification: {
     queSignifica: 'Usar rasgos físicos (cara, huella, voz, iris) para identificar de forma única a una persona.',
     ejemploSi: 'Fichar con reconocimiento facial o con la huella dactilar.',

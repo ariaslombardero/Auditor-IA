@@ -231,6 +231,7 @@ ${obligations(requirements).map((r) => requirementBlock(r, _idioma)).join('\n')}
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *${answers.ratActivityName || 'No indicada'}*.
 - **Categorías especiales de datos (Art. 9 RGPD):** ${answers.processesSpecialCategoryData === 'si' ? 'declarado que SÍ se tratan (exige garantías adicionales y probablemente EIPD).' : answers.processesSpecialCategoryData === 'no' ? 'declarado que NO se tratan.' : 'no consta.'}
 - **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** ${answers.processesCriminalData === 'si' ? 'declarado que SÍ se tratan.' : answers.processesCriminalData === 'no' ? 'declarado que NO se tratan.' : 'no consta.'}
+- **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** ${answers.processesSolvencyData === 'si' ? 'declarado que SÍ se tratan.' : answers.processesSolvencyData === 'no' ? 'declarado que NO se tratan.' : 'no consta.'}
 
 ${llmCritique ? `\n---\n\n## 8. ANÁLISIS ASISTIDO POR IA (CONTENIDO NO VERIFICADO)\n\n> *Texto generado por un modelo de lenguaje. Es contenido no verificado: no modifica la clasificación ni acredita requisitos, y sus citas deben comprobarse antes de cualquier uso.*\n\n${llmCritique}\n` : ''}
 

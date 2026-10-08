@@ -57,7 +57,7 @@ ${ingest.agentsMdContent.slice(0, 3500)}
   * Papel de la entidad: ${answers.institutionalRole}
   * Supervisión humana: ${answers.humanOversightLevel} (${answers.supervisionRole || 'sin rol indicado'}) · Intervención directa de un empleado público: ${answers.directHumanIntervention}
   * Funcionamiento del procedimiento: ${answers.procedureDescription || 'no descrito'}
-  * Datos personales: ${answers.processesPersonalData} · Base jurídica: ${answers.legalBasis} · Art. 9: ${answers.processesSpecialCategoryData} · Art. 10: ${answers.processesCriminalData}
+  * Datos personales: ${answers.processesPersonalData} · Base jurídica: ${answers.legalBasis} · Art. 9: ${answers.processesSpecialCategoryData} · Art. 10: ${answers.processesCriminalData} · Solvencia: ${answers.processesSolvencyData}
   * Alojamiento declarado: ${answers.hostingModel} · Actividad RAT: ${answers.ratActivityName || 'no indicada'}
   * Registro de actividad: ${answers.auditLogsEnabled} (${answers.logRetentionMonths} meses)
 

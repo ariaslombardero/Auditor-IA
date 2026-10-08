@@ -37,6 +37,7 @@ const NO_SIEMPRE_INFERIDO = new Set([
   'performsProfiling',
   'processesSpecialCategoryData',
   'processesCriminalData',
+  'processesSolvencyData',
   'biometricIdentification',
   'geneticData',
   'systematicMonitoring',

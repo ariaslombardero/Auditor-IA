@@ -4,6 +4,7 @@ import { officialDossierText } from '../../test/fixtures';
 import { generateOfficialDossierMarkdown } from '../officialDossierMd';
 import { buildAuditManifest } from '../auditManifestGenerator';
 import { buildDocumentTraceability } from '../traceability';
+import { eipdScreening } from '../eipdCriteria';
 
 /**
  * Casos de referencia (Fase 4): resultado esperado del motor y concordancia de los cuatro
@@ -17,6 +18,9 @@ describe.each(REFERENCE_CASES)('Caso de referencia «$id»', (caso) => {
     expect(Boolean(d.isArticle63Derogation)).toBe(Boolean(caso.esperado.excepcion63));
     for (const alerta of caso.esperado.alertas ?? []) {
       expect(d.redFlags.some((f) => f.includes(alerta))).toBe(true);
+    }
+    if (caso.esperado.eipd) {
+      expect(eipdScreening(caso.state()), 'cribado de la EIPD').toBe(caso.esperado.eipd);
     }
     if (caso.esperado.clasificacion === 'requires_review') {
       expect(d.reviewReasons.length).toBeGreaterThan(0);

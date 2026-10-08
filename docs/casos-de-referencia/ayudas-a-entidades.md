@@ -3,7 +3,7 @@
 **Entidad Promotora:** Administración Pública Promotora
 **Departamento / Servicio:** Área de Régimen Jurídico y Transformación Digital
 **Software Evaluado:** "Caso sintético"
-**Fecha de Emisión:** 8/10/2026
+**Fecha de Emisión:** 9/10/2026
 **Marco Normativo de Referencia:**
 - Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (RIA), modificado por el Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)
 - Real Decreto 729/2023, de 22 de agosto (Estatuto de la Agencia Española de Supervisión de Inteligencia Artificial - AESIA)
@@ -213,6 +213,7 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *Apoyo a la gestión documental*.
 - **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
 - **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.
+- **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** declarado que NO se tratan.
 
 
 
@@ -223,8 +224,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.1.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** 7ab475223a3cda321225f2ec66f73de84d079659379f6a3ba1bf81f4edb23251 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-07T23:04:28.315Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** c9413ed03495aa23a2876ce608a05fab7d37a9ab082d365f0cc2a80518302bb9 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-08T22:25:13.914Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

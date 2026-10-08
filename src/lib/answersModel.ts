@@ -47,6 +47,7 @@ export function createDefaultAnswers(): LegalEnrichmentAnswers {
     legalBasis: 'desconocida',
     processesSpecialCategoryData: 'desconocido',
     processesCriminalData: 'desconocido',
+    processesSolvencyData: 'desconocido',
     biometricIdentification: 'desconocido',
     geneticData: 'desconocido',
     systematicMonitoring: 'desconocido',

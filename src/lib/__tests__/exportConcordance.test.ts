@@ -146,6 +146,28 @@ describe('EIPD (criterios WP248)', () => {
     expect(eipdScreening(makeState('Sistema', makeAnswers({ infersOutputs: 'si' })))).toBe('por_determinar');
   });
 
+  it('EIPD-06 · los datos de solvencia activan el criterio 4 de la AEPD (no el 4 de WP248) y llegan a los documentos', async () => {
+    const solvencia = makeState(
+      'Monitor de edictos concursales',
+      answeredAnswers({ infersOutputs: 'no', processesPersonalData: 'si', processesSolvencyData: 'si' }),
+      { isAiSystem: false }
+    );
+    expect(buildAepdCriteria(solvencia).find((c) => c.id === 'AEPD-4')!.applies).toBe(true);
+    expect(buildEipdCriteria(solvencia).find((c) => c.id === 'C4')!.applies).toBe(false);
+    // Un solo criterio: no basta para presumir la EIPD
+    expect(eipdScreening(solvencia)).toBe('no_indicada');
+    // Si además es a gran escala, son dos criterios de la lista de la AEPD
+    const granEscala = makeState('Monitor', { ...solvencia.answers, largeScale: 'si' }, { isAiSystem: false });
+    expect(eipdScreening(granEscala)).toBe('necesaria');
+    // Sin contestar, el criterio queda por valorar
+    const sinContestar = makeState('Monitor', { ...solvencia.answers, processesSolvencyData: 'desconocido' }, { isAiSystem: false });
+    expect(buildAepdCriteria(sinContestar).find((c) => c.id === 'AEPD-4')!.estado).toBe('desconocido');
+
+    const traza = await buildDocumentTraceability(solvencia);
+    expect(generateOfficialDossierMarkdown(solvencia, undefined, 'castellano', traza)).toMatch(/solvencia patrimonial y de crédito[^\n]*SÍ/i);
+    expect(buildAuditManifest(solvencia, undefined, 'castellano', traza).governance_and_compliance.gdpr_rgpd.declared_solvency_data).toBe('si');
+  });
+
   it('EIPD-02 · el criterio 9 de WP248 es el impedimento al ejercicio de derechos, no las transferencias internacionales', () => {
     const state = makeState('Asistente de redacción', answeredAnswers({ hostingModel: 'us_hyperscaler' }));
     const c9 = buildEipdCriteria(state).find((c) => c.id === 'C9')!;

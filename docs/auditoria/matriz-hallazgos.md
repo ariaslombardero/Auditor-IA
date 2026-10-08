@@ -14,6 +14,7 @@
 > **Fase 5 · entrega 5.2** (08/10/2026): **171 pruebas en verde**. Entrevista generada desde el catálogo con ayuda en lenguaje sencillo y navegación a lo pendiente (UX-01, UX-02).
 > **Fase 5 · entrega 5.3** (08/10/2026): **191 pruebas en verde**. Sugerencias de respuesta con comprobación de citas y procedencia en los documentos (SUG-01 a SUG-03). Verificado en el navegador con un modelo local simulado.
 > **Cierre de la Fase 5** (08/10/2026): **191 pruebas en verde**. Guía de uso, manual de la app, `agents.md` y README actualizados con la entrevista asistida, el panel «Lo que falta» y la diferencia entre respuestas pendientes y requisitos por validar.
+> **Casos de aplicaciones reales** (09/10/2026): **199 pruebas en verde, 14 casos de referencia**. Se añaden la Calculadora de plazos LCSP, el Monitor BOE y el Asistente de notas de prensa, y el analizador de ayudas pasa a usar el README real. La documentación de cada uno se guarda con su commit en `src/test/casos-reales/`; las respuestas de su entrevista son un borrador que debe confirmar el autor. Los casos reales revelaron EIPD-06 e IND-01.
 
 **Origen:** C = Claude · G = GPT Sol 6.1 · C+G = ambos. **Estado:** 🔴 reproducido (prueba en rojo) · 🟢 corregido (prueba en verde) · ⚪ sin prueba automática todavía.
 
@@ -47,6 +48,7 @@
 | MOT-24 | Ningún requisito podía llegar a «acreditado»: no existía validación humana documentada | C (en Fase 1) | Registro de validación (quién y con qué evidencia), ligada a las entradas; caduca si cambian | 2 | 🟢 |
 | MOT-25 | Las prácticas del Art. 5 se decidían por palabras clave | C+G | Una pregunta por práctica; «sí» = prohibido; «desconocido» = requiere revisión | 2 | 🟢 |
 | MOT-26 | El punto 5 del Anexo III se aplicaba a cualquier ayuda o subvención | G | Solo 5.a): prestaciones esenciales de asistencia pública a personas físicas; 5.b)–d) declarados no soportados | 2 | 🟢 |
+| IND-01 | El indicio «uso de IA» saltaba con frases que no describen lo que hace la aplicación: cómo se desarrolló («Vibe Coding», «depurada con Claude», «Construido con… IA generativa»), la estrategia de IA de la entidad o la presentación del autor. Las dos aplicaciones sin IA (Calculadora LCSP, Monitor BOE) recibían el indicio | C (casos reales) | Esas frases se excluyen del indicio de IA; una mención real en otra frase («usa la API de Gemini») sigue detectándose. Los indicios siguen sin decidir nada | 6 | 🟢 |
 
 ## B. Citas normativas
 
@@ -92,6 +94,7 @@
 | EIPD-03 | Sin cálculo de riesgo residual; C3/C6 fijos en `false`; WP248 y lista AEPD mezclados | C+G | Riesgo inherente → medidas → residual; numeraciones separadas | 2 | 🟢 |
 | EIPD-04 | El borrador de EIPD redactaba el dictamen del DPD («FAVORABLE PARA EL PASO A PRODUCCIÓN»), se presentaba como «Metodología Oficial de la AEPD» y daba por implantadas medidas no comprobadas | C (en Fase 1) | Borrador rotulado como tal; medidas como declaradas o pendientes; dictamen en blanco para el DPD | 1 | 🟢 |
 | EIPD-05 | La necesidad de EIPD era binaria y presumía «obligatoria» con datos sensibles | G | Cribado «necesaria / no indicada / por determinar» con el umbral de dos criterios de WP248 o de la lista de la AEPD | 2 | 🟢 |
+| EIPD-06 | El criterio 4 de la lista de la AEPD incluye los datos de solvencia patrimonial y crédito, pero la entrevista no los preguntaba: el Monitor BOE (deudores de edictos concursales, que pueden ser personas físicas) no activaba el criterio | C (casos reales) | Pregunta `processesSolvencyData` en el bloque G, con ayuda que aclara que los datos de fuentes públicas (BOE) siguen sujetos al RGPD; activa AEPD-4 (no el criterio 4 de WP248); siempre «inferida» si la IA sugiere «no»; consta en el Markdown y en el manifiesto | 6 | 🟢 |
 
 ## E. Historial local (`src/lib/auditHistoryService.ts`)
 

@@ -117,6 +117,8 @@ export interface LegalEnrichmentAnswers {
   legalBasis: 'art_6_1_c' | 'art_6_1_e' | 'otra' | 'desconocida';
   processesSpecialCategoryData: TriState; // Art. 9 RGPD
   processesCriminalData: TriState; // Art. 10 RGPD
+  /** Solvencia patrimonial y crédito de personas físicas (lista de la AEPD del Art. 35.4 RGPD, criterio 4). */
+  processesSolvencyData: TriState;
   biometricIdentification: TriState;
   geneticData: TriState;
   systematicMonitoring: TriState;

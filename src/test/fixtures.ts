@@ -53,6 +53,7 @@ export function answeredAnswers(overrides: Partial<LegalEnrichmentAnswers> = {})
     legalBasis: 'art_6_1_e',
     processesSpecialCategoryData: 'no',
     processesCriminalData: 'no',
+    processesSolvencyData: 'no',
     biometricIdentification: 'no',
     geneticData: 'no',
     systematicMonitoring: 'no',

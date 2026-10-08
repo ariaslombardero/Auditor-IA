@@ -205,6 +205,7 @@ const BASE_QUESTIONS: InterviewQuestion[] = [
   },
   tri('processesSpecialCategoryData', 'G', '¿Trata categorías especiales de datos (Art. 9 RGPD: salud, origen étnico, opiniones políticas, afiliación sindical, etc.)?', tratarDatos),
   tri('processesCriminalData', 'G', '¿Trata datos relativos a condenas e infracciones penales (Art. 10 RGPD)?', tratarDatos),
+  tri('processesSolvencyData', 'G', '¿Trata datos sobre la solvencia o las deudas de personas físicas (concursos, embargos, impagos)?', tratarDatos),
   tri('biometricIdentification', 'G', '¿Usa datos biométricos para identificar de manera única a una persona?', tratarDatos),
   tri('geneticData', 'G', '¿Trata datos genéticos?', tratarDatos),
   tri('systematicMonitoring', 'G', '¿Observa, monitoriza o controla a los interesados de forma sistemática?', tratarDatos),

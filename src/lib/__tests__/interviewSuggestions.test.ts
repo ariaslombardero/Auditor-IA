@@ -67,7 +67,7 @@ describe('Reglas de prudencia (SUG-01)', () => {
   });
 
   it('un «no» en datos sensibles o en perfilado es siempre inferido', () => {
-    for (const id of ['processesSpecialCategoryData', 'performsProfiling']) {
+    for (const id of ['processesSpecialCategoryData', 'processesSolvencyData', 'performsProfiling']) {
       expect(classifySuggestion(questionById(id)!, 'no', 'ni perfila a nadie', 'x', ingest)?.tipo, id).toBe('inferida');
     }
   });

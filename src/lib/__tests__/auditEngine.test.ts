@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { evaluateRulesDeterministically } from '../auditEngine';
 import { computeExecutivePillars, computeExecutiveVerdict } from '../dashboardPillars';
-import { annexIIIHints, prohibitedPracticeHints } from '../documentHints';
+import { aiUsageHint, annexIIIHints, prohibitedPracticeHints } from '../documentHints';
 import { detectAiSignals } from '../githubIngestion';
 import { NORMATIVE_SNAPSHOT } from '../traceability';
 import { effectiveDiagnostic, inputsKey } from '../validations';
@@ -31,6 +31,26 @@ describe('Indicios documentales (solo sugieren, nunca deciden)', () => {
     expect(prohibitedPracticeHints(ingest)).toHaveLength(0);
     const r = evaluateRulesDeterministically(ingest, answeredAnswers());
     expect(r.riskClassification).not.toBe('prohibited');
+  });
+
+  it('IND-01 · que la aplicación se haya desarrollado con IA, o que la entidad tenga una estrategia de IA, no es indicio de que use IA', () => {
+    const desarrollo = makeIngest('Monitor de edictos', {
+      readmeContent: [
+        'Este proyecto se ha creado con metodologías de **Vibe Coding** (Inteligencia Artificial Generativa).',
+        'Ha sido desarrollado íntegramente mediante **AI-Driven Development**, orquestando modelos de lenguaje (LLMs).',
+        '- La lógica de scraping fue diseñada y depurada de forma iterativa con Claude (Anthropic).',
+        'Forma parte de MencIA, la estrategia de Inteligencia Artificial de la Diputación de Lugo.',
+        'Autor: experto en inteligencia artificial aplicada al sector público.',
+        'Construido con ❤️ aprovechando el potencial de la Inteligencia Artificial Generativa',
+      ].join('\n'),
+    });
+    expect(aiUsageHint(desarrollo)).toBeNull();
+    for (const real of [
+      'Herramienta desarrollada con metodologías de Vibe Coding. Utiliza la API de Google Gemini para redactar borradores.',
+      'Aplicación desarrollada en React que usa un modelo de lenguaje local con Ollama.',
+    ]) {
+      expect(aiUsageHint(makeIngest('Asistente', { readmeContent: real })), real).not.toBeNull();
+    }
   });
 
   it('MOT-03 · el agents.md de la propia aplicación no se califica como práctica prohibida', () => {

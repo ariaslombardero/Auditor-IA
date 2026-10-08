@@ -86,7 +86,7 @@ export function buildAepdCriteria(input: CriteriaInput): EipdCriterion[] {
     criterion('AEPD-1', '1. Perfilado o valoración de sujetos', a.performsProfiling, 'ALTO'),
     criterion('AEPD-2', '2. Decisiones automatizadas o que contribuyan en gran medida a ellas', contributes, 'ALTO'),
     criterion('AEPD-3', '3. Observación, monitorización o control sistemático y exhaustivo', a.systematicMonitoring, 'ALTO'),
-    criterion('AEPD-4', '4. Categorías especiales (Art. 9), datos penales (Art. 10) o de solvencia', any(a.processesSpecialCategoryData, a.processesCriminalData), 'ALTO'),
+    criterion('AEPD-4', '4. Categorías especiales (Art. 9), datos penales (Art. 10) o de solvencia', any(a.processesSpecialCategoryData, a.processesCriminalData, a.processesSolvencyData), 'ALTO'),
     criterion('AEPD-5', '5. Datos biométricos para identificar de manera única a una persona', a.biometricIdentification, 'ALTO'),
     criterion('AEPD-6', '6. Datos genéticos', a.geneticData, 'ALTO'),
     criterion('AEPD-7', '7. Datos a gran escala', a.largeScale, 'MEDIO'),
