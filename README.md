@@ -6,6 +6,8 @@ Herramienta de apoyo para preparar el **diagnóstico preliminar** de un sistema 
 
 Desarrollada por [Arias Lombardero · Aplicaciones](https://ariaslombardero.es/).
 
+**Estado:** versión 2.2.0, en **piloto con datos sintéticos**. No está en producción ni certifica nada. Cambios por versión en [CHANGELOG.md](CHANGELOG.md).
+
 ## Qué hace
 
 1. **Ingesta.** Recoge la descripción, el README, el AGENTS.md y el prompt del sistema de la aplicación (pegados o desde un repositorio público de GitHub). Las palabras clave solo sugieren qué revisar.
@@ -15,8 +17,9 @@ Desarrollada por [Arias Lombardero · Aplicaciones](https://ariaslombardero.es/)
    - ámbito del Anexo III, perfilado y excepción del Art. 6.3;
    - transparencia (Art. 50) y papel de la entidad;
    - supervisión humana y Art. 41 de la Ley 40/2015;
-   - datos personales y criterios de EIPD (WP248 y lista de la AEPD);
-   - alojamiento del modelo y dimensiones del ENS.
+   - datos personales, incluidos los de solvencia, y criterios de EIPD (WP248 y lista de la AEPD);
+   - procedimiento de brechas de datos (Arts. 33 y 34 RGPD);
+   - dónde se ejecuta el sistema y dimensiones del ENS.
 3. **Diagnóstico.** Clasificación orientativa con su **traza** (pregunta, respuesta, regla, fuente y límites). Además:
    - requisitos con su estado de acreditación: nada se da por acreditado sin una validación humana registrada;
    - cuadro de mando de 4 pilares, alertas y recomendaciones;
@@ -103,6 +106,12 @@ Las pautas para agentes de IA y para quien contribuya están en [agents.md](agen
 
 React 19 · TypeScript · Vite 8 · Vitest · `docx` · `@google/genai` (se carga solo si se usa Gemini).
 
+## Cómo citar
+
+Arias Lombardero, J. A. (2026). *Auditor IA · Sector Público* (versión 2.2.0) [software]. https://github.com/ariaslombardero/Auditor-IA/releases/tag/v2.2.0
+
+Cite siempre la versión etiquetada: las cifras de pruebas, hallazgos y casos de la documentación corresponden a esa versión.
+
 ## Autoría y licencia
 
-Diseñado y desarrollado por **[Arias Lombardero · Aplicaciones](https://ariaslombardero.es/)**. Distribuido bajo licencia MIT.
+Diseñado y desarrollado por **[Arias Lombardero · Aplicaciones](https://ariaslombardero.es/)**. Distribuido bajo [licencia MIT](LICENSE).
