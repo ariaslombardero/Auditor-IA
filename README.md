@@ -84,7 +84,8 @@ Las pautas para agentes de IA y para quien contribuya están en [agents.md](agen
 | [docs/revision-humana.md](docs/revision-humana.md) | Lista de comprobación para asesoría jurídica, Responsable de Seguridad, DPD y responsable funcional |
 | [docs/casos-de-referencia/](docs/casos-de-referencia/LEEME.md) | 14 casos con su resultado esperado y el obtenido; cuatro son aplicaciones reales de la Diputación de Lugo |
 | [docs/adr/001-credenciales-inferencia.md](docs/adr/001-credenciales-inferencia.md) | Proveedores de IA, credenciales y cabeceras de seguridad |
-| [docs/custodia-historial.md](docs/custodia-historial.md) | Conservación del historial en el navegador |
+| [docs/cobertura-aepd.md](docs/cobertura-aepd.md) | Cobertura frente a los *Requisitos para auditorías de tratamientos que incluyan IA* de la AEPD: lo que la herramienta trata y lo que no |
+| [docs/custodia-historial.md](docs/custodia-historial.md) | Conservación del historial en el navegador y procedimiento ante brechas e incidentes |
 | [docs/formato-documental.md](docs/formato-documental.md) | Formato de los informes y su incorporación al expediente |
 | [docs/auditoria/matriz-hallazgos.md](docs/auditoria/matriz-hallazgos.md) | Hallazgos de las auditorías y su corrección |
 | [docs/auditoria/registro-fuentes.md](docs/auditoria/registro-fuentes.md) | Fuentes normativas cotejadas (BOE, EUR-Lex, AEPD, OWASP) |
