@@ -28,7 +28,7 @@
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
 | **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | Riesgo de Transparencia (Riesgo Limitado - Art. 50 RIA) | 11 requisitos por validar |
-| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Condicionado a EIPD | Datos sensibles o nube externa |
+| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 3 requisitos por validar |
 | **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
 | **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos por validar |
 
@@ -40,7 +40,7 @@ Diagnóstico preliminar para "Asistente de notas de prensa": según lo declarado
 **FALTAN RESPUESTAS Y VALIDACIÓN HUMANA.** Queda 1 respuesta pendiente en la entrevista. 20 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
 
 ### Alertas para la revisión
-- Transferencia Internacional de Datos: el envío de datos a servidores fuera del Espacio Económico Europeo exige garantías reforzadas (Cláusulas Contractuales Tipo o Marco de Privacidad de Datos) y una valoración específica de la protección de servicios en la nube ([op.nub.1] ENS).
+- Alojamiento declarado y documentación discrepantes: se declara que el modelo se ejecuta en servidores propios, pero la documentación cita servicios en la nube (Google Gemini). Debe comprobarse qué proveedor procesa realmente los datos antes de aplicar las conclusiones sobre transferencias y ENS.
 
 ### Recomendaciones
 - Implantar los avisos de transparencia (banner y pie de página) del Art. 50 del RIA.
@@ -57,7 +57,7 @@ Diagnóstico preliminar para "Asistente de notas de prensa": según lo declarado
 - **Pila tecnológica declarada:** @google/genai, @radix-ui/react-dialog, @radix-ui/react-slot, @radix-ui/react-tabs, @tailwindcss/typography, @tailwindcss/vite, @vitejs/plugin-react, clsx, dotenv, express, lucide-react, mammoth, motion, pdfjs-dist, react, react-dom, react-helmet-async, react-markdown, tailwind-merge, vite
 - **Documentación aportada:** README.md (documentación funcional y de usuario).
 - **Modelo de inferencia (declarado):**
-  Nube internacional: transferencia internacional de datos sujeta a garantías reforzadas.
+  Ejecución local en servidores propios (Ollama / vLLM). No se ha comprobado el proveedor efectivamente utilizado.
 
 
 ---
@@ -236,8 +236,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.2.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** de1d051104bfc64d164b261e26a8272ecffacfe5626827cf4ff382c91f0c9694 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-10T12:01:44.258Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** 54dad5e5458026f2bb90e24b5e03c20fe05587ce4c5ddfea9a7007af21b69d92 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-10T12:38:01.672Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

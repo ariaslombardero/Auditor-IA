@@ -344,6 +344,9 @@ export function buildEipdDocument(state: FullAuditState, idioma: AppIdioma = 'ca
             spacing: { after: 200 },
           }),
 
+          // SECCIÓN 3 BIS: NECESIDAD Y PROPORCIONALIDAD (ART. 35.7.b RGPD)
+          ...necessityProportionalitySection(state),
+
           // SECCIÓN 4: MEDIDAS MITIGADORAS
           new Paragraph({
             text: '4. MEDIDAS DE MITIGACIÓN PREVISTAS (PENDIENTES DE VERIFICAR)',
@@ -508,4 +511,98 @@ function residualRiskTable(list: EipdCriterion[], measures: string): Table | Par
       ),
     ],
   });
+}
+
+const PENDIENTE_RESPONSABLE = 'A COMPLETAR por el responsable del tratamiento, con el asesoramiento del DPD.';
+
+/**
+ * Apartado de necesidad y proporcionalidad (Art. 35.7.b RGPD). Recoge lo declarado y plantea
+ * las preguntas; no concluye: el juicio corresponde al responsable con el asesoramiento del DPD.
+ * Las preguntas siguen el objetivo «Análisis de la proporcionalidad y necesidad» de los
+ * Requisitos para auditorías de tratamientos que incluyan IA (AEPD).
+ */
+function necessityProportionalitySection(state: FullAuditState): (Paragraph | Table)[] {
+  const { ingest, answers } = state;
+  const personal = answers.processesPersonalData;
+
+  const usoIa =
+    answers.infersOutputs === 'si'
+      ? 'Declarado que el sistema usa IA (infiere sus resultados).'
+      : answers.infersOutputs === 'no'
+        ? 'Declarado que el sistema no usa IA: aplica reglas fijas.'
+        : 'No consta si el sistema usa IA.';
+  const alojamiento =
+    answers.hostingModel === 'local_on_premise'
+      ? 'Se declara ejecución en servidores propios de la entidad.'
+      : answers.hostingModel === 'eu_cloud_dpa'
+        ? 'Se declara ejecución en una nube de la UE con contrato de encargo.'
+        : answers.hostingModel === 'us_hyperscaler'
+          ? 'Se declara ejecución fuera del EEE o sin garantía de tratamiento en la UE.'
+          : 'No consta dónde se ejecuta el sistema.';
+
+  const declaradas: string[] = [];
+  if (answers.processesSpecialCategoryData === 'si') declaradas.push('categorías especiales (Art. 9)');
+  if (answers.processesCriminalData === 'si') declaradas.push('datos penales (Art. 10)');
+  if (answers.processesSolvencyData === 'si') declaradas.push('datos de solvencia');
+  if (answers.biometricIdentification === 'si') declaradas.push('datos biométricos para identificar');
+  if (answers.geneticData === 'si') declaradas.push('datos genéticos');
+  if (answers.vulnerableSubjects === 'si') declaradas.push('datos de personas vulnerables');
+  if (answers.largeScale === 'si') declaradas.push('tratamiento a gran escala');
+  const minimizacion =
+    personal === 'no'
+      ? 'Declarado que no se tratan datos personales.'
+      : declaradas.length
+        ? `Se declaran: ${declaradas.join(', ')}. Debe justificarse que cada uno es imprescindible para la finalidad.`
+        : personal === 'si'
+          ? 'Se declaran datos personales, sin categorías especiales, penales ni de solvencia.'
+          : 'No consta si se tratan datos personales.';
+
+  const cribado = eipdScreening(state);
+  const riesgo =
+    (cribado === 'necesaria'
+      ? 'Cribado: concurren dos o más criterios de riesgo.'
+      : cribado === 'por_determinar'
+        ? 'Cribado: hay criterios de riesgo sin contestar.'
+        : 'Cribado: según lo declarado no concurren dos o más criterios de riesgo.') + ' Véase el apartado 4 bis.';
+
+  const filas: Array<[string, string, string]> = [
+    ['Idoneidad', '¿Sirve el tratamiento para alcanzar la finalidad declarada?', ingest.appDescription ? `Finalidad declarada: «${ingest.appDescription}».` : 'No consta la finalidad.'],
+    [
+      'Alternativas menos intrusivas',
+      '¿Se ha comparado con opciones que traten menos datos o supongan menos riesgo: sin IA, sin datos personales o con datos seudonimizados, con un modelo en servidores propios?',
+      `${usoIa} ${alojamiento}`,
+    ],
+    [
+      'Motivos para usar este sistema',
+      '¿Por qué se usa este sistema y no el procedimiento anterior? Si se aborda un problema nuevo, ¿por qué con IA?',
+      'No consta en la entrevista.',
+    ],
+    ['Minimización', '¿Se tratan solo los datos imprescindibles para la finalidad?', minimizacion],
+    ['Proporcionalidad en sentido estricto', '¿Compensan los beneficios para el interés público los riesgos para los derechos de los interesados?', riesgo],
+  ];
+
+  return [
+    new Paragraph({
+      text: '3 bis. EVALUACIÓN DE LA NECESIDAD Y LA PROPORCIONALIDAD (ART. 35.7.b RGPD)',
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 400, after: 200 },
+    }),
+    new Paragraph({
+      text: 'La EIPD debe incluir una evaluación de la necesidad y la proporcionalidad de las operaciones de tratamiento con respecto a su finalidad (Art. 35.7.b RGPD). La herramienta recoge lo declarado y plantea las preguntas; no las responde. Las preguntas siguen el objetivo «Análisis de la proporcionalidad y necesidad» de los Requisitos para auditorías de tratamientos que incluyan IA de la AEPD.',
+      spacing: { after: 150 },
+    }),
+    new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [
+        new TableRow({ children: [headerCell('Juicio', 18), headerCell('Pregunta', 32), headerCell('Lo que consta', 30), headerCell('Conclusión', 20)] }),
+        ...filas.map(
+          ([juicio, pregunta, consta]) =>
+            new TableRow({
+              children: [textCell(juicio, { bold: true }), textCell(pregunta), textCell(consta), textCell(PENDIENTE_RESPONSABLE, { color: COLOR_MUTED })],
+            })
+        ),
+      ],
+    }),
+    new Paragraph({ text: '', spacing: { after: 200 } }),
+  ];
 }

@@ -44,7 +44,7 @@ Lo leí completo el 10/10/2026.
 | :--- | :--- | :--- | :--- |
 | Finalidades y usos previstos | Parcial | Finalidad declarada, uso en un ámbito del Anexo III y base jurídica (`RGPD-BASE-JURIDICA`) | No analiza usos ni usuarios secundarios |
 | Contexto de uso | Parcial | Destinatarios del sistema. Quién supervisa y cuándo (`SUPERVISION-HUMANA`). Descripción del procedimiento y deslinde con el Art. 41 de la Ley 40/2015 | No pide umbrales de interpretación de resultados ni contextos en los que no debe usarse |
-| Proporcionalidad y necesidad | Parcial | Cribado de la EIPD (Art. 35) y tabla de riesgo inherente, medidas y riesgo residual en el borrador de EIPD | **El borrador de EIPD no tiene un apartado de necesidad y proporcionalidad (Art. 35.7.b RGPD)** ni compara con alternativas menos intrusivas |
+| Proporcionalidad y necesidad | Parcial | Apartado «3 bis. Evaluación de la necesidad y la proporcionalidad» (Art. 35.7.b RGPD) en el borrador de EIPD: idoneidad, alternativas menos intrusivas, motivos para usar el sistema, minimización y proporcionalidad en sentido estricto, con lo declarado en cada caso (EIPD-07). Cribado y tabla de riesgo inherente, medidas y riesgo residual | Plantea las preguntas y recoge lo declarado, pero no las responde: el juicio corresponde al responsable con el asesoramiento del DPD |
 | Destinatarios de los datos | Parcial | Dónde se ejecuta el sistema y alerta de transferencia internacional (capítulo V RGPD). Proveedor efectivo de IA en cada diagnóstico. Bloqueo del envío a proveedores externos si se declaran datos de los Arts. 9 o 10 | No inventaría destinatarios ni revisa la información a los interesados (Arts. 13 y 14 RGPD) |
 | Limitación de la conservación | Parcial | Plazo de conservación de los registros de actividad (`ENS-REGISTRO-ACTIVIDAD`). Política de conservación del propio historial ([custodia-historial.md](custodia-historial.md)) | No pregunta por los plazos de los datos que trata la aplicación auditada |
 | Categorías de interesados | Parcial | Personas vulnerables, personas físicas en ámbitos del Anexo III, perfilado y criterios de EIPD (9 de WP248 y 11 de la lista de la AEPD) | No prevé consultar a los interesados (Art. 35.9 RGPD) |
@@ -84,10 +84,9 @@ Lo leí completo el 10/10/2026.
 
 En orden de esfuerzo, sin compromiso de fecha:
 
-1. **Apartado de necesidad y proporcionalidad en el borrador de EIPD** (Art. 35.7.b), con las preguntas del objetivo B.3: alternativas menos intrusivas y motivos para usar IA.
-2. **Versión del componente auditado**, como la etiqueta o el commit del repositorio, en el paso 1 y en el informe (objetivo A.1).
-3. **Preguntas sobre plazos de conservación** y **destinatarios** de los datos de la aplicación auditada (objetivos B.4 y B.5).
-4. **Una pregunta sobre métricas de rendimiento y umbrales de error** cuando el sistema clasifica o puntúa (objetivos E.3 y B.2).
+1. **Versión del componente auditado**, como la etiqueta o el commit del repositorio, en el paso 1 y en el informe (objetivo A.1).
+2. **Preguntas sobre plazos de conservación** y **destinatarios** de los datos de la aplicación auditada (objetivos B.4 y B.5).
+3. **Una pregunta sobre métricas de rendimiento y umbrales de error** cuando el sistema clasifica o puntúa (objetivos E.3 y B.2).
 
 ## La propia herramienta frente a estos controles
 

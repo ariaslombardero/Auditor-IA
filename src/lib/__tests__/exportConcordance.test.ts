@@ -168,6 +168,27 @@ describe('EIPD (criterios WP248)', () => {
     expect(buildAuditManifest(solvencia, undefined, 'castellano', traza).governance_and_compliance.gdpr_rgpd.declared_solvency_data).toBe('si');
   });
 
+  it('EIPD-07 · el borrador de EIPD incluye la evaluación de necesidad y proporcionalidad (Art. 35.7.b) sin concluirla', async () => {
+    const state = makeState(
+      'Monitor de edictos concursales',
+      answeredAnswers({ infersOutputs: 'no', processesPersonalData: 'si', processesSolvencyData: 'si', hostingModel: 'local_on_premise' }),
+      { isAiSystem: false }
+    );
+    const text = await docxText(buildEipdDocument(state));
+    expect(text).toMatch(/EVALUACIÓN DE LA NECESIDAD Y LA PROPORCIONALIDAD/);
+    expect(text).toMatch(/Art\. 35\.7\.b/);
+    for (const pregunta of [/Idoneidad/, /Alternativas menos intrusivas/, /Motivos para usar/, /Minimización/, /Proporcionalidad en sentido estricto/]) {
+      expect(text).toMatch(pregunta);
+    }
+    // Recoge lo declarado
+    expect(text).toMatch(/solvencia/i);
+    expect(text).toMatch(/Monitor de edictos concursales/);
+    // No concluye por el responsable ni por el DPD
+    expect(text).toMatch(/A COMPLETAR/);
+    expect(text).not.toMatch(/es necesari[oa] y proporcionad[oa]/i);
+    expect(text).not.toMatch(/supera el juicio de proporcionalidad/i);
+  });
+
   it('BRE-01 · el procedimiento de brechas (Arts. 33 y 34 RGPD) es un requisito con su estado, y llega a los documentos', async () => {
     const con = (breachProcedure: 'si' | 'no' | 'desconocido', processesPersonalData: 'si' | 'no' = 'si') =>
       makeState('Asistente', answeredAnswers({ processesPersonalData, breachProcedure }));
