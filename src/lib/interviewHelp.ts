@@ -171,6 +171,12 @@ export const INTERVIEW_HELP: Record<string, QuestionHelp> = {
     ejemploNo: 'Datos que no se refieren a condenas ni infracciones penales.',
     norma: 'RGPD, Art. 10',
   },
+  breachProcedure: {
+    queSignifica: 'Una brecha es cualquier fallo de seguridad que destruye, pierde o altera datos personales, o permite que alguien no autorizado acceda a ellos. Si ocurre, la entidad debe documentarla siempre y notificarla a la AEPD sin dilación y, si es posible, en 72 horas, salvo que sea improbable que suponga un riesgo. Si el riesgo es alto, también debe informar a las personas afectadas. La pregunta es si la entidad tiene previsto cómo hacerlo para este sistema.',
+    ejemploSi: 'La entidad tiene un procedimiento de gestión de incidentes que incluye avisar al DPD, registrar la brecha y notificarla a la AEPD.',
+    ejemploNo: 'Nadie sabe a quién avisar si se envían por error los datos de los solicitantes a un servicio externo.',
+    norma: 'RGPD, Arts. 4.12, 33 y 34',
+  },
   processesSolvencyData: {
     queSignifica: 'Datos que muestran si una persona física puede pagar sus deudas: concursos de acreedores, embargos, impagos o ficheros de morosidad. Que procedan de una fuente pública, como los edictos del BOE, no los saca del RGPD. Los datos de empresas (personas jurídicas) no son datos personales, pero los de empresarios individuales y autónomos sí.',
     ejemploSi: 'Extraer de los edictos concursales del BOE el nombre y el DNI de los deudores que son personas físicas.',

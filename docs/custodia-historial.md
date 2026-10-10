@@ -44,3 +44,29 @@ El historial es una **copia de trabajo** guardada en el navegador (`localStorage
 La huella de las entradas que figura en los informes permite comprobar que dos documentos parten de las mismas entradas (ingesta y entrevista).
 
 **No acredita la integridad del documento:** quien modifique un registro puede recalcularla. La integridad la aporta la firma electrónica y la custodia en el gestor de expedientes.
+
+## Brechas e incidentes en la propia herramienta
+
+**Hallazgo:** BRE-01 · **Normas:** RGPD, Arts. 4.12, 33 y 34
+
+Auditor IA no tiene servidor propio: lo que guarda está en el navegador de quien la usa.
+
+| Dato | Dónde | Cuánto dura |
+| :--- | :--- | :--- |
+| Historial de diagnósticos: documentación aportada, entrevista, diagnóstico y validaciones | `localStorage`, clave `auditor_ia_history` | Hasta que se borre el historial o los datos del navegador |
+| Configuración del proveedor de IA, incluida la clave | `sessionStorage` por defecto (se borra al cerrar la pestaña); `localStorage` solo si se marca «Recordar». Clave `auditor_ia_api_config_v2` | Hasta cerrar la pestaña o, si se marcó «Recordar», hasta borrar los datos del sitio en el navegador |
+| Documentación enviada al proveedor de IA para sugerencias o comentarios | Solo si se pide, y fuera de la herramienta: en el proveedor elegido. Con un modelo local, no sale de la organización. Si se declaran datos de los Arts. 9 o 10 del RGPD, no se envía a proveedores externos | Según el proveedor |
+
+**Para que una brecha tenga poco alcance,** el piloto se hace con datos sintéticos o no sensibles ([alcance-piloto.md](alcance-piloto.md)), sin datos de personas en la documentación ni en la entrevista.
+
+**Si se pierde o se expone un equipo con el historial, o se filtra una clave:**
+
+1. **Revocar la clave** del proveedor de IA en su consola. Es lo primero, porque permite usar el servicio a costa de la entidad.
+2. **Borrar** el historial («Historial» → «Vaciar») y los datos del sitio en el navegador afectado, que incluyen la configuración del proveedor.
+3. **Avisar al DPD y al Responsable de Seguridad.** Valoran si hay una brecha de datos personales. Solo la hay si el historial contenía datos de personas, lo que el piloto no permite.
+4. **Si hay brecha:**
+   - documentarla siempre (Art. 33.5 RGPD);
+   - valorar la notificación a la AEPD con **Asesora Brecha**: sin dilación indebida y, de ser posible, en 72 horas (Art. 33.1);
+   - valorar la comunicación a los interesados con **Comunica-Brecha RGPD** (Art. 34).
+
+**En las aplicaciones auditadas,** la herramienta pregunta si existe un procedimiento de brechas y lo refleja en el requisito `RGPD-BRECHAS` de cada informe.

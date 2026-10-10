@@ -1,6 +1,6 @@
 # Guía de uso · Auditor IA · Sector Público
 
-> Versión para la herramienta con motor v2.1.0 y entrevista asistida (octubre de 2026). Escrita para personas sin formación técnica.
+> Versión para la herramienta con motor v2.2.0 y entrevista asistida (octubre de 2026). Escrita para personas sin formación técnica.
 
 ## 1. Qué es, en un minuto
 
@@ -104,7 +104,7 @@ Ocho bloques de preguntas. Casi todas se contestan con **Sí / No / No lo sé**.
 | **D. Transparencia** | Art. 50 | ¿Habla con personas? ¿Genera textos, imágenes o audios? |
 | **E. Papel de la entidad** | Art. 3 | ¿La entidad desarrolla el sistema (proveedora), lo usa (responsable del despliegue) o ambas cosas? |
 | **F. Supervisión humana** | Art. 41 de la Ley 40/2015 | ¿Quién revisa los resultados y cuándo? ¿Interviene un empleado público en cada actuación? |
-| **G. Protección de datos** | RGPD | ¿Trata datos personales, de salud o penales? ¿A gran escala? ¿De personas vulnerables? |
+| **G. Protección de datos** | RGPD | ¿Trata datos personales, de salud, penales o de solvencia (deudas, concursos)? ¿A gran escala? ¿De personas vulnerables? ¿Hay un procedimiento para avisar de una brecha de datos? ¿Dónde se ejecuta? |
 | **H. Seguridad (ENS)** | RD 311/2022 | ¿Qué daño causaría un fallo en confidencialidad, integridad, trazabilidad, autenticidad y disponibilidad? ¿Hay registro de actividad? |
 
 **Consejos:**

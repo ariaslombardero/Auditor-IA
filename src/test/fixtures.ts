@@ -61,6 +61,7 @@ export function answeredAnswers(overrides: Partial<LegalEnrichmentAnswers> = {})
     datasetCombination: 'no',
     vulnerableSubjects: 'no',
     preventsRightsOrService: 'no',
+    breachProcedure: 'si',
     ratActivityName: 'Apoyo a la gestión documental',
     hostingModel: 'local_on_premise',
     ensImpact: { C: 'bajo', I: 'bajo', T: 'bajo', A: 'bajo', D: 'bajo' },

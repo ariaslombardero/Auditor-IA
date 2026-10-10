@@ -126,6 +126,8 @@ export interface LegalEnrichmentAnswers {
   datasetCombination: TriState;
   vulnerableSubjects: TriState;
   preventsRightsOrService: TriState;
+  /** ¿Existe un procedimiento para detectar, documentar y notificar brechas de datos personales (Arts. 33 y 34 RGPD)? */
+  breachProcedure: TriState;
   ratActivityName: string;
   hostingModel: 'local_on_premise' | 'eu_cloud_dpa' | 'us_hyperscaler' | 'desconocido';
 

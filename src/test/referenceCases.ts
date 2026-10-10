@@ -222,6 +222,7 @@ export const REFERENCE_CASES: ReferenceCase[] = [
           processesSolvencyData: 'si',
           largeScale: 'desconocido',
           systematicMonitoring: 'desconocido',
+          breachProcedure: 'desconocido',
           hostingModel: 'desconocido',
           ratActivityName: '',
         }),
@@ -253,6 +254,7 @@ export const REFERENCE_CASES: ReferenceCase[] = [
           processesPersonalData: 'si',
           ratActivityName: '',
           hostingModel: 'us_hyperscaler',
+          breachProcedure: 'desconocido',
         }),
         { appName: 'Asistente de notas de prensa', ...casoReal('notas-de-prensa'), isAiSystem: true, targetAudience: 'public_employees' }
       ),

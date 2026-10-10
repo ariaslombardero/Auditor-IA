@@ -55,6 +55,7 @@ export function createDefaultAnswers(): LegalEnrichmentAnswers {
     datasetCombination: 'desconocido',
     vulnerableSubjects: 'desconocido',
     preventsRightsOrService: 'desconocido',
+    breachProcedure: 'desconocido',
     ratActivityName: '',
     hostingModel: 'desconocido',
     ensImpact: allUnknownEns(),

@@ -3,7 +3,7 @@
 **Entidad Promotora:** Administración Pública Promotora
 **Departamento / Servicio:** Área de Régimen Jurídico y Transformación Digital
 **Software Evaluado:** "Caso sintético"
-**Fecha de Emisión:** 9/10/2026
+**Fecha de Emisión:** 10/10/2026
 **Marco Normativo de Referencia:**
 - Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (RIA), modificado por el Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)
 - Real Decreto 729/2023, de 22 de agosto (Estatuto de la Agencia Española de Supervisión de Inteligencia Artificial - AESIA)
@@ -13,7 +13,7 @@
 - Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)
 
 > **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**
-> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.1.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
+> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
 
 ---
 
@@ -192,6 +192,13 @@ Cribado preliminar: según lo declarado no concurren dos o más criterios.
 
 **Acción:** Completar el borrador de EIPD con el asesoramiento del DPD.
 
+### Gestión y notificación de brechas de datos personales — **No aplica**
+*RGPD (UE 2016/679) · Arts. 33 y 34 · Declaración del promotor*
+
+Declarado que no se tratan datos personales.
+
+**Acción:** Prever cómo se detecta y documenta cualquier brecha (Art. 33.5) y quién la notifica a la AEPD sin dilación indebida y, de ser posible, en 72 horas (Art. 33.1), y a los interesados si entraña un alto riesgo (Art. 34). La AEPD ofrece las herramientas Asesora Brecha (notificación) y Comunica-Brecha RGPD (comunicación a los interesados).
+
 ### Actuación administrativa automatizada — **No aplica**
 *Ley 40/2015 · Art. 41 · Declaración del promotor*
 
@@ -213,6 +220,7 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *Apoyo a la gestión documental*.
 - **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
 - **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.
+- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** declarado que SÍ existe. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
 - **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** declarado que NO se tratan.
 
 
@@ -223,9 +231,9 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
-- **Versión del motor:** 2.1.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** c9413ed03495aa23a2876ce608a05fab7d37a9ab082d365f0cc2a80518302bb9 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-08T22:25:13.914Z
+- **Versión del motor:** 2.2.0
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** 6c35bc3d56c8a50034236b55b46966c7112f91d5b5d179fb26d9e9ff77ab8cbd (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-10T11:56:46.126Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

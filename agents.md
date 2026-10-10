@@ -1,6 +1,6 @@
 # AGENTS.md · Auditor IA · Sector Público
 
-> Manual para agentes de IA y personas que trabajen en este repositorio. Describe **solo lo implementado y verificado** (motor v2.1.0, octubre de 2026). Lo que no está aquí no debe darse por hecho.
+> Manual para agentes de IA y personas que trabajen en este repositorio. Describe **solo lo implementado y verificado** (motor v2.2.0, octubre de 2026). Lo que no está aquí no debe darse por hecho.
 
 ## 1. Qué es y qué no es
 

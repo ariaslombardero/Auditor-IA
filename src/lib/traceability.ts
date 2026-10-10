@@ -2,7 +2,7 @@ import type { FullAuditState } from '../types';
 import { calculateSha256 } from './signatureService';
 
 /** Versión del motor de diagnóstico. Se incrementa con cada cambio que altere conclusiones. */
-export const ENGINE_VERSION = '2.1.0';
+export const ENGINE_VERSION = '2.2.0';
 
 /** Corte normativo de la base de conocimiento (ver docs/auditoria/registro-fuentes.md). */
 export const NORMATIVE_SNAPSHOT =

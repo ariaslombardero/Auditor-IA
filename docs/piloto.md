@@ -1,6 +1,6 @@
 # Condiciones del piloto interno
 
-**Estado:** propuesta pendiente de decisión expresa de los responsables (§ 6) · **Versión de la herramienta:** motor v2.1.0 · **Fecha:** 07/10/2026
+**Estado:** propuesta pendiente de decisión expresa de los responsables (§ 6) · **Versión de la herramienta:** motor v2.2.0 · **Fecha:** 07/10/2026
 
 Desarrolla el [alcance del uso habilitado](alcance-piloto.md). El piloto sirve para comprobar si la herramienta ayuda al personal a preparar diagnósticos preliminares de sistemas de IA, y con qué calidad. **No** sirve para tramitar expedientes reales.
 

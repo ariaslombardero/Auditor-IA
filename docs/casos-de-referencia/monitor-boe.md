@@ -3,7 +3,7 @@
 **Entidad Promotora:** Administración Pública Promotora
 **Departamento / Servicio:** Área de Régimen Jurídico y Transformación Digital
 **Software Evaluado:** "Monitor BOE — Edictos concursales"
-**Fecha de Emisión:** 9/10/2026
+**Fecha de Emisión:** 10/10/2026
 **Marco Normativo de Referencia:**
 - Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (RIA), modificado por el Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)
 - Real Decreto 729/2023, de 22 de agosto (Estatuto de la Agencia Española de Supervisión de Inteligencia Artificial - AESIA)
@@ -13,7 +13,7 @@
 - Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)
 
 > **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**
-> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.1.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
+> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
 
 ---
 
@@ -28,16 +28,16 @@
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
 | **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | EXCLUIDO DEL RIA (No es un sistema de IA - Art. 3.1 RIA), según lo declarado | Sin requisitos evaluados |
-| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 3 requisitos por validar |
+| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 4 requisitos por validar |
 | **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
 | **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 2 requisitos por validar |
 
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Monitor BOE — Edictos concursales": según lo declarado, el sistema se clasifica como EXCLUIDO DEL RIA (No es un sistema de IA - Art. 3.1 RIA), según lo declarado. Faltan 4 respuestas de la entrevista. Quedan 8 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
+Diagnóstico preliminar para "Monitor BOE — Edictos concursales": según lo declarado, el sistema se clasifica como EXCLUIDO DEL RIA (No es un sistema de IA - Art. 3.1 RIA), según lo declarado. Faltan 5 respuestas de la entrevista. Quedan 9 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
 
-**FALTAN RESPUESTAS Y VALIDACIÓN HUMANA.** Quedan 4 respuestas pendientes en la entrevista. 8 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
+**FALTAN RESPUESTAS Y VALIDACIÓN HUMANA.** Quedan 5 respuestas pendientes en la entrevista. 9 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
 
 ### Recomendaciones
 - Según lo declarado, el software queda fuera del RIA (Art. 3.1). Contrastar esa declaración con las capacidades reales del sistema y centrar el expediente en el ENS (RD 311/2022) y en la Ley 40/2015.
@@ -188,6 +188,13 @@ Cribado preliminar: hay criterios sin contestar que podrían alcanzar el umbral 
 
 **Acción:** Completar el borrador de EIPD con el asesoramiento del DPD.
 
+### Gestión y notificación de brechas de datos personales — **PENDIENTE**
+*RGPD (UE 2016/679) · Arts. 33 y 34 · Declaración del promotor*
+
+No consta si existe un procedimiento para gestionar brechas de datos personales.
+
+**Acción:** Prever cómo se detecta y documenta cualquier brecha (Art. 33.5) y quién la notifica a la AEPD sin dilación indebida y, de ser posible, en 72 horas (Art. 33.1), y a los interesados si entraña un alto riesgo (Art. 34). La AEPD ofrece las herramientas Asesora Brecha (notificación) y Comunica-Brecha RGPD (comunicación a los interesados).
+
 ### Actuación administrativa automatizada — **No aplica**
 *Ley 40/2015 · Art. 41 · Declaración del promotor*
 
@@ -209,6 +216,7 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *No indicada*.
 - **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
 - **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.
+- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** no consta. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
 - **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** declarado que SÍ se tratan.
 
 
@@ -219,9 +227,9 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
-- **Versión del motor:** 2.1.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** 205fb952ebecb607494d1caaec8acf9524737822751e949b41d3124ce9e78fd9 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-08T22:25:14.232Z
+- **Versión del motor:** 2.2.0
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** e6db757d5c21b36995bf87b67f8e325a88a2a495a67a51b91e0310f20da96a50 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-10T11:56:46.354Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

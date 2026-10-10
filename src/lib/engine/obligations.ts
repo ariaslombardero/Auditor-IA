@@ -430,6 +430,28 @@ export function buildObligations(ctx: ObligationsContext): RequirementAssessment
     accionRequerida: 'Completar el borrador de EIPD con el asesoramiento del DPD.',
     fecha,
   });
+  reqs.push({
+    id: 'RGPD-BRECHAS',
+    kind: 'obligacion',
+    pillar: 'rgpd',
+    title: 'Gestión y notificación de brechas de datos personales',
+    norma: 'RGPD (UE 2016/679)',
+    precepto: 'Arts. 33 y 34',
+    aplicabilidad: personalApplic,
+    resultado: personal === 'no' ? 'no_evaluado' : a.breachProcedure === 'si' ? 'declarado' : a.breachProcedure === 'no' ? 'incumple' : 'pendiente',
+    origen: 'declaracion_promotor',
+    hechos:
+      personal === 'no'
+        ? 'Declarado que no se tratan datos personales.'
+        : a.breachProcedure === 'si'
+          ? 'Declarado que existe un procedimiento para detectar, documentar y notificar brechas de datos personales. No se ha verificado.'
+          : a.breachProcedure === 'no'
+            ? 'Declarado que no existe un procedimiento para gestionar brechas de datos personales.'
+            : 'No consta si existe un procedimiento para gestionar brechas de datos personales.',
+    accionRequerida:
+      'Prever cómo se detecta y documenta cualquier brecha (Art. 33.5) y quién la notifica a la AEPD sin dilación indebida y, de ser posible, en 72 horas (Art. 33.1), y a los interesados si entraña un alto riesgo (Art. 34). La AEPD ofrece las herramientas Asesora Brecha (notificación) y Comunica-Brecha RGPD (comunicación a los interesados).',
+    fecha,
+  });
 
   // Ley 40/2015: actuación administrativa automatizada
   const direct = a.directHumanIntervention;

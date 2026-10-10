@@ -168,6 +168,31 @@ describe('EIPD (criterios WP248)', () => {
     expect(buildAuditManifest(solvencia, undefined, 'castellano', traza).governance_and_compliance.gdpr_rgpd.declared_solvency_data).toBe('si');
   });
 
+  it('BRE-01 · el procedimiento de brechas (Arts. 33 y 34 RGPD) es un requisito con su estado, y llega a los documentos', async () => {
+    const con = (breachProcedure: 'si' | 'no' | 'desconocido', processesPersonalData: 'si' | 'no' = 'si') =>
+      makeState('Asistente', answeredAnswers({ processesPersonalData, breachProcedure }));
+    const resultado = (s: ReturnType<typeof con>) => s.diagnostic!.requirements.find((r) => r.id === 'RGPD-BRECHAS')?.resultado;
+    expect(resultado(con('si'))).toBe('declarado');
+    expect(resultado(con('no'))).toBe('incumple');
+    expect(resultado(con('desconocido'))).toBe('pendiente');
+    expect(resultado(con('si', 'no'))).toBe('no_evaluado');
+
+    const state = con('no');
+    const req = state.diagnostic!.requirements.find((r) => r.id === 'RGPD-BRECHAS')!;
+    expect(req.precepto).toMatch(/Arts?\. 33 y 34/);
+    expect(req.accionRequerida).toMatch(/72 horas/);
+    expect(req.accionRequerida).toMatch(/Asesora Brecha/);
+    expect(req.accionRequerida).toMatch(/Comunica-Brecha/);
+
+    const traza = await buildDocumentTraceability(state);
+    const md = generateOfficialDossierMarkdown(state, undefined, 'castellano', traza);
+    const docx = await officialDossierText(state, undefined, traza);
+    expect(md).toMatch(/brechas de datos personales[^\n]*NO/i);
+    expect(md).toContain('Asesora Brecha');
+    expect(docx).toContain('Asesora Brecha');
+    expect(buildAuditManifest(state, undefined, 'castellano', traza).governance_and_compliance.gdpr_rgpd.declared_breach_procedure).toBe('no');
+  });
+
   it('EIPD-02 · el criterio 9 de WP248 es el impedimento al ejercicio de derechos, no las transferencias internacionales', () => {
     const state = makeState('Asistente de redacción', answeredAnswers({ hostingModel: 'us_hyperscaler' }));
     const c9 = buildEipdCriteria(state).find((c) => c.id === 'C9')!;

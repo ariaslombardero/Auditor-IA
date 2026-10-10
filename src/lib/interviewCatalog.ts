@@ -213,6 +213,7 @@ const BASE_QUESTIONS: InterviewQuestion[] = [
   tri('datasetCombination', 'G', '¿Combina o enlaza datos de distintos tratamientos o responsables?', tratarDatos),
   tri('vulnerableSubjects', 'G', '¿Afecta a personas vulnerables o en riesgo de exclusión social?', tratarDatos),
   tri('preventsRightsOrService', 'G', '¿Puede impedir a los interesados ejercer un derecho o acceder a un servicio o contrato?', tratarDatos),
+  tri('breachProcedure', 'G', '¿Existe un procedimiento para detectar, documentar y notificar brechas de datos personales?', tratarDatos, { sugerible: 'orientacion' }),
   {
     id: 'hostingModel',
     bloque: 'G',

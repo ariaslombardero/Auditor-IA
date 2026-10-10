@@ -77,6 +77,7 @@ export interface AuditManifestRecord {
       declared_special_categories_art_9: string;
       declared_criminal_data_art_10: string;
       declared_solvency_data: string;
+      declared_breach_procedure: string;
       declared_rat_activity_name: string;
       dpia_eipd_screening: {
         status: 'necesaria' | 'no_indicada' | 'por_determinar';
@@ -198,6 +199,7 @@ export function buildAuditManifest(
         declared_special_categories_art_9: answers.processesSpecialCategoryData,
         declared_criminal_data_art_10: answers.processesCriminalData,
         declared_solvency_data: answers.processesSolvencyData,
+        declared_breach_procedure: answers.breachProcedure,
         declared_rat_activity_name: answers.ratActivityName || '',
         dpia_eipd_screening: {
           status: eipdStatus,

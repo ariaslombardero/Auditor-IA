@@ -44,7 +44,9 @@ El archivo AGENTS.md debe documentar:
 
 5. DATOS PERSONALES (RGPD):
    - Si trata datos personales o de categorías especiales (Art. 9 RGPD: salud, discapacidad, religión, afiliación sindical…).
+   - Si trata datos de solvencia o deudas de personas físicas (concursos, embargos, impagos), aunque procedan de fuentes públicas.
    - Flujo de los datos: dónde se reciben, a dónde se envían y cuándo se borran.
+   - Si hay un procedimiento para detectar y notificar brechas de datos personales (Arts. 33 y 34 RGPD).
 
 6. REGISTRO DE ACTIVIDAD (ENS, [op.exp.8]):
    - Si se registran peticiones, respuestas, fecha, hora y usuario.
