@@ -101,7 +101,7 @@ Ocho bloques de preguntas. Casi todas se contestan con **Sí / No / No lo sé**.
 | **A. ¿Es un sistema de IA?** | Art. 3.1 del Reglamento de IA | ¿Saca sus resultados por inferencia (aprende o «razona»), o aplica reglas fijas programadas? |
 | **B. Prácticas prohibidas** | Art. 5, una pregunta por práctica | Puntuación social, manipulación, reconocimiento de emociones en el trabajo, identificación biométrica en tiempo real… |
 | **C. Alto riesgo** | Art. 6 y Anexo III | ¿Se usa en empleo, educación, prestaciones sociales, justicia, migración…? ¿Valora a personas (perfilado)? ¿Hace solo una tarea auxiliar? |
-| **D. Transparencia** | Art. 50 | ¿Habla con personas? ¿Genera textos, imágenes o audios? |
+| **D. Transparencia** | Art. 50 | ¿Habla con personas? ¿Genera textos, imágenes o audios? ¿Se publican esos textos para informar a la ciudadanía y alguien los revisa antes? |
 | **E. Papel de la entidad** | Art. 3 | ¿La entidad desarrolla el sistema (proveedora), lo usa (responsable del despliegue) o ambas cosas? |
 | **F. Supervisión humana** | Art. 41 de la Ley 40/2015 | ¿Quién revisa los resultados y cuándo? ¿Interviene un empleado público en cada actuación? |
 | **G. Protección de datos** | RGPD | ¿Trata datos personales, de salud, penales o de solvencia (deudas, concursos)? ¿A gran escala? ¿De personas vulnerables? ¿Hay un procedimiento para avisar de una brecha de datos? ¿Dónde se ejecuta? |

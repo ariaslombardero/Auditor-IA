@@ -56,6 +56,45 @@ describe('Catálogo de preguntas (UX-02)', () => {
   });
 });
 
+describe('Alojamiento y Art. 50.4 (ALO-01, TRA-01)', () => {
+  it('ALO-01 · la pregunta de alojamiento sirve también para aplicaciones sin IA', () => {
+    const q = questionById('hostingModel')!;
+    expect(q.enunciado).toMatch(/si no usa IA/i);
+    expect(q.visible(answeredAnswers({ infersOutputs: 'no' }))).toBe(true);
+    expect(q.ayuda?.queSignifica).toMatch(/aplicaci[óo]n/i);
+    expect(q.opciones?.find((o) => o.value === 'us_hyperscaler')?.label).not.toMatch(/^En una nube fuera del Espacio Económico Europeo$/);
+  });
+
+  it('TRA-01 · las preguntas del Art. 50.4 solo aparecen si el sistema genera contenido y, la segunda, si se publica', () => {
+    const publica = questionById('publishesPublicInterestText')!;
+    const revision = questionById('editorialReview')!;
+    expect(publica.visible(answeredAnswers({ generatesSyntheticContent: 'si' }))).toBe(true);
+    expect(publica.visible(answeredAnswers({ generatesSyntheticContent: 'no' }))).toBe(false);
+    expect(publica.visible(answeredAnswers({ infersOutputs: 'no' }))).toBe(false);
+    expect(revision.visible(answeredAnswers({ publishesPublicInterestText: 'si' }))).toBe(true);
+    expect(revision.visible(answeredAnswers({ publishesPublicInterestText: 'no' }))).toBe(false);
+  });
+
+  it('TRA-01 · el control editorial cambia la acción del Art. 50, no la clasificación', () => {
+    const art50 = (over: Parameters<typeof answeredAnswers>[0]) => {
+      const d = makeState('Asistente de notas de prensa', answeredAnswers({ interactsWithPersons: 'no', ...over })).diagnostic!;
+      return { clasificacion: d.riskClassification, req: d.requirements.find((r) => r.id === 'RIA-ART-50')! };
+    };
+    const conControl = art50({ publishesPublicInterestText: 'si', editorialReview: 'si' });
+    const sinControl = art50({ publishesPublicInterestText: 'si', editorialReview: 'no' });
+    const noPublica = art50({ publishesPublicInterestText: 'no' });
+    expect(conControl.clasificacion).toBe('transparency_risk');
+    expect(sinControl.clasificacion).toBe('transparency_risk');
+    expect(conControl.req.accionRequerida).toMatch(/50\.4/);
+    expect(conControl.req.accionRequerida).toMatch(/no es obligatorio divulgar/i);
+    expect(sinControl.req.accionRequerida).toMatch(/divulgar que el texto se ha generado/i);
+    expect(noPublica.req.accionRequerida).not.toMatch(/50\.4/);
+    // Sin interacción con personas, no se exige el aviso de interacción (Art. 50.1)
+    expect(conControl.req.accionRequerida).not.toMatch(/aviso de interacción/i);
+    expect(conControl.req.accionRequerida).toMatch(/50\.2/);
+  });
+});
+
 describe('Contestar lo pendiente desde el diagnóstico (UX-01)', () => {
   it('contestar una pregunta pendiente la quita de la lista y actualiza la clasificación', () => {
     const s = makeState('Asistente', answeredAnswers({ annexIIIArea: 'desconocido' }));

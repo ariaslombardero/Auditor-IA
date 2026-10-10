@@ -37,6 +37,8 @@ export function createDefaultAnswers(): LegalEnrichmentAnswers {
     materialInfluence: 'desconocido',
     interactsWithPersons: 'desconocido',
     generatesSyntheticContent: 'desconocido',
+    publishesPublicInterestText: 'desconocido',
+    editorialReview: 'desconocido',
     institutionalRole: 'desconocido',
     humanOversightLevel: 'desconocido',
     supervisionRole: '',

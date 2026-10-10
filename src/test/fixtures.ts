@@ -43,6 +43,7 @@ export function answeredAnswers(overrides: Partial<LegalEnrichmentAnswers> = {})
     materialInfluence: 'no',
     interactsWithPersons: 'si',
     generatesSyntheticContent: 'si',
+    publishesPublicInterestText: 'no',
     institutionalRole: 'ambos',
     humanOversightLevel: 'pre_execution',
     supervisionRole: 'Técnico de la unidad tramitadora',

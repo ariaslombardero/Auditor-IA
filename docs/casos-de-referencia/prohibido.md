@@ -139,7 +139,7 @@ Proveedores y responsables del despliegue deben adoptar medidas para apoyar la a
 
 Declarado: el sistema interactúa con personas o genera contenido. La herramienta no comprueba que la información de transparencia esté implantada. Exigible desde el 2/8/2026.
 
-**Acción:** Implantar el aviso de interacción con IA y el marcado del contenido generado, y conservar evidencia de su implantación.
+**Acción:** Informar a las personas de que interactúan con un sistema de IA (Art. 50.1). Marcar el contenido generado en un formato legible por máquina (Art. 50.2). Corresponde al proveedor del sistema, salvo que solo apoye la edición estándar o no altere sustancialmente los datos de entrada. Conservar evidencia de lo implantado.
 
 ### Supervisión humana de los resultados — **DECLARADO (sin verificar)**
 *Reglamento (UE) 2024/1689; RGPD; Ley 40/2015 · Art. 14 RIA (alto riesgo); Art. 22 RGPD; Art. 41 Ley 40/2015 · Declaración del promotor*
@@ -230,8 +230,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.2.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** 4f20bb4b4e224af19f03f945867c4143b63166e7eed163e29e315e7353fd1e3e (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-10T11:56:46.117Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** 2e305ac26b241fdf17ff1b38454318cc0b70f85f1d8787400bb31df69d4ec798 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-10T12:01:43.906Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

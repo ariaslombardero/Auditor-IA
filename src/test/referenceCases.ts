@@ -241,13 +241,15 @@ export const REFERENCE_CASES: ReferenceCase[] = [
     titulo: 'Asistente de notas de prensa (aplicación real, con IA en la nube)',
     real: { repositorio: 'https://github.com/ariaslombardero/Asistente-notas-de-prensa', commit: 'c57534300ec40ff35ccdb803e42610bc0a3cb4a1' },
     fundamento:
-      'Genera con Gemini borradores de notas de prensa y publicaciones para redes sociales a partir de actas y resoluciones; el gabinete de comunicación los revisa antes de publicarlos. Fuera del Anexo III; genera contenido: transparencia (Art. 50). El modelo se ejecuta en la API de Google Gemini, fuera del EEE: debe señalarse la transferencia internacional.',
+      'Genera con Gemini borradores de notas de prensa y publicaciones para redes sociales a partir de actas y resoluciones; el gabinete de comunicación los revisa antes de publicarlos. Fuera del Anexo III; genera contenido: transparencia (Art. 50). El modelo se ejecuta en la API de Google Gemini, fuera del EEE: debe señalarse la transferencia internacional. Como el gabinete revisa y aprueba cada texto antes de publicarlo, no es obligatorio divulgar que se generó con IA (Art. 50.4, párrafo segundo), siempre que pueda acreditarse ese control editorial.',
     state: () =>
       makeState(
         'Asistente que redacta borradores de notas de prensa y publicaciones para redes sociales a partir de actas, resoluciones e informes.',
         answeredAnswers({
           interactsWithPersons: 'no',
           generatesSyntheticContent: 'si',
+          publishesPublicInterestText: 'si',
+          editorialReview: 'si',
           institutionalRole: 'ambos',
           supervisionRole: 'Personal del gabinete de comunicación',
           procedureDescription: 'El gabinete revisa y corrige cada borrador antes de publicarlo; la aplicación no publica nada por sí misma.',

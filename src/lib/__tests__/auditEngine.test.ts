@@ -33,6 +33,27 @@ describe('Indicios documentales (solo sugieren, nunca deciden)', () => {
     expect(r.riskClassification).not.toBe('prohibited');
   });
 
+  it('IND-03 · una negación al principio de una enumeración larga alcanza a toda la cláusula, pero no más allá de «pero»', () => {
+    const lista = makeIngest('Analizador', {
+      readmeContent: 'El sistema **no** procesa ni requiere datos sobre salud, convicciones religiosas, afiliación sindical, origen racial o datos biométricos.',
+    });
+    expect(annexIIIHints(lista).map((h) => h.target)).not.toContain('annexIII:biometria');
+    const adversativa = makeIngest('Control de accesos', {
+      readmeContent: 'El sistema no almacena las imágenes de forma permanente, pero usa reconocimiento facial en tiempo real en la entrada.',
+    });
+    expect(prohibitedPracticeHints(adversativa).map((h) => h.target)).toContain('realtime_remote_biometric_identification');
+  });
+
+  it('IND-02 · «criterios de baremación» de una convocatoria no es indicio de empleo; la baremación de méritos de aspirantes sí', () => {
+    const convocatoria = makeIngest('Analizador', { readmeContent: 'Extrae plazos, porcentajes de cofinanciación y criterios de baremación de cada convocatoria.' });
+    expect(annexIIIHints(convocatoria).map((h) => h.target)).not.toContain('annexIII:empleo');
+    for (const texto of ['Herramienta de baremación de méritos de los aspirantes', 'Asistente para baremar a los candidatos de la bolsa']) {
+      expect(annexIIIHints(makeIngest(texto)).map((h) => h.target), texto).toContain('annexIII:empleo');
+    }
+    const agentsAnalizador = readFileSync(resolve(process.cwd(), 'Resultados prueba app analizador ayudas', 'historico-no-motor', 'AGENTS.md'), 'utf8');
+    expect(annexIIIHints(makeIngest('Analizador', { agentsMdContent: agentsAnalizador })).map((h) => h.target)).not.toContain('annexIII:empleo');
+  });
+
   it('IND-01 · que la aplicación se haya desarrollado con IA, o que la entidad tenga una estrategia de IA, no es indicio de que use IA', () => {
     const desarrollo = makeIngest('Monitor de edictos', {
       readmeContent: [

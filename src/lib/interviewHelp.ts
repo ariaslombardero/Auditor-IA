@@ -121,6 +121,18 @@ export const INTERVIEW_HELP: Record<string, QuestionHelp> = {
     ejemploNo: 'Un proceso interno que trabaja «por detrás», sin conversación con nadie.',
     norma: `${RIA}, Art. 50.1`,
   },
+  publishesPublicInterestText: {
+    queSignifica: 'Si la entidad publica los textos que genera el sistema para informar a la ciudadanía sobre asuntos de interés público, el Reglamento de IA exige, en principio, decir que el texto se ha generado con IA.',
+    ejemploSi: 'Borradores de notas de prensa que, tras revisarlos, se publican en la web institucional.',
+    ejemploNo: 'Resúmenes internos de convocatorias para el personal técnico, que no se publican.',
+    norma: 'Reglamento de IA, Art. 50.4, párrafo segundo',
+  },
+  editorialReview: {
+    queSignifica: 'No hace falta avisar de que el texto lo ha generado una IA si pasa por revisión humana o control editorial y una persona física o jurídica tiene la responsabilidad editorial de lo que se publica. Conviene poder demostrar ese control: quién revisa y quién aprueba.',
+    ejemploSi: 'El gabinete de comunicación revisa, corrige y aprueba cada nota antes de publicarla, y la entidad la publica como propia.',
+    ejemploNo: 'Los textos se publican tal como los genera el sistema, sin que nadie los revise.',
+    norma: 'Reglamento de IA, Art. 50.4, párrafo segundo',
+  },
   generatesSyntheticContent: {
     queSignifica: 'Pregunta si el sistema crea contenido nuevo: textos, resúmenes, imágenes, audio o vídeo. Ese contenido debe poder identificarse como generado por IA.',
     ejemploSi: 'Redacta borradores de informes, resume convocatorias o genera imágenes.',
@@ -226,8 +238,8 @@ export const INTERVIEW_HELP: Record<string, QuestionHelp> = {
     norma: 'Lista de la AEPD del Art. 35.4 RGPD',
   },
   hostingModel: {
-    queSignifica: 'Pregunta dónde se ejecuta el modelo de IA y, por tanto, a dónde viajan los datos que se le envían.',
-    ejemploSi: '«Servidores propios»: Ollama o vLLM en un servidor de la Diputación. «Nube fuera del EEE»: la API de Gemini u OpenAI sin contrato que garantice el tratamiento en la UE.',
+    queSignifica: 'Pregunta dónde se procesan los datos: en el modelo de IA o, si la aplicación no usa IA, en el servidor donde se ejecuta la aplicación. De ello depende a dónde viajan los datos.',
+    ejemploSi: '«Servidores propios»: Ollama o vLLM en un servidor de la Diputación. «Fuera del EEE»: la API de Gemini u OpenAI sin contrato que garantice el tratamiento en la UE, o una demostración publicada en un alojamiento gratuito en la nube cuyos servidores no estén en la UE.',
     ejemploNo: 'Si se usan varias opciones, elija la que procesará los datos reales y descríbalo en la documentación.',
     norma: 'RGPD, capítulo V (transferencias internacionales); ENS, medida [op.nub.1]',
   },

@@ -230,6 +230,24 @@ export function buildObligations(ctx: ObligationsContext): RequirementAssessment
 
   // Transparencia (Art. 50)
   const art50Date = REGULATORY_CALENDAR.art50.fecha;
+  const art50Actions: string[] = [];
+  if (a.interactsWithPersons === 'si') art50Actions.push('Informar a las personas de que interactúan con un sistema de IA (Art. 50.1).');
+  else if (a.interactsWithPersons === 'desconocido') art50Actions.push('Si interactúa directamente con personas, informarlas de que interactúan con un sistema de IA (Art. 50.1).');
+  if (a.generatesSyntheticContent !== 'no') {
+    art50Actions.push('Marcar el contenido generado en un formato legible por máquina (Art. 50.2). Corresponde al proveedor del sistema, salvo que solo apoye la edición estándar o no altere sustancialmente los datos de entrada.');
+    if (a.publishesPublicInterestText === 'si') {
+      art50Actions.push(
+        a.editorialReview === 'si'
+          ? 'Según lo declarado, no es obligatorio divulgar que el texto publicado se ha generado con IA, porque pasa por revisión humana o control editorial y hay un responsable editorial (Art. 50.4, párrafo segundo). Conservar evidencia de ese control: quién revisa y quién aprueba cada texto.'
+          : a.editorialReview === 'no'
+            ? 'Al publicarlo, divulgar que el texto se ha generado o manipulado de manera artificial (Art. 50.4, párrafo segundo).'
+            : 'Determinar si los textos publicados pasan por revisión humana o control editorial con un responsable editorial; si no, hay que divulgar que se han generado con IA (Art. 50.4, párrafo segundo).'
+      );
+    } else if (a.publishesPublicInterestText === 'desconocido') {
+      art50Actions.push('Si el texto se publica para informar al público sobre asuntos de interés público, divulgar que se ha generado con IA, salvo que pase por revisión humana o control editorial con un responsable editorial (Art. 50.4, párrafo segundo).');
+    }
+  }
+  art50Actions.push('Conservar evidencia de lo implantado.');
   reqs.push({
     id: 'RIA-ART-50',
     kind: 'obligacion',
@@ -249,7 +267,7 @@ export function buildObligations(ctx: ObligationsContext): RequirementAssessment
     accionRequerida:
       ctx.appliesArt50 === 'no'
         ? 'Revisar la declaración si el sistema llega a interactuar con personas o a generar contenido.'
-        : 'Implantar el aviso de interacción con IA y el marcado del contenido generado, y conservar evidencia de su implantación.',
+        : art50Actions.join(' '),
     exigibleDesde: ctx.appliesArt50 === 'no' ? undefined : art50Date,
     fecha,
   });

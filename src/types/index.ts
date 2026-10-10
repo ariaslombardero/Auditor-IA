@@ -99,6 +99,10 @@ export interface LegalEnrichmentAnswers {
   // D. Transparencia (Art. 50 RIA)
   interactsWithPersons: TriState;
   generatesSyntheticContent: TriState;
+  /** ¿Se publica el texto generado para informar al público sobre asuntos de interés público? (Art. 50.4, párrafo segundo) */
+  publishesPublicInterestText: TriState;
+  /** ¿Pasa por revisión humana o control editorial, con un responsable editorial? (Art. 50.4, párrafo segundo) */
+  editorialReview: TriState;
 
   // E. Papel de la entidad
   institutionalRole: InstitutionalRole;

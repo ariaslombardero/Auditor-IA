@@ -150,6 +150,18 @@ const BASE_QUESTIONS: InterviewQuestion[] = [
 
   tri('interactsWithPersons', 'D', '¿Interactúa directamente con personas físicas (por ejemplo, un asistente conversacional)?', esIA, { bloqueaClasificacion: true }),
   tri('generatesSyntheticContent', 'D', '¿Genera contenido sintético (texto, imagen, audio o vídeo)?', esIA, { bloqueaClasificacion: true }),
+  tri(
+    'publishesPublicInterestText',
+    'D',
+    '¿Se publica el texto que genera para informar al público sobre asuntos de interés público (notas de prensa, noticias, avisos)?',
+    (a) => esIA(a) && a.generatesSyntheticContent !== 'no'
+  ),
+  tri(
+    'editorialReview',
+    'D',
+    '¿Pasa ese texto por revisión humana o control editorial antes de publicarse, con una persona o la entidad como responsable de la publicación?',
+    (a) => esIA(a) && a.generatesSyntheticContent !== 'no' && a.publishesPublicInterestText === 'si'
+  ),
 
   {
     id: 'institutionalRole',
@@ -218,12 +230,12 @@ const BASE_QUESTIONS: InterviewQuestion[] = [
     id: 'hostingModel',
     bloque: 'G',
     tipo: 'select',
-    enunciado: '¿Dónde se ejecuta el modelo?',
+    enunciado: '¿Dónde se ejecuta el sistema: el modelo de IA o, si no usa IA, la aplicación y sus datos?',
     opciones: [
       { value: 'desconocido', label: 'No lo sé' },
-      { value: 'local_on_premise', label: 'En servidores propios (Ollama, vLLM u otro modelo local)' },
+      { value: 'local_on_premise', label: 'En servidores propios de la entidad (incluidos modelos locales: Ollama, vLLM…)' },
       { value: 'eu_cloud_dpa', label: 'En una nube de la Unión Europea con contrato de encargo del tratamiento' },
-      { value: 'us_hyperscaler', label: 'En una nube fuera del Espacio Económico Europeo' },
+      { value: 'us_hyperscaler', label: 'Fuera del Espacio Económico Europeo o sin garantía de tratamiento en la UE (por ejemplo, APIs o alojamientos gratuitos en la nube)' },
     ],
     valorDesconocido: 'desconocido',
     visible: siempre,

@@ -90,7 +90,7 @@ Implementada en `src/lib/engine/index.ts`. Cada paso queda en la traza con pregu
    - El **perfilado** de personas físicas impide siempre la excepción.
    - Las condiciones a) a d) del Art. 6.3 son **disyuntivas**, y además debe faltar una influencia sustancial en la decisión y constar los hechos que la justifican.
    - Si procede la excepción, hay que documentarla (Art. 6.4) y registrar el sistema (Art. 49.2, que el Reglamento 2026/1744 mantiene).
-4. **Art. 50:** si interactúa con personas o genera contenido sintético, hay obligaciones de transparencia, **acumulables** a las anteriores.
+4. **Art. 50:** si interactúa con personas o genera contenido sintético, hay obligaciones de transparencia, **acumulables** a las anteriores. La acción del requisito distingue el 50.1 (aviso de interacción, solo si interactúa con personas), el 50.2 (marcado, a cargo del proveedor) y el 50.4, párrafo segundo (textos publicados sobre asuntos de interés público: no hay que divulgar el uso de IA si hay revisión humana o control editorial con un responsable editorial). Ninguno cambia la clasificación.
 5. **Resultado:**
    - `prohibited`, `high_risk`, `transparency_risk` o `minimal_risk`;
    - `requires_review` si hay respuestas desconocidas o contradictorias.

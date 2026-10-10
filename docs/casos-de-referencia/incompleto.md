@@ -35,9 +35,9 @@
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Caso sintético": la clasificación no es concluyente (2 motivos). Faltan 39 respuestas de la entrevista. Quedan 25 requisitos por validar (los acredita una persona con evidencia). Categoría ENS orientativa: BASICA. Deben completarse o revisarse las respuestas de la entrevista.
+Diagnóstico preliminar para "Caso sintético": la clasificación no es concluyente (2 motivos). Faltan 40 respuestas de la entrevista. Quedan 25 requisitos por validar (los acredita una persona con evidencia). Categoría ENS orientativa: BASICA. Deben completarse o revisarse las respuestas de la entrevista.
 
-**CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN.** 2 motivos impiden concluir: completar o corregir la entrevista. Quedan 39 respuestas pendientes en la entrevista. 25 requisitos por validar.
+**CLASIFICACIÓN NO CONCLUYENTE — REQUIERE REVISIÓN.** 2 motivos impiden concluir: completar o corregir la entrevista. Quedan 40 respuestas pendientes en la entrevista. 25 requisitos por validar.
 
 ### Recomendaciones
 - Completar o corregir las respuestas de la entrevista señaladas como desconocidas o contradictorias antes de extraer conclusiones.
@@ -147,7 +147,7 @@ Proveedores y responsables del despliegue deben adoptar medidas para apoyar la a
 
 No consta si el sistema interactúa con personas o genera contenido sintético.
 
-**Acción:** Implantar el aviso de interacción con IA y el marcado del contenido generado, y conservar evidencia de su implantación.
+**Acción:** Si interactúa directamente con personas, informarlas de que interactúan con un sistema de IA (Art. 50.1). Marcar el contenido generado en un formato legible por máquina (Art. 50.2). Corresponde al proveedor del sistema, salvo que solo apoye la edición estándar o no altere sustancialmente los datos de entrada. Si el texto se publica para informar al público sobre asuntos de interés público, divulgar que se ha generado con IA, salvo que pase por revisión humana o control editorial con un responsable editorial (Art. 50.4, párrafo segundo). Conservar evidencia de lo implantado.
 
 ### Supervisión humana de los resultados — **PENDIENTE**
 *Reglamento (UE) 2024/1689; RGPD; Ley 40/2015 · Art. 14 RIA (alto riesgo); Art. 22 RGPD; Art. 41 Ley 40/2015 · Declaración del promotor*
@@ -252,8 +252,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.2.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** 4d9bab72434f9cfd2f44c034dd6a4d26a7d34c842d11f50c0dd06e4b1d9961ef (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-10T11:56:46.138Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** 043a84521aca8a6b16cb309a6f85bfad3746c55678832f873ed7a57f4b2ec301 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-10T12:01:43.937Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

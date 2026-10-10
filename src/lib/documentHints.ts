@@ -15,7 +15,12 @@ export function normalizeText(text: string): string {
   return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
-const NEGATION = /\b(no|sin|nunca|ni|tampoco|jamas|excluye|excluido|prohibe|prohibido|prohibida|evita|evitar|discriminacion por)\b[^.;:\n]{0,40}$/;
+/**
+ * Negación que alcanza a la coincidencia: en la misma cláusula (sin punto, punto y coma, dos puntos
+ * ni salto de línea) y sin una conjunción adversativa en medio («no almacena imágenes, pero usa…»).
+ * Admite enumeraciones largas: «no procesa datos de salud, afiliación sindical… o biométricos».
+ */
+const NEGATION = /\b(no|sin|nunca|ni|tampoco|jamas|excluye|excluido|prohibe|prohibido|prohibida|evita|evitar|discriminacion por)\b(?:(?!\b(?:pero|sino|aunque|salvo|excepto)\b)[^.;:\n]){0,140}$/;
 
 /** Frase (hasta el punto o el salto de línea) en la que aparece una coincidencia. */
 function sentenceAt(text: string, index: number, length: number): string {
@@ -32,7 +37,7 @@ function findAffirmed(text: string, pattern: RegExp, excludeSentence?: RegExp): 
   const re = new RegExp(pattern.source, pattern.flags.includes('g') ? pattern.flags : `${pattern.flags}g`);
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
-    const before = text.slice(Math.max(0, m.index - 60), m.index);
+    const before = text.slice(Math.max(0, m.index - 160), m.index);
     if (excludeSentence && excludeSentence.test(sentenceAt(text, m.index, m[0].length))) continue;
     if (!NEGATION.test(before)) {
       const start = Math.max(0, m.index - 40);
@@ -51,7 +56,7 @@ const PROHIBITED_PATTERNS: Record<string, RegExp> = {
 };
 
 const ANNEX_III_PATTERNS: Array<[Exclude<AnnexIIIArea, 'ninguno' | 'desconocido'>, RegExp]> = [
-  ['empleo', /\b(seleccion de personal|baremacion|tribunal calificador|evaluacion de candidatos|oposiciones|bolsa de empleo|proceso selectivo|promocion interna)\b/],
+  ['empleo', /\b(seleccion de personal|baremacion de (meritos|candidatos|aspirantes|solicitantes de empleo)|baremar (a )?(los |las )?(candidatos|aspirantes)|tribunal calificador|evaluacion de candidatos|oposiciones|bolsa de empleo|proceso selectivo|promocion interna)\b/],
   ['servicios_esenciales', /\b(prestaciones? sociales?|renta (minima|garantizada)|ingreso minimo|ayudas? de emergencia social|servicios sociales|dependencia)\b/],
   ['educacion', /\b(admision (escolar|de alumnos)|evaluacion de alumnos|calificacion de examenes|becas?)\b/],
   ['justicia_democracia', /\b(procedimientos? judicial(es)?|resoluciones? judicial(es)?|juzgado|tribunal de justicia|proceso electoral)\b/],
