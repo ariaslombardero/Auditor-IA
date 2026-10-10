@@ -1,6 +1,6 @@
 # Casos de referencia del motor
 
-> Generado por `npm run ejemplos` (`scripts/generarEjemplos.ts`) el 2026-10-10T12:38:01.675Z, con el motor v2.2.0.
+> Generado por `npm run ejemplos` (`scripts/generarEjemplos.ts`) el 2026-10-10T19:40:50.692Z, con el motor v2.2.0.
 > Corte normativo: Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022).
 > Los diagnósticos proceden solo del motor determinista, sin ningún modelo de IA. Las entradas son sintéticas,
 > salvo en los casos de aplicaciones reales, que usan la documentación pública de sus repositorios.

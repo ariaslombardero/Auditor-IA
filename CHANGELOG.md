@@ -11,6 +11,9 @@ Cada versión indica la del motor de clasificación (`ENGINE_VERSION`), que figu
 - **Art. 50 (TRA-01).** La acción distingue el aviso de interacción (50.1), el marcado (50.2) y los textos publicados sobre asuntos de interés público, con la excepción por control editorial (50.4).
 - **Indicios (IND-01 a IND-03).** Ya no cuentan como uso de IA las frases sobre cómo se desarrolló la aplicación. Se corrigen el falso indicio de empleo por «criterios de baremación» y las negaciones largas.
 - **Cobertura AEPD (COB-01).** Matriz frente a los 25 objetivos de control de los *Requisitos para auditorías de tratamientos que incluyan IA*, incluido lo que no cubre.
+- **Necesidad y proporcionalidad (EIPD-07).** Nuevo apartado en el borrador de EIPD (Art. 35.7.b RGPD) con cinco juicios. La conclusión la completa el responsable con el asesoramiento del DPD.
+- **Evaluación de impacto en los derechos fundamentales (FRIA-01).** En alto riesgo, el requisito del Art. 27 RIA aclara que complementa la EIPD y remite al modelo FRIA de la APDCAT.
+- La revisión del 5/10 pasa a `docs/historico/revision-ia-linea-base-v2.0/`.
 - Licencia MIT y versión unificada en el paquete y el motor.
 
 ## 2.1.0 · 5–8/10/2026 · Saneamiento (fases 0 a 5)

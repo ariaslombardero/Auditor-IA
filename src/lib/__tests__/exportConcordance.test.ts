@@ -189,6 +189,22 @@ describe('EIPD (criterios WP248)', () => {
     expect(text).not.toMatch(/supera el juicio de proporcionalidad/i);
   });
 
+  it('FRIA-01 · en alto riesgo, el requisito del Art. 27 remite al modelo FRIA de la APDCAT y aclara que complementa la EIPD', async () => {
+    const state = CASES.altoRiesgoEmpleo();
+    const req = state.diagnostic!.requirements.find((r) => r.id === 'RIA-ART-27')!;
+    expect(req.accionRequerida).toMatch(/APDCAT/);
+    expect(req.accionRequerida).toMatch(/FRIA/);
+    expect(req.accionRequerida).toMatch(/complementa/i);
+    expect(req.accionRequerida).toMatch(/Art\. 27\.4/);
+    // Solo es una guía: no se presenta como obligatoria ni como sustituto de la EIPD
+    expect(req.accionRequerida).not.toMatch(/obligatori[oa] (usar|utilizar) el modelo/i);
+    expect(req.accionRequerida).not.toMatch(/sustituye/i);
+    const traza = await buildDocumentTraceability(state);
+    expect(generateOfficialDossierMarkdown(state, undefined, 'castellano', traza)).toContain('modelo FRIA');
+    // Fuera del alto riesgo no aparece
+    expect(CASES.asistenteRedaccion().diagnostic!.requirements.some((r) => r.id === 'RIA-ART-27')).toBe(false);
+  });
+
   it('BRE-01 · el procedimiento de brechas (Arts. 33 y 34 RGPD) es un requisito con su estado, y llega a los documentos', async () => {
     const con = (breachProcedure: 'si' | 'no' | 'desconocido', processesPersonalData: 'si' | 'no' = 'si') =>
       makeState('Asistente', answeredAnswers({ processesPersonalData, breachProcedure }));

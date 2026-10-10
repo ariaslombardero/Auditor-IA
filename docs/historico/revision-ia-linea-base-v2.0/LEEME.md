@@ -4,6 +4,6 @@
 
 Se conservan **sin cambios**, como evidencia del punto de partida. **No describen la versión actual.**
 
-- Cada hallazgo de esta revisión, y los de la otra revisión hecha ese mismo día, están en la [matriz de hallazgos](../docs/auditoria/matriz-hallazgos.md), con la prueba que verifica su corrección.
+- Cada hallazgo de esta revisión, y los de la otra revisión hecha ese mismo día, están en la [matriz de hallazgos](../../auditoria/matriz-hallazgos.md), con la prueba que verifica su corrección.
 - Los errores que contenían las propias revisiones también constan en la matriz, en «Correcciones a las auditorías previas».
-- El estado actual de la herramienta está en el [README](../README.md) y el [CHANGELOG](../CHANGELOG.md).
+- El estado actual de la herramienta está en el [README](../../../README.md) y el [CHANGELOG](../../../CHANGELOG.md).

@@ -173,7 +173,8 @@ export function buildObligations(ctx: ObligationsContext): RequirementAssessment
           resultado: 'pendiente',
           origen: 'declaracion_promotor',
           hechos: withDate('Los responsables del despliegue que sean organismos de Derecho público deben evaluar el impacto del sistema en los derechos fundamentales antes de utilizarlo (salvo los sistemas del Anexo III, punto 2).', hrDate),
-          accionRequerida: 'Realizar la evaluación de impacto en los derechos fundamentales y notificar sus resultados a la autoridad de vigilancia del mercado.',
+          accionRequerida:
+            'Realizar la evaluación de impacto en los derechos fundamentales y notificar sus resultados a la autoridad de vigilancia del mercado. Si ya hay una EIPD, esta evaluación la complementa (Art. 27.4). Como guía metodológica puede usarse el modelo FRIA de la Autoritat Catalana de Protecció de Dades (APDCAT), con una aplicación gratuita que funciona en local, o el cuestionario modelo de la Oficina de IA (Art. 27.5) cuando esté disponible.',
           exigibleDesde: hrDate,
           fecha,
         });

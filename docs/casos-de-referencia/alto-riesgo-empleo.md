@@ -158,7 +158,7 @@ Uso conforme a las instrucciones (26.1), supervisión humana por personas con co
 
 Los responsables del despliegue que sean organismos de Derecho público deben evaluar el impacto del sistema en los derechos fundamentales antes de utilizarlo (salvo los sistemas del Anexo III, punto 2). Aún no exigible: lo será desde el 2/12/2027. Conviene prepararla antes de la puesta en servicio.
 
-**Acción:** Realizar la evaluación de impacto en los derechos fundamentales y notificar sus resultados a la autoridad de vigilancia del mercado.
+**Acción:** Realizar la evaluación de impacto en los derechos fundamentales y notificar sus resultados a la autoridad de vigilancia del mercado. Si ya hay una EIPD, esta evaluación la complementa (Art. 27.4). Como guía metodológica puede usarse el modelo FRIA de la Autoritat Catalana de Protecció de Dades (APDCAT), con una aplicación gratuita que funciona en local, o el cuestionario modelo de la Oficina de IA (Art. 27.5) cuando esté disponible.
 
 ### Registro del uso del sistema por una autoridad pública — **PENDIENTE**
 *Reglamento (UE) 2024/1689 · Art. 49.3 · Declaración del promotor*
@@ -271,7 +271,7 @@ Los preceptos citados proceden de la base de conocimiento de la herramienta (Reg
 
 - **Versión del motor:** 2.2.0
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** e28211ba0c4bbdbfbd3915063e491cbbd04986948fb323ed0db971d7647a128f (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-10T12:38:01.315Z
+- **Fecha de generación:** 2026-10-10T19:40:50.325Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

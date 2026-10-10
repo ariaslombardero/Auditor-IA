@@ -156,4 +156,4 @@ Un modelo o una persona que revise este repositorio debería contrastar, con el 
 4. ¿Sale alguna clave o algún dato hacia un destino distinto del proveedor elegido?
 5. ¿Podría un ensayo adversario aprobarse por las palabras de la respuesta y no por su efecto?
 
-Hay una revisión externa anterior (5/10/2026) en `auditoria-pericial/`; los hallazgos de las auditorías externas están en la matriz de hallazgos.
+Hay una revisión externa anterior (5/10/2026), hecha con un modelo de IA sobre la línea base v2.0, en `docs/historico/revision-ia-linea-base-v2.0/`; los hallazgos de las auditorías externas están en la matriz de hallazgos.
