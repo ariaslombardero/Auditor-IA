@@ -31,7 +31,7 @@ export const QuickAgentsWizardModal: React.FC<QuickAgentsWizardModalProps> = ({
   idioma,
 }) => {
   const [hostingModel, setHostingModel] = useState<'local' | 'eu' | 'commercial'>('local');
-  const [modelName, setModelName] = useState('Llama 3.3 70B (Ollama Local) / Mistral Small');
+  const [modelName, setModelName] = useState('Modelo local en servidores propios (por ejemplo, Gemma, Llama o Mistral con Ollama o vLLM)');
   const [agencyLevel, setAgencyLevel] = useState<'strictly_assisted' | 'human_confirmed_tools' | 'semi_autonomous'>('strictly_assisted');
   const [requireOfficialCitation, setRequireOfficialCitation] = useState(true);
   const [forbidAutomatedActs, setForbidAutomatedActs] = useState(true);
@@ -182,7 +182,7 @@ ${agencyDesc}
                 type="button"
                 onClick={() => {
                   setHostingModel('local');
-                  setModelName('Llama 3.3 70B (Ollama Local) / Mistral Small 24B');
+                  setModelName('Modelo local en servidores propios (por ejemplo, Gemma, Llama o Mistral con Ollama o vLLM)');
                 }}
                 style={{
                   padding: '0.5rem 0.75rem',
@@ -220,7 +220,7 @@ ${agencyDesc}
                 type="button"
                 onClick={() => {
                   setHostingModel('commercial');
-                  setModelName('Google Gemini 2.5 Flash / OpenAI GPT-4o');
+                  setModelName('Modelo en la nube (por ejemplo, Gemini, GPT o Claude)');
                 }}
                 style={{
                   padding: '0.5rem 0.75rem',
@@ -242,7 +242,7 @@ ${agencyDesc}
                 type="text"
                 value={modelName}
                 onChange={(e) => setModelName(e.target.value)}
-                placeholder="Ej: Llama 3.3 70B, Gemini 2.5 Flash, GPT-4o..."
+                placeholder="Ej.: Gemma con Ollama, o la API de Gemini"
                 style={{ fontSize: '0.8125rem' }}
               />
             </div>

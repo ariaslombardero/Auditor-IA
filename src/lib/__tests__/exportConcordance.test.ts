@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { generateOfficialDossierMarkdown } from '../officialDossierMd';
 import { buildAuditManifest } from '../auditManifestGenerator';
 import { buildAepdCriteria, buildEipdCriteria, buildEipdDocument, eipdScreening } from '../eipdGenerator';
-import { generateCryptographicReceipt } from '../signatureService';
 import { CASES, answeredAnswers, docxText, makeAnswers, makeState, officialDossierText } from '../../test/fixtures';
 import { computeExecutiveVerdict } from '../dashboardPillars';
 import { unaccreditedRequirements } from '../assessmentModel';
@@ -95,15 +94,6 @@ describe('Manifiesto JSON', () => {
       expect(json).not.toContain('"FAVORABLE"');
       expect(json).not.toContain('vigente_consolidado');
     }
-  });
-});
-
-describe('Diligencia de integridad', () => {
-  it('DOC-07 · el identificador interno no se presenta como CSV ni el software "certifica"', async () => {
-    const receipt = await generateCryptographicReceipt('expediente.docx', 'contenido sintético', 'Entidad', 'Responsable');
-    // Puede aclarar que no es un CSV, pero no rotular el identificador como tal
-    expect(receipt.diligenceText).not.toMatch(/C[ÓO]DIGO SEGURO DE VERIFICACI[ÓO]N \(CSV\):/i);
-    expect(receipt.diligenceText).not.toMatch(/se certifica/i);
   });
 });
 

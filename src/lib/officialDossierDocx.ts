@@ -205,7 +205,7 @@ export function buildOfficialDossierDocument(
                 ? [makeMetadataRow('Régimen Especial AI Act', 'Excepción Art. 6.3 RIA (Derogación de Alto Riesgo documentada Art. 6.4)')]
                 : []),
               makeMetadataRow('Categoría ENS (RD 311/2022)', `Nivel ${diagnostic?.ensCategory || 'BÁSICA'}`),
-              makeMetadataRow('Régimen Jurídico (Ley 40/2015)', answers.directHumanIntervention === 'no' ? 'Actuación administrativa automatizada declarada (Art. 41)' : answers.directHumanIntervention === 'si' ? 'Intervención directa de un empleado público (declarada)' : 'No consta'),
+              makeMetadataRow('Régimen Jurídico (Ley 40/2015)', answers.producesAdministrativeActs === 'no' ? 'No produce actos ni actuaciones administrativas (declarado)' : answers.directHumanIntervention === 'no' ? 'Actuación administrativa automatizada declarada (Art. 41)' : answers.directHumanIntervention === 'si' ? 'Intervención directa de un empleado público (declarada)' : 'No consta'),
               makeMetadataRow('Responsable Funcional', metadata.functionalResponsible || 'Jefatura de Servicio'),
               makeMetadataRow('Responsable Técnico / CISO', metadata.technicalResponsible || 'Dirección de TI'),
               makeMetadataRow('Supervisión Pública y DPD', metadata.dpoContact || 'Delegado de Protección de Datos'),

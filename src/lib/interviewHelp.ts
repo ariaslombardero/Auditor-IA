@@ -14,7 +14,7 @@ export const INTERVIEW_HELP: Record<string, QuestionHelp> = {
   infersOutputs: {
     queSignifica: 'Pregunta si el sistema «aprende» o «razona» a partir de los datos para producir sus resultados, en lugar de seguir solo reglas que alguien programó paso a paso. Es lo que distingue un sistema de IA de un programa informático tradicional.',
     ejemploSi: 'Un asistente que redacta resúmenes con un modelo de lenguaje (Gemini, Llama, GPT…), o un clasificador entrenado con ejemplos.',
-    ejemploNo: 'Una aplicación que calcula plazos o valida formularios con reglas fijas («si falta el DNI, mostrar un aviso»).',
+    ejemploNo: 'Una aplicación que calcula plazos o valida formularios con reglas fijas («si falta el DNI, mostrar un aviso»), o que aplica una fórmula fija, como una interpolación de temperaturas entre estaciones o una puntuación con pesos predefinidos, aunque su documentación la llame «aprendizaje automático».',
     norma: `${RIA}, Art. 3.1`,
   },
 
@@ -153,6 +153,12 @@ export const INTERVIEW_HELP: Record<string, QuestionHelp> = {
     ejemploNo: '«Nunca»: el sistema envía las respuestas o los documentos sin que nadie los revise.',
     norma: `${RIA}, Art. 14 (para los sistemas de alto riesgo)`,
   },
+  producesAdministrativeActs: {
+    queSignifica: 'Una actuación administrativa es lo que la Administración hace dentro de un procedimiento: resolver, notificar, certificar o tramitar. Una aplicación que solo informa a la ciudadanía (mapas, rutas, buscadores) no las produce. Si el sistema prepara actos que luego firma un empleado público, contesta «sí» e indícalo en la pregunta siguiente.',
+    ejemploSi: 'Prepara borradores de resolución que firma un funcionario, o emite certificados automáticamente.',
+    ejemploNo: 'Muestra a la ciudadanía rutas con sombra y fuentes de agua a partir de datos abiertos.',
+    norma: 'Ley 40/2015, Art. 41',
+  },
   directHumanIntervention: {
     queSignifica: 'Si un acto administrativo se produce sin que intervenga directamente un empleado público, es una actuación administrativa automatizada. Exige establecer antes los órganos responsables y quién responde a efectos de recurso.',
     ejemploSi: 'Un funcionario revisa y firma cada resolución que prepara el sistema.',
@@ -282,7 +288,7 @@ export const INTERVIEW_HELP: Record<string, QuestionHelp> = {
   },
   deterministicConfig: {
     queSignifica: 'Pregunta si se fija la versión exacta del modelo y sus parámetros, de modo que pueda saberse con qué configuración se obtuvo cada resultado.',
-    ejemploSi: 'Usa una versión concreta (por ejemplo, «gemini-2.5-flash») con temperatura baja.',
+    ejemploSi: 'Usa una versión concreta (un identificador de modelo fijo, no un alias como «latest» que cambia solo) con temperatura baja.',
     ejemploNo: 'Usa un alias como «gemini-flash-latest», que cambia de modelo con el tiempo.',
     norma: 'Buena práctica de trazabilidad (ENS, [op.exp.8])',
   },

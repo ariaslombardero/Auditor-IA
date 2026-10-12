@@ -34,7 +34,7 @@ export function evaluateEns(answers: LegalEnrichmentAnswers, ingest: AppIngestDa
     // Sin valoración de dimensiones: estimación orientativa a partir de otras respuestas
     let category: EnsEvaluation['category'] = 'BASICA';
     if (answers.processesSpecialCategoryData === 'si' || answers.processesCriminalData === 'si' || highRisk) category = 'ALTA';
-    else if (answers.directHumanIntervention === 'no' || answers.hostingModel === 'us_hyperscaler' || ingest.targetAudience === 'public_citizens') category = 'MEDIA';
+    else if ((answers.producesAdministrativeActs !== 'no' && answers.directHumanIntervention === 'no') || answers.hostingModel === 'us_hyperscaler' || ingest.targetAudience === 'public_citizens') category = 'MEDIA';
     return {
       category,
       orientative: true,
@@ -475,7 +475,22 @@ export function buildObligations(ctx: ObligationsContext): RequirementAssessment
   // Ley 40/2015: actuación administrativa automatizada
   const direct = a.directHumanIntervention;
   const procedure = a.procedureDescription.trim();
-  reqs.push({
+  if (a.producesAdministrativeActs === 'no') {
+    reqs.push({
+      id: 'LEY-40-2015-ART-41',
+      kind: 'obligacion',
+      pillar: 'gobernanza',
+      title: 'Actuación administrativa automatizada',
+      norma: 'Ley 40/2015',
+      precepto: 'Art. 41',
+      aplicabilidad: 'no_aplica',
+      resultado: 'no_evaluado',
+      origen: 'declaracion_promotor',
+      hechos: 'Declarado que el sistema no produce ni prepara actos o actuaciones administrativas: solo informa. El Art. 41 no es aplicable.',
+      accionRequerida: 'Revisar la declaración si el sistema llega a intervenir en un procedimiento administrativo.',
+      fecha,
+    });
+  } else reqs.push({
     id: 'LEY-40-2015-ART-41',
     kind: 'obligacion',
     pillar: 'gobernanza',

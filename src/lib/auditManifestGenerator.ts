@@ -59,6 +59,7 @@ export interface AuditManifestRecord {
       };
     };
     administrative_nature: {
+      declared_produces_administrative_acts: string;
       declared_direct_human_intervention: string;
       declared_procedure: string;
       ley_40_2015_art_41_automated_act: boolean;
@@ -181,6 +182,7 @@ export function buildAuditManifest(
         },
       },
       administrative_nature: {
+        declared_produces_administrative_acts: answers.producesAdministrativeActs,
         declared_direct_human_intervention: answers.directHumanIntervention,
         declared_procedure: answers.procedureDescription || '',
         ley_40_2015_art_41_automated_act: Boolean(diagnostic?.isAutomatedAdministrativeAct),

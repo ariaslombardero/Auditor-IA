@@ -300,10 +300,11 @@ export function detectContradictions(answers: LegalEnrichmentAnswers): string[] 
   if (noPersonal && (answers.processesSpecialCategoryData === 'si' || answers.processesCriminalData === 'si' || answers.biometricIdentification === 'si')) {
     reasons.push('Se declaran categorías especiales, datos penales o biométricos y, a la vez, que no se tratan datos personales.');
   }
-  if (answers.directHumanIntervention === 'si' && answers.humanOversightLevel === 'fully_automated') {
+  const producesActs = answers.producesAdministrativeActs !== 'no';
+  if (producesActs && answers.directHumanIntervention === 'si' && answers.humanOversightLevel === 'fully_automated') {
     reasons.push('Se declara la intervención directa de un empleado público y, a la vez, una actuación sin intervención humana.');
   }
-  if (answers.directHumanIntervention === 'no' && answers.humanOversightLevel === 'pre_execution') {
+  if (producesActs && answers.directHumanIntervention === 'no' && answers.humanOversightLevel === 'pre_execution') {
     reasons.push('Se declara una revisión humana previa y, a la vez, que no interviene de forma directa ningún empleado público.');
   }
   return reasons;

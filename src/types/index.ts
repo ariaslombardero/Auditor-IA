@@ -110,6 +110,8 @@ export interface LegalEnrichmentAnswers {
   // F. Supervisión humana y actuación administrativa automatizada (Art. 41 Ley 40/2015)
   humanOversightLevel: 'pre_execution' | 'post_execution' | 'fully_automated' | 'desconocido';
   supervisionRole: string;
+  /** ¿Produce el sistema actos o actuaciones administrativas? «no» = solo informa: el Art. 41 no aplica. */
+  producesAdministrativeActs: TriState;
   /** ¿Interviene de forma directa un empleado público en cada acto o actuación? */
   directHumanIntervention: TriState;
   /** Descripción del funcionamiento real del procedimiento. */

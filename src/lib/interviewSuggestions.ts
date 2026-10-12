@@ -45,6 +45,13 @@ const NO_SIEMPRE_INFERIDO = new Set([
   'preventsRightsOrService',
 ]);
 
+/**
+ * Calificaciones jurídicas decisivas: la sugerencia es siempre «inferida», aunque la cita exista.
+ * Una frase de la documentación (por ejemplo, «técnica de aprendizaje automático») no basta para
+ * concluir que el sistema infiere sus resultados o que produce actuaciones administrativas.
+ */
+const SIEMPRE_INFERIDA = new Set(['infersOutputs', 'producesAdministrativeActs', 'directHumanIntervention']);
+
 const LONGITUD_MINIMA_CITA = 12;
 const MAX_DOCUMENTACION = 24000;
 
@@ -102,7 +109,7 @@ export function classifySuggestion(
     ...base,
     valor,
     cita: cita?.trim() || undefined,
-    tipo: citaComprobada && !noPrudente ? 'con_cita' : 'inferida',
+    tipo: citaComprobada && !noPrudente && !SIEMPRE_INFERIDA.has(q.id) ? 'con_cita' : 'inferida',
   };
 }
 

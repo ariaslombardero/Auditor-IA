@@ -13,6 +13,8 @@ Cada versión indica la del motor de clasificación (`ENGINE_VERSION`), que figu
 - **Cobertura AEPD (COB-01).** Matriz frente a los 25 objetivos de control de los *Requisitos para auditorías de tratamientos que incluyan IA*, incluido lo que no cubre.
 - **Necesidad y proporcionalidad (EIPD-07).** Nuevo apartado en el borrador de EIPD (Art. 35.7.b RGPD) con cinco juicios. La conclusión la completa el responsable con el asesoramiento del DPD.
 - **Evaluación de impacto en los derechos fundamentales (FRIA-01).** En alto riesgo, el requisito del Art. 27 RIA aclara que complementa la EIPD y remite al modelo FRIA de la APDCAT.
+- **Prueba con Oasis-Madrid (quinto caso real, sin IA).** La herramienta se adapta al caso: sin IA no ofrece el kit de código ni las pruebas del modelo (UX-03); sin datos personales, «No procede la EIPD» (EIPD-08). Las sugerencias sobre el Art. 3.1 y el Art. 41 son siempre «inferidas» (SUG-04). Nueva pregunta «¿produce actos administrativos?»: si no, el Art. 41 no aplica (ADM-01).
+- **Textos (DOC-16).** Se retira la diligencia con huella e identificador del documento, y los textos que prometían de más. Los ejemplos de modelos ya no llevan números de versión.
 - La revisión del 5/10 pasa a `docs/historico/revision-ia-linea-base-v2.0/`.
 - Licencia MIT y versión unificada en el paquete y el motor.
 

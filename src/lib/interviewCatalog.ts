@@ -196,7 +196,8 @@ const BASE_QUESTIONS: InterviewQuestion[] = [
     bloqueaClasificacion: false,
     sugerible: 'documental',
   },
-  tri('directHumanIntervention', 'F', '¿Interviene de forma directa un empleado público en cada acto o actuación?', siempre),
+  tri('producesAdministrativeActs', 'F', '¿Produce o prepara el sistema actos o actuaciones administrativas (resoluciones, notificaciones, certificados, trámites)?', siempre),
+  tri('directHumanIntervention', 'F', '¿Interviene de forma directa un empleado público en cada acto o actuación?', (a) => a.producesAdministrativeActs !== 'no'),
 
   tri('processesPersonalData', 'G', '¿Trata datos personales?', siempre),
   {

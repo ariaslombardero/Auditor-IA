@@ -89,9 +89,9 @@ describe('Reglas de prudencia (SUG-01)', () => {
   });
 
   it('la aceptación en bloque solo incluye las sugerencias con cita comprobada', () => {
-    const ok = classifySuggestion(questionById('infersOutputs')!, 'si', 'ni perfila a nadie', 'x', ingest)!;
+    const ok = classifySuggestion(questionById('generatesSyntheticContent')!, 'si', 'ni perfila a nadie', 'x', ingest)!;
     const inferida = classifySuggestion(questionById('prohibitedPractices.social_scoring')!, 'no', 'No realiza puntuación social', 'x', ingest)!;
-    expect(bulkAcceptable([ok, inferida]).map((s) => s.questionId)).toEqual(['infersOutputs']);
+    expect(bulkAcceptable([ok, inferida]).map((s) => s.questionId)).toEqual(['generatesSyntheticContent']);
   });
 });
 
@@ -107,10 +107,10 @@ describe('Aceptar y procedencia (SUG-03)', () => {
 
   it('aceptar fija la respuesta y registra el origen con modelo y cita', () => {
     const state = { ...analizador(), answers: makeAnswers() };
-    const s = classifySuggestion(questionById('infersOutputs')!, 'si', 'gemini-2.5-flash', 'Usa un modelo de lenguaje', state.ingest, { fuente: 'ia', modelo: 'Ollama (local) · modelo-sintetico' })!;
+    const s = classifySuggestion(questionById('generatesSyntheticContent')!, 'si', 'gemini-2.5-flash', 'Usa un modelo de lenguaje', state.ingest, { fuente: 'ia', modelo: 'Ollama (local) · modelo-sintetico' })!;
     const next = acceptSuggestion(state, s, '2026-10-08T10:00:00.000Z');
-    expect(next.answers.infersOutputs).toBe('si');
-    expect(next.answerSources?.infersOutputs).toMatchObject({ origen: 'ia', modelo: 'Ollama (local) · modelo-sintetico', tipo: 'con_cita' });
+    expect(next.answers.generatesSyntheticContent).toBe('si');
+    expect(next.answerSources?.generatesSyntheticContent).toMatchObject({ origen: 'ia', modelo: 'Ollama (local) · modelo-sintetico', tipo: 'con_cita' });
   });
 
   it('si la persona cambia después la respuesta, el origen vuelve a ser suyo', () => {
@@ -164,7 +164,8 @@ describe('Respuesta del modelo (SUG-01)', () => {
     const pedidas = ['infersOutputs', 'generatesSyntheticContent', 'prohibitedPractices.social_scoring', 'institutionalRole', 'annexIIIArea'];
     const r = await suggestWithAI(LOCAL, state.ingest, makeAnswers(), pedidas);
     const por = Object.fromEntries(r.sugerencias.map((s) => [s.questionId, s]));
-    expect(por.infersOutputs.tipo).toBe('con_cita');
+    // SUG-04: la calificación del Art. 3.1 es siempre «inferida», aunque la cita exista
+    expect(por.infersOutputs.tipo).toBe('inferida');
     expect(por.generatesSyntheticContent.tipo).toBe('inferida');
     expect(por['prohibitedPractices.social_scoring'].tipo).toBe('inferida');
     expect(por.institutionalRole.tipo).toBe('orientacion');

@@ -63,6 +63,7 @@ describe('Indicios documentales (solo sugieren, nunca deciden)', () => {
         'Forma parte de MencIA, la estrategia de Inteligencia Artificial de la Diputación de Lugo.',
         'Autor: experto en inteligencia artificial aplicada al sector público.',
         'Construido con ❤️ aprovechando el potencial de la Inteligencia Artificial Generativa',
+        'Este proyecto ha sido desarrollado aplicando metodologías de **Inteligencia Artificial Avanzada**, cumpliendo los criterios del concurso.',
       ].join('\n'),
     });
     expect(aiUsageHint(desarrollo)).toBeNull();

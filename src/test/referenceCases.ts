@@ -262,4 +262,28 @@ export const REFERENCE_CASES: ReferenceCase[] = [
       ),
     esperado: { clasificacion: 'transparency_risk', alertas: ['Alojamiento declarado y documentación discrepantes'] },
   },
+  {
+    id: 'oasis-madrid',
+    titulo: 'Navegador de confort térmico con datos abiertos de Madrid (aplicación real, sin IA)',
+    real: { repositorio: 'https://github.com/ariaslombardero/Oasis-Madrid', commit: '3d95ae2503086fc83a1665acf6e2ee5c0f3f0b1d' },
+    fundamento:
+      'Calcula rutas y riesgo térmico con datos abiertos mediante fórmulas fijas: la interpolación IDW es una media ponderada por la distancia, no infiere sus resultados, aunque su README la llame «técnica de aprendizaje automático». No es un sistema de IA (Art. 3.1 RIA); el indicio por palabras clave lo señala y la persona decide. Solo informa a la ciudadanía: no produce actos administrativos, así que el Art. 41 de la Ley 40/2015 no aplica. Queda por valorar si trata datos personales: recibe direcciones y ubicaciones para calcular rutas, aunque no las guarde.',
+    state: () =>
+      makeState(
+        'Navegador de confort térmico y rutas saludables que combina datos abiertos del Ayuntamiento de Madrid.',
+        answeredAnswers({
+          infersOutputs: 'no',
+          producesAdministrativeActs: 'no',
+          humanOversightLevel: 'fully_automated',
+          supervisionRole: '',
+          procedureDescription: 'Muestra a la ciudadanía mapas y rutas calculados con datos abiertos; no tramita ni resuelve.',
+          processesPersonalData: 'desconocido',
+          hostingModel: 'desconocido',
+          breachProcedure: 'desconocido',
+          ratActivityName: '',
+        }),
+        { appName: 'OasisMadrid', ...casoReal('oasis-madrid'), isAiSystem: false, targetAudience: 'public_citizens' }
+      ),
+    esperado: { clasificacion: 'not_ai_system' },
+  },
 ];

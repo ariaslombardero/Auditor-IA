@@ -103,7 +103,7 @@ Ocho bloques de preguntas. Casi todas se contestan con **Sí / No / No lo sé**.
 | **C. Alto riesgo** | Art. 6 y Anexo III | ¿Se usa en empleo, educación, prestaciones sociales, justicia, migración…? ¿Valora a personas (perfilado)? ¿Hace solo una tarea auxiliar? |
 | **D. Transparencia** | Art. 50 | ¿Habla con personas? ¿Genera textos, imágenes o audios? ¿Se publican esos textos para informar a la ciudadanía y alguien los revisa antes? |
 | **E. Papel de la entidad** | Art. 3 | ¿La entidad desarrolla el sistema (proveedora), lo usa (responsable del despliegue) o ambas cosas? |
-| **F. Supervisión humana** | Art. 41 de la Ley 40/2015 | ¿Quién revisa los resultados y cuándo? ¿Interviene un empleado público en cada actuación? |
+| **F. Supervisión humana** | Art. 41 de la Ley 40/2015 | ¿Produce o prepara actos administrativos, o solo informa? ¿Quién revisa los resultados y cuándo? ¿Interviene un empleado público en cada actuación? |
 | **G. Protección de datos** | RGPD | ¿Trata datos personales, de salud, penales o de solvencia (deudas, concursos)? ¿A gran escala? ¿De personas vulnerables? ¿Hay un procedimiento para avisar de una brecha de datos? ¿Dónde se ejecuta? |
 | **H. Seguridad (ENS)** | RD 311/2022 | ¿Qué daño causaría un fallo en confidencialidad, integridad, trazabilidad, autenticidad y disponibilidad? ¿Hay registro de actividad? |
 
@@ -236,15 +236,16 @@ Son **propuestas**: el equipo técnico debe adaptarlas.
 
 ## 10. Paso 6 · Laboratorio de pruebas
 
+Solo aparece lo que aplica al caso. Si declaró que el sistema **no usa IA**, no verá las pruebas del modelo. Si declaró que **no trata datos personales**, la pestaña de EIPD le dirá que no procede.
+
 | Pestaña | Qué hace |
 | :--- | :--- |
-| **1. Simulador Red Teaming** | Ataca al modelo de IA configurado con trampas: instrucciones ocultas en documentos, peticiones de datos personales, órdenes de pagar o borrar… El resultado depende de **lo que el modelo haría**, no de lo que dice. |
-| **2. Generador EIPD (AEPD)** | Muestra qué criterios de las listas de la AEPD y de las directrices europeas (WP248) se cumplen y descarga el borrador de EIPD. |
-| **3. Inspector Prompt-Guard** | Revisa un texto en busca de caracteres invisibles y trucos para colar instrucciones, y propone cómo reforzar el prompt. |
-| **4. Consultor RAG Offline** | Busca en los textos normativos incluidos en la aplicación, sin conexión. Indica si cada resultado es un extracto literal o un resumen, con enlace a la fuente oficial. |
-| **5. Diligencia y AutoFirma** | Calcula la huella del informe y un identificador interno, y explica cómo firmarlo con AutoFirma. **No** genera un código seguro de verificación (CSV): ese lo asigna la sede electrónica. |
+| **Ataques de prueba al modelo** | Ataca al modelo de IA configurado con trampas: instrucciones ocultas en documentos, peticiones de datos personales, órdenes de pagar o borrar… El resultado depende de **lo que el modelo haría**, no de lo que dice. |
+| **Evaluación de impacto (EIPD)** | Muestra qué criterios de las listas de la AEPD y de las directrices europeas (WP248) se cumplen y descarga el borrador de EIPD. |
+| **Revisar instrucciones del modelo** | Revisa un texto en busca de caracteres invisibles y trucos para colar instrucciones, y propone cómo reforzar el prompt. |
+| **Consultar normas sin conexión** | Busca en los textos normativos incluidos en la aplicación, sin conexión. Indica si cada resultado es un extracto literal o un resumen, con enlace a la fuente oficial. |
 
-**Cómo leer el Simulador Red Teaming:**
+**Cómo leer los ataques de prueba al modelo:**
 1. Elija el tipo de aplicación: documental, chatbot, agente con herramientas o batería completa.
 2. Si la aplicación auditada tiene **prompt del sistema** (paso 1), marque la casilla para usarlo.
 3. Pulse **«Lanzar evaluación»**.

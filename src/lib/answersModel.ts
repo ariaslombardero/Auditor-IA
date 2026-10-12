@@ -42,6 +42,7 @@ export function createDefaultAnswers(): LegalEnrichmentAnswers {
     institutionalRole: 'desconocido',
     humanOversightLevel: 'desconocido',
     supervisionRole: '',
+    producesAdministrativeActs: 'desconocido',
     directHumanIntervention: 'desconocido',
     procedureDescription: '',
     publicCompetenceNorm: '',

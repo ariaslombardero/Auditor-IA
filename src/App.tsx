@@ -48,6 +48,7 @@ import type {
   StoredAuditRecord,
 } from './types';
 import { t } from './lib/i18n';
+import { appliesCodeKit } from './lib/stepAvailability';
 import { DEFAULT_INGEST, DEFAULT_ANSWERS, DEFAULT_METADATA } from './lib/auditDefaults';
 
 type Step = 'ingesta' | 'entrevista' | 'diagnostico' | 'codigo' | 'expediente' | 'blindaje';
@@ -316,7 +317,9 @@ export const App: React.FC = () => {
     setShowHistoryModal(false);
   };
 
-  const stepsList: { key: Step; label: string; icon: React.ReactNode }[] = [
+  // El kit de código (avisos del Art. 50) solo se ofrece si el sistema puede ser IA (UX-03)
+  const codeKitApplies = appliesCodeKit(state.answers);
+  const allSteps: { key: Step; label: string; icon: React.ReactNode }[] = [
     { key: 'ingesta', label: t('step_1', idioma), icon: <FileText style={{ width: 15, height: 15 }} /> },
     { key: 'entrevista', label: t('step_2', idioma), icon: <UserCheck style={{ width: 15, height: 15 }} /> },
     { key: 'diagnostico', label: t('step_3', idioma), icon: <ShieldCheck style={{ width: 15, height: 15 }} /> },
@@ -324,6 +327,10 @@ export const App: React.FC = () => {
     { key: 'expediente', label: t('step_5', idioma), icon: <FileDown style={{ width: 15, height: 15 }} /> },
     { key: 'blindaje', label: t('step_6', idioma), icon: <Sparkles style={{ width: 15, height: 15, color: '#8b5cf6' }} /> },
   ];
+  // Se numeran los pasos que se ven, para que no haya saltos (1, 2, 3, 5…)
+  const stepsList = allSteps
+    .filter((s) => s.key !== 'codigo' || codeKitApplies)
+    .map((s, i) => ({ ...s, label: `${i + 1}. ${s.label.replace(/^\d+\.\s*/, '')}` }));
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -461,7 +468,7 @@ export const App: React.FC = () => {
               window.setTimeout(() => setFocusQuestionId(id), 0);
               setCurrentStep('entrevista');
             }}
-            onGoToCodeKit={() => setCurrentStep('codigo')}
+            onGoToCodeKit={codeKitApplies ? () => setCurrentStep('codigo') : undefined}
             onOpenDossier={() => setCurrentStep('expediente')}
             onBackToInterview={() => setCurrentStep('entrevista')}
             onInspectNorm={(normId, article) => {
@@ -472,7 +479,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {currentStep === 'codigo' && state.codeKit && (
+        {currentStep === 'codigo' && state.codeKit && codeKitApplies && (
           <CodeKitView
             codeKit={state.codeKit}
             onBackToDiagnostic={() => setCurrentStep('diagnostico')}
@@ -485,7 +492,7 @@ export const App: React.FC = () => {
           <OfficialDossierView
             state={state}
             onUpdateMetadata={(newMeta) => setState((p) => ({ ...p, metadata: newMeta }))}
-            onBackToCodeKit={() => setCurrentStep('codigo')}
+            onBackToCodeKit={() => setCurrentStep(codeKitApplies ? 'codigo' : 'diagnostico')}
             onGoToHardening={() => setCurrentStep('blindaje')}
             llmCritique={aiComment}
             idioma={idioma}

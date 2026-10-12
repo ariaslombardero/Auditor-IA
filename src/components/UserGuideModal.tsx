@@ -305,8 +305,8 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({ isOpen, onClose,
                   ],
                   [
                     tx('6. Laboratorio de pruebas', '6. Laboratorio de probas'),
-                    tx('Lanza los ensayos adversarios, revisa la EIPD, inspecciona textos y consulta normas.', 'Lanza os ensaios adversarios, revisa a AIPD, inspecciona textos e consulta normas.'),
-                    tx('Resultados de los ensayos, escáner de claves y huella del informe.', 'Resultados dos ensaios, escáner de claves e pegada do informe.'),
+                    tx('Ataques de prueba al modelo, EIPD, revisión de las instrucciones del modelo y consulta de normas. Si el sistema no usa IA, solo la EIPD y las normas.', 'Ataques de proba ao modelo, AIPD, revisión das instrucións do modelo e consulta de normas. Se o sistema non usa IA, só a AIPD e as normas.'),
+                    tx('Resultados de los ensayos, escáner de claves y borrador de EIPD.', 'Resultados dos ensaios, escáner de claves e borrador de AIPD.'),
                   ],
                 ]}
               />
@@ -461,10 +461,10 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({ isOpen, onClose,
                   )}
                 </div>
                 <div style={caja}>
-                  <strong>{tx('2. Huella e identificador interno:', '2. Pegada e identificador interno:')}</strong>{' '}
+                  <strong>{tx('2. Huella de las respuestas:', '2. Pegada das respostas:')}</strong>{' '}
                   {tx(
-                    'el informe incluye la huella SHA-256 de las respuestas (cambia si cambia cualquier respuesta) y el paso 6 calcula la huella del documento y un identificador interno. No es un código seguro de verificación (CSV): el CSV lo asigna la sede electrónica de la entidad.',
-                    'o informe inclúe a pegada SHA-256 das respostas (cambia se cambia calquera resposta) e o paso 6 calcula a pegada do documento e un identificador interno. Non é un código seguro de verificación (CSV): o CSV asígnao a sede electrónica da entidade.'
+                    'el informe incluye la huella SHA-256 de las respuestas, que cambia si cambia cualquiera de ellas. No es una firma ni un CSV: el CSV lo asigna la sede electrónica de la entidad al firmar.',
+                    'o informe inclúe a pegada SHA-256 das respostas, que cambia se cambia calquera delas. Non é unha sinatura nin un CSV: o CSV asígnao a sede electrónica da entidade ao asinar.'
                   )}
                 </div>
                 <div style={caja}>

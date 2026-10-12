@@ -188,7 +188,7 @@ Herramienta de apoyo técnico: un empleado público interviene de forma directa 
 Prohibición taxativa de actos administrativos automatizados o calificación autónoma de opositores.
 
 ## 2. Inferencia y Soberanía del Dato
-- Motor primario: Inferencia Local On-Premise con Ollama (Llama 3.3 70B / Mistral Small 24B).
+- Motor primario: modelo local en servidores propios con Ollama (por ejemplo, Llama o Mistral).
 - Motor de contingencia: Google Gemini API (Modo Zero Data Retention / enterprise).
 - Sin almacenamiento de consultas para reentrenamiento de modelos comerciales de terceros.
 
@@ -224,7 +224,7 @@ Stack: Next.js, Node.js, API Mistral en servidor de la Diputación Provincial.`,
 Software que analiza los certificados de méritos aportados por los aspirantes a una convocatoria de empleo público.
 Calcula la puntuación provisional y genera el orden de prelación de admitidos y excluidos.
 Decisión inicial automática sujeta a reclamación posterior.
-Stack: Python, FastAPI, OpenAI GPT-4o.`,
+Stack: Python, FastAPI y la API de OpenAI.`,
         agentsMdContent: '',
         techStack: 'Python FastAPI, OpenAI API',
         targetAudience: 'public_citizens',

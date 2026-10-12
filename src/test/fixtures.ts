@@ -47,6 +47,7 @@ export function answeredAnswers(overrides: Partial<LegalEnrichmentAnswers> = {})
     institutionalRole: 'ambos',
     humanOversightLevel: 'pre_execution',
     supervisionRole: 'Técnico de la unidad tramitadora',
+    producesAdministrativeActs: 'si',
     directHumanIntervention: 'si',
     procedureDescription: 'El técnico revisa y corrige cada borrador antes de incorporarlo al expediente.',
     publicCompetenceNorm: 'Ley 39/2015',

@@ -1,7 +1,7 @@
 /**
- * Generador de Evaluación de Impacto en la Protección de Datos (EIPD / DPIA)
- * Conforme a la Guía Oficial de la Agencia Española de Protección de Datos (AEPD)
- * y las directrices del Comité Europeo de Protección de Datos (WP248).
+ * Borrador de evaluación de impacto en la protección de datos (EIPD, Art. 35 RGPD) para completar
+ * por el responsable del tratamiento con el asesoramiento del DPD. El cribado aplica las directrices
+ * WP248 y la lista de la AEPD del Art. 35.4 RGPD.
  */
 
 import {

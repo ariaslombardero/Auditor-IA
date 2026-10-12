@@ -97,7 +97,7 @@ Implementada en `src/lib/engine/index.ts`. Cada paso queda en la traza con pregu
 6. **Obligaciones según el papel de la entidad** (proveedora o responsable del despliegue): Arts. 4, 26, 27 (solo alto riesgo), 49.2, 49.3, 50 y 86. El alto riesgo del Anexo III puntos 2 a 8 se evalúa por control interno (Anexo VI); no requiere organismo notificado (Art. 43.2).
 7. **Lo que no cambia la clasificación.** Ni el modelo de IA opcional ni las alertas modifican la clasificación. Por ejemplo, si se declara ejecución local pero la documentación cita APIs en la nube, se emite una alerta, no `requires_review`.
 
-**Casos de referencia:** `src/test/referenceCases.ts` contiene 14 casos con su resultado esperado y su fundamento. Cuatro son aplicaciones reales: su documentación se guarda con su commit en `src/test/casos-reales/` y las respuestas de su entrevista son un borrador que debe confirmar su autor. Si un cambio altera alguno, la prueba falla. Las salidas regeneradas están en [docs/casos-de-referencia/](docs/casos-de-referencia/LEEME.md).
+**Casos de referencia:** `src/test/referenceCases.ts` contiene 15 casos con su resultado esperado y su fundamento. Cinco son aplicaciones reales: su documentación se guarda con su commit en `src/test/casos-reales/` y las respuestas de su entrevista son un borrador que debe confirmar su autor. Si un cambio altera alguno, la prueba falla. Las salidas regeneradas están en [docs/casos-de-referencia/](docs/casos-de-referencia/LEEME.md).
 
 ## 6. Proveedores de IA y credenciales
 

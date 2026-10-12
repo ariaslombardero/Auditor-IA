@@ -73,7 +73,7 @@ const AI_PATTERN = /\b(llm|gpt|gemini|claude|ollama|openai|langchain|anthropic|m
  * («Vibe Coding», «AI-Driven Development», «diseñada y depurada con Claude»), la estrategia de IA de
  * la entidad o la presentación de su autor.
  */
-const NON_RUNTIME_CONTEXT = /(vibe coding|ai-driven development|desarrollo asistido por (ia|inteligencia artificial)|\b(construid|disenad|desarrollad|depurad|programad)[ao]s? (y (depurad|refinad)[ao]s? )?(integramente |exclusivamente |de forma iterativa )?(con|mediante)\b|estrategia de (ia|inteligencia artificial)|\b(experto|experta|especialista) en (ia|inteligencia artificial)\b)/;
+const NON_RUNTIME_CONTEXT = /(vibe coding|ai-driven development|desarrollo asistido por (ia|inteligencia artificial)|\b(construid|disenad|desarrollad|depurad|programad)[ao]s? (y (depurad|refinad)[ao]s? )?(integramente |exclusivamente |de forma iterativa )?(con|mediante|aplicando)\b|metodologias? de (\*\*)?(ia|inteligencia artificial|vibe coding)\b|estrategia de (ia|inteligencia artificial)|\b(experto|experta|especialista) en (ia|inteligencia artificial)\b)/;
 
 function documentationText(ingest: AppIngestData): string {
   return normalizeText(

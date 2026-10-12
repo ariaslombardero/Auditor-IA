@@ -3,7 +3,7 @@
 **Entidad Promotora:** Administración Pública Promotora
 **Departamento / Servicio:** Área de Régimen Jurídico y Transformación Digital
 **Software Evaluado:** "Caso sintético"
-**Fecha de Emisión:** 10/10/2026
+**Fecha de Emisión:** 13/10/2026
 **Marco Normativo de Referencia:**
 - Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (RIA), modificado por el Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA)
 - Real Decreto 729/2023, de 22 de agosto (Estatuto de la Agencia Española de Supervisión de Inteligencia Artificial - AESIA)
@@ -232,8 +232,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.2.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** 84efce35c6004444712d81eb6a29db261c0f24f12d5a6ce7dca4df0bd55719f8 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-10T19:40:50.333Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** b7933b29017326d33850234be65fdbccb323c48f78f7ad7daf63800653d81987 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-12T23:22:50.410Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

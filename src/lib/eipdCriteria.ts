@@ -35,6 +35,8 @@ function isAi(input: CriteriaInput): TriState {
 }
 
 function automatedDecision(a: LegalEnrichmentAnswers): TriState {
+  // Sin actos ni actuaciones administrativas no hay decisión con efectos jurídicos que automatizar
+  if (a.producesAdministrativeActs === 'no') return 'no';
   if (a.humanOversightLevel === 'fully_automated' || a.directHumanIntervention === 'no') return 'si';
   if (a.directHumanIntervention === 'si' && a.humanOversightLevel !== 'desconocido') return 'no';
   return 'desconocido';

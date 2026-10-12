@@ -120,7 +120,7 @@ export function evaluateRulesDeterministically(
   const isAi = ai.isAi === 'si';
   const isHighRiskAnnexIII = isAi && hr.highRisk === 'si';
   const isArticle63Derogation = isAi && hr.exception === 'si';
-  const isAutomatedAdministrativeAct = answers.directHumanIntervention === 'no';
+  const isAutomatedAdministrativeAct = answers.producesAdministrativeActs !== 'no' && answers.directHumanIntervention === 'no';
 
   let riskLabel = LABELS[classification];
   if (isArticle63Derogation && classification === 'transparency_risk') riskLabel = 'Riesgo Limitado (Exceptuado de Alto Riesgo vía Art. 6.3 RIA & Art. 50)';
@@ -227,7 +227,7 @@ function buildRedFlags(answers: LegalEnrichmentAnswers, ingest: AppIngestData): 
   if (answers.hostingModel === 'us_hyperscaler') {
     flags.push('Transferencia Internacional de Datos: el envío de datos a servidores fuera del Espacio Económico Europeo exige garantías reforzadas (Cláusulas Contractuales Tipo o Marco de Privacidad de Datos) y una valoración específica de la protección de servicios en la nube ([op.nub.1] ENS).');
   }
-  if (answers.humanOversightLevel === 'fully_automated') {
+  if (answers.humanOversightLevel === 'fully_automated' && answers.producesAdministrativeActs !== 'no') {
     flags.push('Ausencia de Control Humano Previo: una decisión basada únicamente en tratamiento automatizado puede quedar sujeta a la prohibición del Art. 22 RGPD y, en el sector público, exige los requisitos del Art. 41 de la Ley 40/2015.');
   }
   if (answers.auditLogsEnabled === 'no') {

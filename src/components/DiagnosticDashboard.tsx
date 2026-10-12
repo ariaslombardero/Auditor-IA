@@ -44,7 +44,8 @@ interface DiagnosticDashboardProps {
   diagnostic: DiagnosticResult;
   appName: string;
   llmCritique?: string;
-  onGoToCodeKit: () => void;
+  /** Sin valor si el kit de código no aplica (sistema declarado sin IA). */
+  onGoToCodeKit?: () => void;
   onOpenDossier: () => void;
   onBackToInterview: () => void;
   onInspectNorm?: (normId: string, article: string) => void;
@@ -876,10 +877,12 @@ export const DiagnosticDashboard: React.FC<DiagnosticDashboardProps> = ({
         </button>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button type="button" onClick={onGoToCodeKit} className="btn-accent">
-            <FileCode style={{ width: 16, height: 16 }} />
-            <span>Ver Kit de Código (Banners & .env)</span>
-          </button>
+          {onGoToCodeKit && (
+            <button type="button" onClick={onGoToCodeKit} className="btn-accent">
+              <FileCode style={{ width: 16, height: 16 }} />
+              <span>Ver Kit de Código (Banners & .env)</span>
+            </button>
+          )}
 
           <button type="button" onClick={onOpenDossier} className="btn-primary">
             <FileCheck style={{ width: 16, height: 16 }} />

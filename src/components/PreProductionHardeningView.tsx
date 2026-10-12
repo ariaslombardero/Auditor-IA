@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import {
   ShieldAlert,
-  FileCheck,
   Search,
-  KeyRound,
   FileSpreadsheet,
   Play,
   RotateCcw,
@@ -50,11 +48,7 @@ import {
   searchNormativeCorpus,
   type RagQueryResult,
 } from '../lib/localRagEngine';
-import {
-  generateCryptographicReceipt,
-  type CryptographicReceipt,
-} from '../lib/signatureService';
-import { generateOfficialDossierMarkdown } from '../lib/officialDossierMd';
+import { appliesEipd, appliesModelTests } from '../lib/stepAvailability';
 
 interface PreProductionHardeningViewProps {
   state: FullAuditState;
@@ -62,7 +56,7 @@ interface PreProductionHardeningViewProps {
   idioma: AppIdioma;
 }
 
-type HardeningTab = 'red_teaming' | 'eipd' | 'prompt_guard' | 'rag' | 'firma';
+type HardeningTab = 'red_teaming' | 'eipd' | 'prompt_guard' | 'rag';
 
 export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProps> = ({
   state,
@@ -70,7 +64,10 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
   idioma,
 }) => {
   const { config, isConfigured } = useApiConfig();
-  const [activeTab, setActiveTab] = useState<HardeningTab>('red_teaming');
+  // Solo se ofrece lo que aplica al caso (UX-03, EIPD-08)
+  const modelTests = appliesModelTests(state.answers);
+  const eipdProcede = appliesEipd(state.answers);
+  const [activeTab, setActiveTab] = useState<HardeningTab>(modelTests ? 'red_teaming' : 'eipd');
 
   // --- 1. Red Teaming State ---
   const [isRunningRedTeaming, setIsRunningRedTeaming] = useState(false);
@@ -187,22 +184,6 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
   const [ragCategory, setRagCategory] = useState<'ALL' | 'AI_ACT' | 'ENS' | 'RGPD' | 'PROCEDIMIENTO_ADM' | 'OMNIBUS'>('ALL');
   const ragResults: RagQueryResult[] = searchNormativeCorpus(ragQuery, ragCategory);
 
-  // --- 5. Firma / SHA-256 State ---
-  const [receipt, setReceipt] = useState<CryptographicReceipt | null>(null);
-  const [copiedHash, setCopiedHash] = useState(false);
-  const [copiedDiligence, setCopiedDiligence] = useState(false);
-
-  const handleComputeHash = async () => {
-    const mdDossier = generateOfficialDossierMarkdown(state, undefined, idioma);
-    const docName = `Expediente_Conformidad_${state.ingest.appName.replace(/\s+/g, '_')}.docx`;
-    const rec = await generateCryptographicReceipt(
-      docName,
-      mdDossier,
-      state.metadata.entityName,
-      state.metadata.functionalResponsible
-    );
-    setReceipt(rec);
-  };
 
   return (
     <div className="animate-fade-in" style={{ width: '100%', paddingBottom: '3rem' }}>
@@ -217,11 +198,12 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
               </span>
             </div>
             <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1e1b4b' }}>
-              Paso 6: Laboratorio de Ensayos Pre-Producción y Gobernanza
+              Pruebas antes de usarla
             </h2>
             <p style={{ fontSize: '0.875rem', color: '#4b5563', marginTop: '0.25rem', maxWidth: 750 }}>
-              Batería interactiva de pruebas de ciberseguridad, red teaming en vivo, borrador de EIPD (AEPD),
-              sanitización de prompts, buscador normativo offline y sellado criptográfico para AutoFirma.
+              {modelTests
+                ? 'Ataques de prueba al modelo, borrador de EIPD, revisión de las instrucciones del modelo y consulta de normas sin conexión.'
+                : 'Se ha declarado que el sistema no usa IA: no se ofrecen las pruebas del modelo. Quedan el borrador de EIPD y la consulta de normas sin conexión.'}
             </p>
           </div>
 
@@ -238,6 +220,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
 
         {/* Tab Selector */}
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', flexWrap: 'wrap' }}>
+          {modelTests && (
           <button
             type="button"
             onClick={() => setActiveTab('red_teaming')}
@@ -257,8 +240,9 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             }}
           >
             <ShieldAlert style={{ width: 15, height: 15 }} />
-            <span>1. Simulador Red Teaming</span>
+            <span>Ataques de prueba al modelo</span>
           </button>
+          )}
 
           <button
             type="button"
@@ -279,9 +263,10 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             }}
           >
             <FileSpreadsheet style={{ width: 15, height: 15 }} />
-            <span>2. Generador EIPD (AEPD)</span>
+            <span>Evaluación de impacto (EIPD)</span>
           </button>
 
+          {modelTests && (
           <button
             type="button"
             onClick={() => setActiveTab('prompt_guard')}
@@ -301,8 +286,9 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             }}
           >
             <Terminal style={{ width: 15, height: 15 }} />
-            <span>3. Inspector Prompt-Guard</span>
+            <span>Revisar instrucciones del modelo</span>
           </button>
+          )}
 
           <button
             type="button"
@@ -323,37 +309,16 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
             }}
           >
             <BookOpen style={{ width: 15, height: 15 }} />
-            <span>4. Consultor RAG Offline</span>
+            <span>Consultar normas sin conexión</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('firma')}
-            className={`btn-tab ${activeTab === 'firma' ? 'active' : ''}`}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.5rem 0.85rem',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              borderRadius: 6,
-              background: activeTab === 'firma' ? '#475569' : '#ffffff',
-              color: activeTab === 'firma' ? '#ffffff' : '#4b5563',
-              border: activeTab === 'firma' ? '1px solid #475569' : '1px solid #cbd5e1',
-              cursor: 'pointer',
-            }}
-          >
-            <KeyRound style={{ width: 15, height: 15 }} />
-            <span>5. Diligencia y AutoFirma</span>
-          </button>
         </div>
       </div>
 
       {/* ========================================================================= */}
       {/* TAB 1: SIMULADOR RED TEAMING                                              */}
       {/* ========================================================================= */}
-      {activeTab === 'red_teaming' && (
+      {activeTab === 'red_teaming' && modelTests && (
         <div className="animate-fade-in" style={{ marginTop: '1.5rem' }}>
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
@@ -676,17 +641,31 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
       {/* ========================================================================= */}
       {/* TAB 2: GENERADOR EIPD (METODOLOGÍA AEPD)                                 */}
       {/* ========================================================================= */}
-      {activeTab === 'eipd' && (
+      {activeTab === 'eipd' && !eipdProcede && (
+        <div className="animate-fade-in" style={{ marginTop: '1.5rem' }}>
+          <div className="card">
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#065f46', marginBottom: '0.5rem' }}>No procede la evaluación de impacto (EIPD)</h3>
+            <p style={{ fontSize: '0.875rem', color: '#334155' }}>
+              Se ha declarado que <strong>{state.ingest.appName || 'el sistema'}</strong> no trata datos personales, así que no hay tratamiento que evaluar (Art. 35 RGPD).
+            </p>
+            <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
+              Antes de darlo por bueno, compruebe que el sistema no recibe direcciones, ubicaciones, direcciones IP ni otros datos que permitan identificar a una persona, aunque no los guarde. Si los recibe, cambie la respuesta en la entrevista y aquí aparecerá el cribado.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'eipd' && eipdProcede && (
         <div className="animate-fade-in" style={{ marginTop: '1.5rem' }}>
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
                 <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#065f46' }}>
-                  Generador de Evaluación de Impacto en Protección de Datos (EIPD / DPIA)
+                  Evaluación de impacto en la protección de datos (EIPD)
                 </h3>
                 <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', maxWidth: 700 }}>
-                  Conforme a la Guía Oficial de la Agencia Española de Protección de Datos (AEPD) y el Art. 35 del RGPD.
-                  Calcula el umbral de preceptividad según los 9 criterios del Comité Europeo de Protección de Datos (WP248).
+                  Borrador para completar por el responsable del tratamiento con el asesoramiento del DPD (Art. 35 RGPD).
+                  El cribado aplica los 9 criterios de las directrices WP248 y los 11 de la lista de la AEPD (Art. 35.4 RGPD).
                 </p>
               </div>
 
@@ -775,7 +754,7 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
       {/* ========================================================================= */}
       {/* TAB 3: INSPECTOR PROMPT-GUARD                                            */}
       {/* ========================================================================= */}
-      {activeTab === 'prompt_guard' && (
+      {activeTab === 'prompt_guard' && modelTests && (
         <div className="animate-fade-in" style={{ marginTop: '1.5rem' }}>
           <div className="card">
             <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#2563eb', marginBottom: '0.35rem' }}>
@@ -1035,126 +1014,6 @@ export const PreProductionHardeningView: React.FC<PreProductionHardeningViewProp
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* TAB 5: DILIGENCIA CRIPTOGRÁFICA Y AUTOFIRMA (@FIRMA)                      */}
-      {/* ========================================================================= */}
-      {activeTab === 'firma' && (
-        <div className="animate-fade-in" style={{ marginTop: '1.5rem' }}>
-          <div className="card">
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-              Sellado Criptográfico SHA-256 y Hoja de Diligencia para AutoFirma (@firma)
-            </h3>
-            <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
-              Calcula la huella digital (SHA-256) del documento generado y prepara las instrucciones para que lo firmen electrónicamente el Responsable del Servicio, el Responsable de Seguridad y el DPD. La huella no es una firma ni un sello de tiempo.
-            </p>
-
-            {!receipt ? (
-              <div style={{ textAlign: 'center', padding: '2.5rem', background: '#f8fafc', borderRadius: 8, border: '1px dashed #cbd5e1' }}>
-                <KeyRound style={{ width: 40, height: 40, color: '#64748b', margin: '0 auto 1rem' }} />
-                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#1e293b' }}>
-                  Generar Huella Digital y Código Seguro de Verificación (CSV)
-                </h4>
-                <p style={{ fontSize: '0.8125rem', color: '#64748b', maxWidth: 500, margin: '0.5rem auto 1.25rem' }}>
-                  Se calculará el hash criptográfico SHA-256 nativo sobre el informe técnico de {state.ingest.appName || 'la aplicación'}.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleComputeHash}
-                  className="btn-primary"
-                  style={{ background: '#334155', borderColor: '#334155', padding: '0.65rem 1.5rem' }}
-                >
-                  <KeyRound style={{ width: 16, height: 16 }} />
-                  <span>Computar Hash SHA-256 y Generar Diligencia</span>
-                </button>
-              </div>
-            ) : (
-              <div className="animate-fade-in">
-                {/* Hash Box */}
-                <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: 8, border: '1px solid #cbd5e1', marginBottom: '1.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>
-                      Huella Digital Matemática (Hash SHA-256):
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(receipt.sha256Hex);
-                        setCopiedHash(true);
-                        setTimeout(() => setCopiedHash(false), 2000);
-                      }}
-                      className="btn-secondary"
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                    >
-                      {copiedHash ? <Check style={{ width: 12, height: 12, color: 'var(--color-success)' }} /> : <Copy style={{ width: 12, height: 12 }} />}
-                      <span>{copiedHash ? 'Copiado' : 'Copiar Hash'}</span>
-                    </button>
-                  </div>
-                  <code style={{ fontSize: '0.875rem', color: '#0f172a', wordBreak: 'break-all', display: 'block', background: '#ffffff', padding: '0.5rem', borderRadius: 4, border: '1px solid #e2e8f0', fontFamily: 'monospace' }}>
-                    {receipt.sha256Hex}
-                  </code>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', marginTop: '0.75rem', fontSize: '0.75rem', color: '#475569' }}>
-                    <div>
-                      <strong>Identificador interno (no es CSV):</strong> <span style={{ fontFamily: 'monospace', color: '#0369a1' }}>{receipt.internalDocumentId}</span>
-                    </div>
-                    <div>
-                      <strong>Fecha de cálculo de la huella:</strong> {receipt.timestampFormatted}
-                    </div>
-                    <div>
-                      <strong>Formato de firma:</strong> {receipt.suggestedSignatureFormat}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Paso a paso de AutoFirma */}
-                <h4 style={{ fontSize: '0.9375rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-                  Instrucciones Operativas para la Firma en la Sede Electrónica / AutoFirma
-                </h4>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.8125rem' }}>
-                  <div style={{ padding: '0.65rem 0.85rem', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6 }}>
-                    <strong>Paso 1:</strong> Descargar el informe en Word (.DOCX) generado en el paso 5 y revisarlo.
-                  </div>
-                  <div style={{ padding: '0.65rem 0.85rem', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6 }}>
-                    <strong>Paso 2:</strong> Abrir el cliente de escritorio oficial <strong>AutoFirma</strong> (Ministerio para la Transformación Digital y de la Función Pública).
-                  </div>
-                  <div style={{ padding: '0.65rem 0.85rem', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6 }}>
-                    <strong>Paso 3:</strong> Seleccionar el archivo y el Certificado Electrónico de Empleado Público (FNMT) o DNIe.
-                  </div>
-                  <div style={{ padding: '0.65rem 0.85rem', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6 }}>
-                    <strong>Paso 4:</strong> Seleccionar el formato de firma cualificada <code>CAdES-BES</code> (para Word) o <code>PAdES-BES</code> (si se convierte a PDF) con sellado de tiempo (TSA).
-                  </div>
-                  <div style={{ padding: '0.65rem 0.85rem', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 6 }}>
-                    <strong>Paso 5:</strong> Incorporar el documento firmado y esta diligencia al Gestor de Expedientes municipal o autonómico.
-                  </div>
-                </div>
-
-                {/* Texto de la Diligencia */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8125rem', fontWeight: 700 }}>Texto propuesto para la diligencia técnica:</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(receipt.diligenceText);
-                      setCopiedDiligence(true);
-                      setTimeout(() => setCopiedDiligence(false), 2000);
-                    }}
-                    className="btn-secondary"
-                    style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                  >
-                    {copiedDiligence ? <Check style={{ width: 12, height: 12, color: 'var(--color-success)' }} /> : <Copy style={{ width: 12, height: 12 }} />}
-                    <span>{copiedDiligence ? 'Copiado' : 'Copiar Diligencia'}</span>
-                  </button>
-                </div>
-
-                <pre style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: 6, border: '1px solid #e2e8f0', fontSize: '0.75rem', whiteSpace: 'pre-wrap', maxHeight: 200, overflowY: 'auto' }}>
-                  {receipt.diligenceText}
-                </pre>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
