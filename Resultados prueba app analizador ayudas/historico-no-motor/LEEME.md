@@ -10,7 +10,7 @@ Por tanto:
 - Algunas de sus afirmaciones contradicen los criterios actuales de la herramienta (claves en el
   cliente como «conforme», medidas «IA-xx» atribuidas a la Guía CCN-STIC 884D, verificación normativa
   «en tiempo real», responsabilidad atribuida «única y exclusivamente» a los funcionarios).
-- Se conservan sin modificar para mantener su procedencia (línea base `48956a6`).
+- Se conservan sin modificar para mantener su procedencia (línea base `fa9a67e`).
 
 En la Fase 4 del plan de saneamiento se regeneraron los resultados ejecutando el motor real (carpeta superior); estos
 ficheros pasaron a esta subcarpeta de histórico.

@@ -1,7 +1,7 @@
 # Alcance del uso habilitado: piloto interno
 
 > Documento de Fase 0 del plan de saneamiento. Define para qué se prepara la herramienta y qué queda fuera.
-> Fecha: 05/10/2026 · Línea base: commit `48956a6` («Línea base v2.0 (estado inicial)»).
+> Fecha: 05/10/2026 · Línea base: commit `fa9a67e` («Línea base v2.0 (estado inicial)»).
 
 ## 1. Uso que se pretende habilitar
 
