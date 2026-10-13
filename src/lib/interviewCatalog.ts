@@ -264,7 +264,7 @@ const BASE_QUESTIONS: InterviewQuestion[] = [
     })
   ),
   tri('auditLogsEnabled', 'H', '¿Se registran las peticiones, respuestas y eventos (registro de actividad)?', siempre),
-  tri('deterministicConfig', 'H', '¿Se fija la configuración del modelo (versión, temperatura) para que los resultados sean reproducibles?', siempre),
+  tri('deterministicConfig', 'H', '¿Se fija la configuración del modelo (versión, temperatura) para que los resultados sean reproducibles?', esIA),
 ];
 
 /** Preguntas en el orden de la entrevista, con su ayuda en lenguaje sencillo. */

@@ -193,7 +193,8 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({ isOpen, onClose,
         </div>
 
         {/* Pestañas */}
-        <div role="tablist" style={{ display: 'flex', borderBottom: '1px solid var(--color-border)', background: '#ffffff', padding: '0 1rem', overflowX: 'auto' }}>
+        {/* Sin barra de desplazamiento: las pestañas pasan a otra línea y la barra no se encoge (flexShrink 0) */}
+        <div role="tablist" style={{ display: 'flex', flexWrap: 'wrap', flexShrink: 0, borderBottom: '1px solid var(--color-border)', background: '#ffffff', padding: '0 1rem' }}>
           {pestanas.map((p) => (
             <button
               key={p.id}
@@ -371,8 +372,8 @@ export const UserGuideModal: React.FC<UserGuideModalProps> = ({ isOpen, onClose,
               <h3 style={titulo}>{tx('¿Necesito un modelo de IA?', 'Preciso un modelo de IA?')}</h3>
               <p style={parrafo}>
                 {tx(
-                  'No. Sin proveedor, todo funciona con el motor de reglas («Modo determinista»). Con un proveedor, el modelo redacta un comentario complementario, que no cambia la clasificación, y ejecuta los ensayos adversarios del paso 6.',
-                  'Non. Sen provedor, todo funciona co motor de regras («Modo determinista»). Cun provedor, o modelo redacta un comentario complementario, que non cambia a clasificación, e executa os ensaios adversarios do paso 6.'
+                  'No. Sin proveedor, todo funciona con el motor de reglas («Modo determinista»). Con un proveedor, el modelo redacta un comentario complementario, que no cambia la clasificación, y ejecuta los ataques de prueba al modelo del laboratorio.',
+                  'Non. Sen provedor, todo funciona co motor de regras («Modo determinista»). Cun provedor, o modelo redacta un comentario complementario, que non cambia a clasificación, e executa os ataques de proba ao modelo do laboratorio.'
                 )}
               </p>
               <Tabla

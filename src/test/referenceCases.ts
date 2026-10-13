@@ -61,6 +61,29 @@ function casoReal(nombre: string): { readmeContent: string; techStack: string } 
   return { readmeContent, techStack };
 }
 
+/**
+ * Datos de operación de las aplicaciones reales confirmados por el autor (13/10/2026): no hay
+ * registro de actividad, no se conoce la categoría ENS y una persona revisa cada resultado.
+ * No se dan por buenos los valores del modelo de prueba (`answeredAnswers`).
+ */
+const OPERACION_CONFIRMADA = {
+  auditLogsEnabled: 'no',
+  logRetentionMonths: 0,
+  ensImpact: { C: 'desconocido', I: 'desconocido', T: 'desconocido', A: 'desconocido', D: 'desconocido' },
+  publicCompetenceNorm: '',
+  humanOversightLevel: 'pre_execution',
+  directHumanIntervention: 'si',
+} as const;
+
+/** Oasis-Madrid: el autor no ha confirmado sus datos de operación; quedan sin contestar. */
+const SIN_DATOS_DE_OPERACION = {
+  auditLogsEnabled: 'desconocido',
+  logRetentionMonths: 0,
+  ensImpact: { C: 'desconocido', I: 'desconocido', T: 'desconocido', A: 'desconocido', D: 'desconocido' },
+  publicCompetenceNorm: '',
+  deterministicConfig: 'desconocido',
+} as const;
+
 export const REFERENCE_CASES: ReferenceCase[] = [
   {
     id: 'no-ia',
@@ -171,17 +194,22 @@ export const REFERENCE_CASES: ReferenceCase[] = [
     titulo: 'Analizador de convocatorias de ayudas y subvenciones (aplicación real)',
     real: { repositorio: 'https://github.com/ariaslombardero/Analizador-de-ayudas-y-subvenciones', commit: 'c672b9a93f75a5e36c5c8ab6910afff901ba9642' },
     fundamento:
-      'Resume convocatorias para el personal técnico de la entidad; no evalúa a personas físicas ni decide. Fuera del Anexo III; genera contenido: transparencia (Art. 50). Se declara ejecución local, pero su documentación cita la API de Gemini: debe señalarse la discrepancia.',
+      'Resume convocatorias para el personal técnico de la entidad; no conversa con nadie, no evalúa a personas físicas, no decide y sus fichas son solo internas. Fuera del Anexo III; genera contenido: transparencia (Art. 50). Se declara ejecución local, pero su documentación cita la API de Gemini: debe señalarse la discrepancia. Respuestas confirmadas por el autor el 13/10/2026.',
     state: () =>
       makeState(
         'Asistente que extrae plazos, requisitos y criterios de convocatorias de ayudas y propone ideas de proyecto para la entidad local.',
         answeredAnswers({
+          ...OPERACION_CONFIRMADA,
           annexIIIArea: 'ninguno',
+          interactsWithPersons: 'no',
+          generatesSyntheticContent: 'si',
+          publishesPublicInterestText: 'no',
           institutionalRole: 'ambos',
           supervisionRole: 'Personal técnico de la unidad de fondos europeos',
-          procedureDescription: 'El personal técnico revisa cada ficha y su cita textual antes de usarla; la aplicación no tramita ni resuelve.',
+          procedureDescription: 'El personal técnico revisa cada ficha antes de usarla; la aplicación no tramita ni resuelve.',
           ratActivityName: '',
           processesPersonalData: 'no',
+          deterministicConfig: 'desconocido',
         }),
         {
           appName: 'Analizador de convocatorias de ayudas y subvenciones',
@@ -190,18 +218,18 @@ export const REFERENCE_CASES: ReferenceCase[] = [
           targetAudience: 'public_employees',
         }
       ),
-    esperado: { clasificacion: 'transparency_risk', alertas: ['Alojamiento declarado y documentación discrepantes'] },
+    esperado: { clasificacion: 'transparency_risk', alertas: ['Alojamiento declarado y documentación discrepantes'], eipd: 'no_indicada' },
   },
   {
     id: 'calculadora-lcsp',
     titulo: 'Calculadora de plazos de la LCSP (aplicación real, sin IA)',
     real: { repositorio: 'https://github.com/ariaslombardero/Calculadora-LCSP-Lugo', commit: '42980eee3dff57d7cf514d9bfa74369917276b03' },
     fundamento:
-      'Calcula vencimientos con reglas fijas (cómputo de días, festivos, prórroga al día hábil siguiente) con date-fns, sin ningún modelo. No infiere sus resultados: no es un sistema de IA (Art. 3.1 RIA). No trata datos personales.',
+      'Calcula vencimientos con reglas fijas (cómputo de días, festivos, prórroga al día hábil siguiente) con date-fns, sin ningún modelo. No infiere sus resultados: no es un sistema de IA (Art. 3.1 RIA). No trata datos personales. Respuestas confirmadas por el autor el 13/10/2026.',
     state: () =>
       makeState(
         'Calculadora de plazos administrativos de la Ley 9/2017 con el calendario de festivos de Lugo y Galicia.',
-        answeredAnswers({ infersOutputs: 'no', processesPersonalData: 'no', ratActivityName: '' }),
+        answeredAnswers({ ...OPERACION_CONFIRMADA, infersOutputs: 'no', processesPersonalData: 'no', ratActivityName: '' }),
         { appName: 'Calculadora de plazos LCSP – Lugo', ...casoReal('calculadora-lcsp'), isAiSystem: false, targetAudience: 'public_employees' }
       ),
     esperado: { clasificacion: 'not_ai_system', eipd: 'no_indicada' },
@@ -211,19 +239,25 @@ export const REFERENCE_CASES: ReferenceCase[] = [
     titulo: 'Monitor de edictos concursales del BOE (aplicación real, sin IA, con datos personales)',
     real: { repositorio: 'https://github.com/ariaslombardero/Monitor-BOE', commit: 'a8fbe06055689f897af8e013b8ff1f5898ffa769' },
     fundamento:
-      'Extrae con reglas fijas (scraping) los edictos concursales del Tablón Edictal Judicial Único del BOE: no es un sistema de IA (Art. 3.1 RIA). Pero recoge el nombre y el DNI o NIE de deudores que pueden ser personas físicas: son datos de solvencia (lista de la AEPD, criterio 4), y que procedan de una fuente pública no los excluye del RGPD. La necesidad de EIPD queda por determinar hasta valorar si el tratamiento es a gran escala o supone una observación sistemática.',
+      'Extrae con reglas fijas (scraping) los edictos concursales del Tablón Edictal Judicial Único del BOE: no es un sistema de IA (Art. 3.1 RIA). Lo usa la recaudación ejecutiva de tributos que los ayuntamientos han delegado en la Diputación: el personal consulta los edictos de Galicia o de toda España del periodo que elige y cruza los deudores con la base de datos provincial. Recoge el nombre y el DNI o NIE de deudores que pueden ser personas físicas: son datos de solvencia (lista de la AEPD, criterio 4), y que procedan de una fuente pública no los excluye del RGPD. El cruce con la base de datos provincial es una combinación de registros de distintos tratamientos (criterio 8). Con dos criterios, la EIPD es necesaria en la mayoría de los casos. No hay procedimiento de brechas, ni base jurídica identificada, ni actividad en el RAT: el informe lo señala como pendiente o incumplido. Si es a gran escala o una observación sistemática lo valora el DPD. Respuestas confirmadas por el autor el 13/10/2026.',
     state: () =>
       makeState(
-        'Monitor que descarga cada día los edictos concursales del BOE y extrae deudor, NIF, número de concurso y fecha del auto.',
+        'Monitor que descarga los edictos concursales del BOE del periodo elegido y extrae deudor, NIF, número de concurso y fecha del auto, para la recaudación ejecutiva delegada por los ayuntamientos.',
         answeredAnswers({
+          ...OPERACION_CONFIRMADA,
           infersOutputs: 'no',
+          producesAdministrativeActs: 'si',
+          directHumanIntervention: 'si',
+          supervisionRole: 'Personal de recaudación de la Diputación',
+          procedureDescription: 'El personal de recaudación consulta los edictos del periodo elegido y cruza los deudores con la base de datos provincial; ninguna actuación se produce sin su intervención.',
           processesPersonalData: 'si',
           legalBasis: 'desconocida',
           processesSolvencyData: 'si',
+          datasetCombination: 'si',
           largeScale: 'desconocido',
           systematicMonitoring: 'desconocido',
-          breachProcedure: 'desconocido',
-          hostingModel: 'desconocido',
+          breachProcedure: 'no',
+          hostingModel: 'local_on_premise',
           ratActivityName: '',
         }),
         {
@@ -234,18 +268,19 @@ export const REFERENCE_CASES: ReferenceCase[] = [
           targetAudience: 'public_employees',
         }
       ),
-    esperado: { clasificacion: 'not_ai_system', eipd: 'por_determinar' },
+    esperado: { clasificacion: 'not_ai_system', eipd: 'necesaria' },
   },
   {
     id: 'notas-de-prensa',
     titulo: 'Asistente de notas de prensa (aplicación real, con IA)',
     real: { repositorio: 'https://github.com/ariaslombardero/Asistente-notas-de-prensa', commit: 'c57534300ec40ff35ccdb803e42610bc0a3cb4a1' },
     fundamento:
-      'Genera borradores de notas de prensa y publicaciones para redes sociales a partir de actas y resoluciones; el gabinete de comunicación los revisa antes de publicarlos. Fuera del Anexo III; genera contenido: transparencia (Art. 50). En la Diputación se ejecuta con modelos locales, pero la versión publicada usa la API de Gemini: debe señalarse la discrepancia y comprobar qué proveedor procesa los datos reales. Como el gabinete revisa y aprueba cada texto antes de publicarlo, no es obligatorio divulgar que se generó con IA (Art. 50.4, párrafo segundo), siempre que pueda acreditarse ese control editorial.',
+      'Genera borradores de notas de prensa y publicaciones para redes sociales a partir de actas y resoluciones; el gabinete de comunicación los revisa antes de publicarlos. Fuera del Anexo III; genera contenido: transparencia (Art. 50). En la Diputación se ejecuta con modelos locales, pero la versión publicada usa la API de Gemini: debe señalarse la discrepancia y comprobar qué proveedor procesa los datos reales. Como el gabinete revisa y aprueba cada texto antes de publicarlo, no es obligatorio divulgar que se generó con IA (Art. 50.4, párrafo segundo), siempre que pueda acreditarse ese control editorial. Las actas pueden contener datos personales y, quizá, de salud o de solvencia: la EIPD queda por determinar. Respuestas confirmadas por el autor el 13/10/2026.',
     state: () =>
       makeState(
         'Asistente que redacta borradores de notas de prensa y publicaciones para redes sociales a partir de actas, resoluciones e informes.',
         answeredAnswers({
+          ...OPERACION_CONFIRMADA,
           interactsWithPersons: 'no',
           generatesSyntheticContent: 'si',
           publishesPublicInterestText: 'si',
@@ -254,13 +289,18 @@ export const REFERENCE_CASES: ReferenceCase[] = [
           supervisionRole: 'Personal del gabinete de comunicación',
           procedureDescription: 'El gabinete revisa y corrige cada borrador antes de publicarlo; la aplicación no publica nada por sí misma.',
           processesPersonalData: 'si',
+          legalBasis: 'desconocida',
+          processesSpecialCategoryData: 'desconocido',
+          processesCriminalData: 'no',
+          processesSolvencyData: 'desconocido',
           ratActivityName: '',
           hostingModel: 'local_on_premise',
-          breachProcedure: 'desconocido',
+          breachProcedure: 'no',
+          deterministicConfig: 'desconocido',
         }),
         { appName: 'Asistente de notas de prensa', ...casoReal('notas-de-prensa'), isAiSystem: true, targetAudience: 'public_employees' }
       ),
-    esperado: { clasificacion: 'transparency_risk', alertas: ['Alojamiento declarado y documentación discrepantes'] },
+    esperado: { clasificacion: 'transparency_risk', alertas: ['Alojamiento declarado y documentación discrepantes'], eipd: 'por_determinar' },
   },
   {
     id: 'oasis-madrid',
@@ -272,6 +312,7 @@ export const REFERENCE_CASES: ReferenceCase[] = [
       makeState(
         'Navegador de confort térmico y rutas saludables que combina datos abiertos del Ayuntamiento de Madrid.',
         answeredAnswers({
+          ...SIN_DATOS_DE_OPERACION,
           infersOutputs: 'no',
           producesAdministrativeActs: 'no',
           humanOversightLevel: 'fully_automated',

@@ -14,6 +14,13 @@
 
 <br/>
 
+<div align="center">
+  <img src="docs/assets/captura-portada.png" width="49%" alt="Portada de Auditor IA: ingesta de la aplicación que se va a auditar" />
+  <img src="docs/assets/captura-diagnostico.png" width="49%" alt="Informe técnico preliminar generado por Auditor IA" />
+</div>
+
+<br/>
+
 [🎯 Qué es](#-qué-es-auditor-ia) · [📌 Características](#-características) · [🏗️ Arquitectura](#️-arquitectura) · [🌍 Soporte multiidioma](#-soporte-multiidioma) · [⚡ Instalación y puesta en marcha](#-instalación-y-puesta-en-marcha) · [📚 Documentación](#-documentación)
 
 </div>

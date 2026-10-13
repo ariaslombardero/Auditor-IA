@@ -116,7 +116,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
               Informe técnico preliminar
             </h2>
             <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-              Documento formal exhaustivo con citas legales, delimitación del Anexo III, análisis ENS y diligencias de firma para el órgano colegiado y el DPD.
+              Borrador con la clasificación y su traza, los requisitos, la categoría ENS y espacio para la revisión y la firma de los responsables. No es un acto administrativo.
             </p>
           </div>
 
@@ -169,7 +169,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
               title="Descargar JSON Maestro con toda la auditoría para cuadros de mandos y observatorios de IA"
             >
               <Database style={{ width: 15, height: 15, color: '#0284c7' }} />
-              <span>JSON Dashboard</span>
+              <span>Manifiesto (.json)</span>
             </button>
           </div>
         </div>
@@ -179,7 +179,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
       <div className="card">
         <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Building style={{ width: 18, height: 18, color: 'var(--color-primary)' }} />
-          Datos Institucionales y Diligencias de Firma
+          Datos de la entidad y de quienes revisan y firman
         </h3>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
@@ -317,7 +317,7 @@ export const OfficialDossierView: React.FC<OfficialDossierViewProps> = ({
               }}
             >
               <Sparkles style={{ width: 16, height: 16 }} />
-              <span>Continuar al laboratorio de pruebas (paso 6)</span>
+              <span>Continuar al laboratorio de pruebas</span>
             </button>
           )}
         </div>

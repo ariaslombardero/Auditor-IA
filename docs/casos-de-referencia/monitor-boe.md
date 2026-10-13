@@ -35,9 +35,12 @@
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Monitor BOE — Edictos concursales": según lo declarado, el sistema se clasifica como EXCLUIDO DEL RIA (No es un sistema de IA - Art. 3.1 RIA), según lo declarado. Faltan 5 respuestas de la entrevista. Quedan 9 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
+Diagnóstico preliminar para "Monitor BOE — Edictos concursales": según lo declarado, el sistema se clasifica como EXCLUIDO DEL RIA (No es un sistema de IA - Art. 3.1 RIA), según lo declarado. Faltan 8 respuestas de la entrevista. Quedan 9 requisitos por validar (los acredita una persona con evidencia). Categoría ENS orientativa: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
 
-**FALTAN RESPUESTAS Y VALIDACIÓN HUMANA.** Quedan 5 respuestas pendientes en la entrevista. 9 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
+**NO APTO SIN SUBSANACIÓN.** Constan 1 incumplimiento que deben corregirse.
+
+### Alertas para la revisión
+- Inexistencia de Registro de Trazabilidad: impide auditar sesgos, verificar respuestas erróneas o atender reclamaciones y requerimientos ([op.exp.8] ENS).
 
 ### Recomendaciones
 - Según lo declarado, el software queda fuera del RIA (Art. 3.1). Contrastar esa declaración con las capacidades reales del sistema y centrar el expediente en el ENS (RD 311/2022) y en la Ley 40/2015.
@@ -48,7 +51,7 @@ Diagnóstico preliminar para "Monitor BOE — Edictos concursales": según lo de
 ## 2. IDENTIFICACIÓN Y ARQUITECTURA TÉCNICA
 
 - **Denominación:** Monitor BOE — Edictos concursales
-- **Objeto funcional:** Monitor que descarga cada día los edictos concursales del BOE y extrae deudor, NIF, número de concurso y fecha del auto.
+- **Objeto funcional:** Monitor que descarga los edictos concursales del BOE del periodo elegido y extrae deudor, NIF, número de concurso y fecha del auto, para la recaudación ejecutiva delegada por los ayuntamientos.
 - **Destinatarios principales:** public_employees
 - **Pila tecnológica declarada:** Python, Streamlit, BeautifulSoup4, lxml, Requests, Pandas, openpyxl
 - **Documentación aportada:** README.md (documentación funcional y de usuario).
@@ -99,7 +102,7 @@ Diagnóstico preliminar para "Monitor BOE — Edictos concursales": según lo de
 ## 5. SUPERVISIÓN HUMANA Y MARCO ESTATAL DE GOBERNANZA
 
 - **Supervisión humana (declarada):** previa; los resultados se presentan como borradores que revisa un empleado público antes de producir efectos. No se ha verificado el funcionamiento real del procedimiento.
-- **Rol del supervisor (declarado):** Técnico de la unidad tramitadora
+- **Rol del supervisor (declarado):** Personal de recaudación de la Diputación
 - **Deslinde con la actuación administrativa automatizada (Ley 40/2015, Art. 41):**
   El promotor declara que un empleado público interviene de forma directa en cada actuación, por lo que no habría actuación administrativa automatizada. Esta afirmación no se ha verificado y debe contrastarse con el funcionamiento real del procedimiento.
 - **Responsabilidad patrimonial:**
@@ -112,12 +115,12 @@ Diagnóstico preliminar para "Monitor BOE — Edictos concursales": según lo de
 ## 6. MEDIDAS DE SEGURIDAD (ENS, RD 311/2022)
 
 - **Categoría ENS orientativa:** **BASICA**
-- **Fundamentación:** Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.
+- **Fundamentación:** Categoría orientativa: no se ha valorado ninguna dimensión de seguridad. Se estima a partir de otras respuestas y debe sustituirse por la valoración del Anexo I del RD 311/2022.
 
 ### 6.1. Medidas del Anexo II relacionadas con el uso de servicios de IA
-1. **Arts. 40 y 41; Anexo I** — DECLARADO (sin verificar): Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.
+1. **Arts. 40 y 41; Anexo I** — PENDIENTE: Categoría orientativa: no se ha valorado ninguna dimensión de seguridad. Se estima a partir de otras respuestas y debe sustituirse por la valoración del Anexo I del RD 311/2022.
 2. **[op.acc.5] y [op.acc.6] mecanismos de autenticación; [mp.sw.1] desarrollo de aplicaciones** — NO VERIFICADO: Las credenciales deben estar bajo control exclusivo y no exponerse en código cliente ni en repositorios. Esta evaluación no ha examinado el código del sistema auditado.
-3. **[op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo)** — DECLARADO (sin verificar): Declarado registro de actividad con conservación de 24 meses. No se ha comprobado su existencia ni su contenido.
+3. **[op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo)** — PENDIENTE: Declarado que no existe registro de actividad.
 
 ---
 
@@ -142,16 +145,16 @@ Declarado: el sistema interactúa con personas o genera contenido. La herramient
 ### Supervisión humana de los resultados — **DECLARADO (sin verificar)**
 *Reglamento (UE) 2024/1689; RGPD; Ley 40/2015 · Art. 14 RIA (alto riesgo); Art. 22 RGPD; Art. 41 Ley 40/2015 · Declaración del promotor*
 
-Declarada revisión humana previa por: Técnico de la unidad tramitadora. No se ha comprobado el funcionamiento real del procedimiento.
+Declarada revisión humana previa por: Personal de recaudación de la Diputación. No se ha comprobado el funcionamiento real del procedimiento.
 
 **Acción:** Documentar quién revisa, en qué momento y con qué capacidad de modificar o descartar el resultado.
 
-### Categorización del sistema según el impacto en cada dimensión — **DECLARADO (sin verificar)**
+### Categorización del sistema según el impacto en cada dimensión — **PENDIENTE**
 *ENS (RD 311/2022) · Arts. 40 y 41; Anexo I · Declaración del promotor*
 
-Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.
+Categoría orientativa: no se ha valorado ninguna dimensión de seguridad. Se estima a partir de otras respuestas y debe sustituirse por la valoración del Anexo I del RD 311/2022.
 
-**Acción:** El responsable de seguridad debe confirmar la valoración de las dimensiones.
+**Acción:** Valorar el nivel (bajo, medio o alto) de cada dimensión de seguridad afectada.
 
 ### Protección de las credenciales de acceso a servicios de IA — **NO VERIFICADO**
 *ENS (RD 311/2022), Anexo II · [op.acc.5] y [op.acc.6] mecanismos de autenticación; [mp.sw.1] desarrollo de aplicaciones · Comprobación automática*
@@ -160,12 +163,12 @@ Las credenciales deben estar bajo control exclusivo y no exponerse en código cl
 
 **Acción:** Revisar el código y la configuración del sistema auditado; trasladar las claves a un servidor o usar modelos locales.
 
-### Registro de la actividad y trazabilidad — **DECLARADO (sin verificar)**
+### Registro de la actividad y trazabilidad — **PENDIENTE**
 *ENS (RD 311/2022), Anexo II; Reglamento (UE) 2024/1689 · [op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo) · Declaración del promotor*
 
-Declarado registro de actividad con conservación de 24 meses. No se ha comprobado su existencia ni su contenido.
+Declarado que no existe registro de actividad.
 
-**Acción:** Aportar evidencia del registro (usuario, fecha y hora, objeto, tipo y resultado del evento) y de su política de conservación.
+**Acción:** Activar el registro de peticiones y respuestas con conservación definida en la documentación de seguridad.
 
 ### Base jurídica del tratamiento — **PENDIENTE**
 *RGPD (UE 2016/679) · Art. 6.1 · Declaración del promotor*
@@ -184,21 +187,21 @@ No se ha indicado la actividad de tratamiento.
 ### Evaluación de impacto en la protección de datos — **PENDIENTE**
 *RGPD (UE 2016/679) · Art. 35; lista de la AEPD (Art. 35.4) · Comprobación automática*
 
-Cribado preliminar: hay criterios sin contestar que podrían alcanzar el umbral de dos.
+Cribado preliminar: concurren dos o más criterios de WP248 o de la lista de la AEPD; en la mayoría de los casos será necesaria una EIPD.
 
 **Acción:** Completar el borrador de EIPD con el asesoramiento del DPD.
 
-### Gestión y notificación de brechas de datos personales — **PENDIENTE**
+### Gestión y notificación de brechas de datos personales — **INCUMPLE**
 *RGPD (UE 2016/679) · Arts. 33 y 34 · Declaración del promotor*
 
-No consta si existe un procedimiento para gestionar brechas de datos personales.
+Declarado que no existe un procedimiento para gestionar brechas de datos personales.
 
 **Acción:** Prever cómo se detecta y documenta cualquier brecha (Art. 33.5) y quién la notifica a la AEPD sin dilación indebida y, de ser posible, en 72 horas (Art. 33.1), y a los interesados si entraña un alto riesgo (Art. 34). La AEPD ofrece las herramientas Asesora Brecha (notificación) y Comunica-Brecha RGPD (comunicación a los interesados).
 
 ### Actuación administrativa automatizada — **No aplica**
 *Ley 40/2015 · Art. 41 · Declaración del promotor*
 
-Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El técnico revisa y corrige cada borrador antes de incorporarlo al expediente.. No se ha verificado.
+Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El personal de recaudación consulta los edictos del periodo elegido y cruza los deudores con la base de datos provincial; ninguna actuación se produce sin su intervención.. No se ha verificado.
 
 **Acción:** Describir el procedimiento real: quién interviene, en qué momento y con qué capacidad de decisión.
 
@@ -211,12 +214,12 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 
 ### 7.1. Datos declarados en materia de protección de datos
-- **Norma competencial declarada:** *Ley 39/2015*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
+- **Norma competencial declarada:** *No indicada*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
 - **Tratamiento de datos personales (declarado):** sí.
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *No indicada*.
 - **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
 - **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.
-- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** no consta. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
+- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** declarado que NO existe. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
 - **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** declarado que SÍ se tratan.
 
 
@@ -228,8 +231,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.2.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** 7aed8b3fafe672d95d86f4dd68cda031438b884eb76f061b66318d5726da6ad0 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-12T23:22:51.090Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** 386c2cd41484674a4cfa831ef5cb4a02211fc7afcc612a090841cc10949d8253 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-13T06:20:23.045Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

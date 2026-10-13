@@ -35,9 +35,12 @@
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Calculadora de plazos LCSP – Lugo": según lo declarado, el sistema se clasifica como EXCLUIDO DEL RIA (No es un sistema de IA - Art. 3.1 RIA), según lo declarado. Quedan 5 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
+Diagnóstico preliminar para "Calculadora de plazos LCSP – Lugo": según lo declarado, el sistema se clasifica como EXCLUIDO DEL RIA (No es un sistema de IA - Art. 3.1 RIA), según lo declarado. Faltan 5 respuestas de la entrevista. Quedan 5 requisitos por validar (los acredita una persona con evidencia). Categoría ENS orientativa: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
 
-**PENDIENTE DE VALIDACIÓN HUMANA.** 5 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
+**FALTAN RESPUESTAS Y VALIDACIÓN HUMANA.** Quedan 5 respuestas pendientes en la entrevista. 5 requisitos por validar: contestar la entrevista no los acredita; los acredita una persona registrando la validación con su evidencia. Las conclusiones se basan en lo declarado y deben validarlas el órgano competente, el Responsable de Seguridad y el DPD.
+
+### Alertas para la revisión
+- Inexistencia de Registro de Trazabilidad: impide auditar sesgos, verificar respuestas erróneas o atender reclamaciones y requerimientos ([op.exp.8] ENS).
 
 ### Recomendaciones
 - Según lo declarado, el software queda fuera del RIA (Art. 3.1). Contrastar esa declaración con las capacidades reales del sistema y centrar el expediente en el ENS (RD 311/2022) y en la Ley 40/2015.
@@ -112,12 +115,12 @@ Diagnóstico preliminar para "Calculadora de plazos LCSP – Lugo": según lo de
 ## 6. MEDIDAS DE SEGURIDAD (ENS, RD 311/2022)
 
 - **Categoría ENS orientativa:** **BASICA**
-- **Fundamentación:** Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.
+- **Fundamentación:** Categoría orientativa: no se ha valorado ninguna dimensión de seguridad. Se estima a partir de otras respuestas y debe sustituirse por la valoración del Anexo I del RD 311/2022.
 
 ### 6.1. Medidas del Anexo II relacionadas con el uso de servicios de IA
-1. **Arts. 40 y 41; Anexo I** — DECLARADO (sin verificar): Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.
+1. **Arts. 40 y 41; Anexo I** — PENDIENTE: Categoría orientativa: no se ha valorado ninguna dimensión de seguridad. Se estima a partir de otras respuestas y debe sustituirse por la valoración del Anexo I del RD 311/2022.
 2. **[op.acc.5] y [op.acc.6] mecanismos de autenticación; [mp.sw.1] desarrollo de aplicaciones** — NO VERIFICADO: Las credenciales deben estar bajo control exclusivo y no exponerse en código cliente ni en repositorios. Esta evaluación no ha examinado el código del sistema auditado.
-3. **[op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo)** — DECLARADO (sin verificar): Declarado registro de actividad con conservación de 24 meses. No se ha comprobado su existencia ni su contenido.
+3. **[op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo)** — PENDIENTE: Declarado que no existe registro de actividad.
 
 ---
 
@@ -146,12 +149,12 @@ Declarada revisión humana previa por: Técnico de la unidad tramitadora. No se 
 
 **Acción:** Documentar quién revisa, en qué momento y con qué capacidad de modificar o descartar el resultado.
 
-### Categorización del sistema según el impacto en cada dimensión — **DECLARADO (sin verificar)**
+### Categorización del sistema según el impacto en cada dimensión — **PENDIENTE**
 *ENS (RD 311/2022) · Arts. 40 y 41; Anexo I · Declaración del promotor*
 
-Categoría según el nivel más alto de las dimensiones valoradas (C: bajo, I: bajo, T: bajo, A: bajo, D: bajo), conforme al Anexo I del RD 311/2022.
+Categoría orientativa: no se ha valorado ninguna dimensión de seguridad. Se estima a partir de otras respuestas y debe sustituirse por la valoración del Anexo I del RD 311/2022.
 
-**Acción:** El responsable de seguridad debe confirmar la valoración de las dimensiones.
+**Acción:** Valorar el nivel (bajo, medio o alto) de cada dimensión de seguridad afectada.
 
 ### Protección de las credenciales de acceso a servicios de IA — **NO VERIFICADO**
 *ENS (RD 311/2022), Anexo II · [op.acc.5] y [op.acc.6] mecanismos de autenticación; [mp.sw.1] desarrollo de aplicaciones · Comprobación automática*
@@ -160,12 +163,12 @@ Las credenciales deben estar bajo control exclusivo y no exponerse en código cl
 
 **Acción:** Revisar el código y la configuración del sistema auditado; trasladar las claves a un servidor o usar modelos locales.
 
-### Registro de la actividad y trazabilidad — **DECLARADO (sin verificar)**
+### Registro de la actividad y trazabilidad — **PENDIENTE**
 *ENS (RD 311/2022), Anexo II; Reglamento (UE) 2024/1689 · [op.exp.8] Registro de la actividad; Art. 12 RIA (alto riesgo) · Declaración del promotor*
 
-Declarado registro de actividad con conservación de 24 meses. No se ha comprobado su existencia ni su contenido.
+Declarado que no existe registro de actividad.
 
-**Acción:** Aportar evidencia del registro (usuario, fecha y hora, objeto, tipo y resultado del evento) y de su política de conservación.
+**Acción:** Activar el registro de peticiones y respuestas con conservación definida en la documentación de seguridad.
 
 ### Base jurídica del tratamiento — **No aplica**
 *RGPD (UE 2016/679) · Art. 6.1 · Declaración del promotor*
@@ -211,7 +214,7 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 
 ### 7.1. Datos declarados en materia de protección de datos
-- **Norma competencial declarada:** *Ley 39/2015*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
+- **Norma competencial declarada:** *No indicada*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
 - **Tratamiento de datos personales (declarado):** no.
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *No indicada*.
 - **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
@@ -228,8 +231,8 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
 - **Versión del motor:** 2.2.0
-- **Huella SHA-256 de las entradas (ingesta y entrevista):** f1844d807e7096fb7466e0d5c7dde76bb3df49523dd0f99dee8d6e0c5b156c45 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-12T23:22:51.084Z
+- **Huella SHA-256 de las entradas (ingesta y entrevista):** 27c16c90d1f0438a33afeaafe6cb057dc0f90149bd31f72474f0f0ca822822b7 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
+- **Fecha de generación:** 2026-10-13T06:20:23.040Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

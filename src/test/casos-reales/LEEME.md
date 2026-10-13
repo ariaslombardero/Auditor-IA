@@ -12,4 +12,4 @@ Copias de la documentación pública de aplicaciones reales del autor: cuatro de
 
 Copias descargadas el 08/10/2026 (Oasis-Madrid, el 13/10/2026). Contienen solo la documentación pública de cada repositorio; ninguna incluye datos personales ni credenciales.
 
-**Las respuestas de la entrevista de estos casos son un borrador.** Se han deducido de la documentación pública y debe confirmarlas el autor de cada aplicación. Hasta entonces, el resultado de cada caso indica lo que el motor concluye *con esas respuestas*, no una calificación de la aplicación.
+**Respuestas de la entrevista.** En las cuatro aplicaciones de la Diputación las confirmó su autor el 13/10/2026; lo que no sabía (gran escala, observación sistemática, base jurídica, categoría ENS) queda en «no lo sé» y debe valorarlo el DPD o el Responsable de Seguridad. En Oasis-Madrid son un borrador deducido de su documentación. En todos los casos, el resultado indica lo que el motor concluye *con esas respuestas*: no es una calificación definitiva de la aplicación.
