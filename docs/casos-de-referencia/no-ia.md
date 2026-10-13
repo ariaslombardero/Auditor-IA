@@ -13,7 +13,7 @@
 - Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)
 
 > **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**
-> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
+> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.1) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
 
 ---
 
@@ -64,16 +64,16 @@ Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema 
 
 | Práctica (Art. 5 RIA) | Estado | Hechos |
 | :--- | :---: | :--- |
-| **Manipulación subliminal o engañosa que cause perjuicio** (Art. 5.1.a RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
-| **Explotación de vulnerabilidades por edad, discapacidad o situación socioeconómica** (Art. 5.1.b RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
-| **Generación o manipulación de imágenes, vídeos o audios íntimos realistas de personas identificables sin su consentimiento** (Art. 5.1.b bis RIA (Reglamento (UE) 2026/1744)) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio. |
-| **Generación o manipulación de material de abuso sexual infantil (Directiva 2011/93/UE)** (Art. 5.1.b ter RIA (Reglamento (UE) 2026/1744)) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio. |
-| **Puntuación social o clasificación ciudadana general por las autoridades** (Art. 5.1.c RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
-| **Evaluación del riesgo penal de personas individuales sin hechos constatables** (Art. 5.1.d RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
-| **Creación indiscriminada de bases de reconocimiento facial mediante raspado de internet o CCTV** (Art. 5.1.e RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
-| **Inferencia de emociones en el lugar de trabajo o instituciones educativas** (Art. 5.1.f RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
-| **Categorización biométrica para deducir raza, opiniones políticas, creencias religiosas u orientación sexual** (Art. 5.1.g RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
-| **Identificación biométrica remota en tiempo real en espacios de acceso público con fines de garantía del cumplimiento del Derecho** (Art. 5.1.h RIA) | DECLARADO (sin verificar) | Declarado por el promotor que no concurre. Exigible desde el 2/2/2025. |
+| **Manipulación subliminal o engañosa que cause perjuicio** (Art. 5.1.a RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
+| **Explotación de vulnerabilidades por edad, discapacidad o situación socioeconómica** (Art. 5.1.b RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
+| **Generación o manipulación de imágenes, vídeos o audios íntimos realistas de personas identificables sin su consentimiento** (Art. 5.1.b bis RIA (Reglamento (UE) 2026/1744)) | PENDIENTE | No consta respuesta. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio. |
+| **Generación o manipulación de material de abuso sexual infantil (Directiva 2011/93/UE)** (Art. 5.1.b ter RIA (Reglamento (UE) 2026/1744)) | PENDIENTE | No consta respuesta. Aún no exigible: lo será desde el 2/12/2026. Conviene prepararla antes de la puesta en servicio. |
+| **Puntuación social o clasificación ciudadana general por las autoridades** (Art. 5.1.c RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
+| **Evaluación del riesgo penal de personas individuales sin hechos constatables** (Art. 5.1.d RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
+| **Creación indiscriminada de bases de reconocimiento facial mediante raspado de internet o CCTV** (Art. 5.1.e RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
+| **Inferencia de emociones en el lugar de trabajo o instituciones educativas** (Art. 5.1.f RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
+| **Categorización biométrica para deducir raza, opiniones políticas, creencias religiosas u orientación sexual** (Art. 5.1.g RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
+| **Identificación biométrica remota en tiempo real en espacios de acceso público con fines de garantía del cumplimiento del Derecho** (Art. 5.1.h RIA) | PENDIENTE | No consta respuesta. Exigible desde el 2/2/2025. |
 
 ---
 
@@ -133,11 +133,11 @@ Proveedores y responsables del despliegue deben adoptar medidas para apoyar la a
 **Acción:** Documentar la formación o las medidas adoptadas para el personal que usa el sistema.
 
 ### Transparencia hacia las personas (interacción con IA y contenido sintético) — **No aplica**
-*Reglamento (UE) 2024/1689 · Art. 50 · Declaración del promotor · Exigible desde 2/8/2026*
+*Reglamento (UE) 2024/1689 · Art. 50 · Declaración del promotor*
 
-Declarado: el sistema interactúa con personas o genera contenido. La herramienta no comprueba que la información de transparencia esté implantada. Exigible desde el 2/8/2026.
+Declarado que el sistema no es un sistema de IA (Art. 3.1 RIA): el Art. 50 no se aplica.
 
-**Acción:** Informar a las personas de que interactúan con un sistema de IA (Art. 50.1). Marcar el contenido generado en un formato legible por máquina (Art. 50.2). Corresponde al proveedor del sistema, salvo que solo apoye la edición estándar o no altere sustancialmente los datos de entrada. Conservar evidencia de lo implantado.
+**Acción:** Revisar la declaración si el sistema llega a usar inteligencia artificial.
 
 ### Supervisión humana de los resultados — **DECLARADO (sin verificar)**
 *Reglamento (UE) 2024/1689; RGPD; Ley 40/2015 · Art. 14 RIA (alto riesgo); Art. 22 RGPD; Art. 41 Ley 40/2015 · Declaración del promotor*
@@ -198,7 +198,7 @@ Declarado que no se tratan datos personales.
 ### Actuación administrativa automatizada — **No aplica**
 *Ley 40/2015 · Art. 41 · Declaración del promotor*
 
-Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El técnico revisa y corrige cada borrador antes de incorporarlo al expediente.. No se ha verificado.
+Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El técnico revisa y corrige cada borrador antes de incorporarlo al expediente. No se ha verificado.
 
 **Acción:** Describir el procedimiento real: quién interviene, en qué momento y con qué capacidad de decisión.
 
@@ -214,10 +214,10 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 - **Norma competencial declarada:** *Ley 39/2015*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
 - **Tratamiento de datos personales (declarado):** no.
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *Apoyo a la gestión documental*.
-- **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
-- **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.
-- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** declarado que SÍ existe. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
-- **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** declarado que NO se tratan.
+- **Categorías especiales de datos (Art. 9 RGPD):** no consta.
+- **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** no consta.
+- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** no consta. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
+- **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** no consta.
 
 
 
@@ -227,9 +227,9 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
-- **Versión del motor:** 2.2.0
+- **Versión del motor:** 2.2.1
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 7de164b3863046d14b83470bafe227a4116bea98a7e270f6a2c67f601f8f033a (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-13T06:20:22.767Z
+- **Fecha de generación:** 2026-10-13T14:42:43.138Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

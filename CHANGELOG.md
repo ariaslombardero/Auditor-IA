@@ -2,6 +2,15 @@
 
 Cada versión indica la del motor de clasificación (`ENGINE_VERSION`), que figura en todos los informes. El detalle de cada corrección, con su prueba, está en la [matriz de hallazgos](docs/auditoria/matriz-hallazgos.md).
 
+## 2.2.1 · 13/10/2026 · Coherencia de los informes
+
+- **Las preguntas ocultas no cuentan (DOC-17).** Cuando una pregunta no aplica al caso (por ejemplo, las del Reglamento de IA en un sistema sin IA, o la del empleado público si el sistema no produce actos administrativos), su respuesta se trata como no contestada en el motor y en los tres documentos. Así ningún informe dice a la vez «no aplica» y «declarado que el sistema interactúa con personas».
+- **Art. 41 coherente en todo el informe.** El resumen y el párrafo de deslinde dicen lo mismo que el requisito: «no produce actos administrativos», «actuación automatizada», «interviene un empleado público» o «no consta».
+- **Art. 50 en sistemas sin IA:** el requisito explica que no se aplica porque el sistema no es de IA.
+- Sin puntos dobles al encadenar textos. La Calculadora LCSP tiene su propia descripción del procedimiento.
+- Una prueba recorre los 15 casos de referencia y falla si un informe se contradice.
+- README: el código se ha programado con asistentes de IA (Claude Code) bajo la dirección y la revisión del autor.
+
 ## 2.2.0 · 10/10/2026 · Casos reales y protección de datos
 
 - **Casos de aplicaciones reales.** Se añaden tres aplicaciones de la Diputación de Lugo como casos de referencia (Calculadora LCSP, Monitor BOE y Asistente de notas de prensa), y el analizador de ayudas pasa a usar su README real. Su documentación se guarda con el commit de cada repositorio. Las respuestas de la entrevista las confirma el autor.

@@ -107,7 +107,7 @@ La aplicación trabaja en los dos idiomas oficiales de la comunidad autónoma de
 
 ## 🤖 Desarrollo asistido por IA (Vibe Coding)
 
-Este proyecto ha sido desarrollado mediante **AI-Driven Development**, orquestando modelos avanzados de lenguaje para la arquitectura, la lógica y el diseño, con controles de calidad propios:
+Este proyecto ha sido desarrollado mediante **AI-Driven Development**, orquestando modelos avanzados de lenguaje para la arquitectura, la lógica y el diseño. El código se ha programado con asistentes de IA (Claude Code, de Anthropic), bajo la dirección y la revisión del autor, que decide cada cambio. Controles de calidad propios:
 
 1. **Revisiones independientes con IA:** la versión de partida la revisaron dos modelos de IA, Claude Opus 5.5 y GPT Sol 6.1. Sus hallazgos se contrastaron con fuentes oficiales, nunca con el criterio de un modelo.
 2. **Matriz de hallazgos:** cada fallo detectado tiene su prueba automática y su corrección, incluidos los errores de las propias revisiones ([matriz](docs/auditoria/matriz-hallazgos.md)).
@@ -216,7 +216,7 @@ Este proyecto se encuentra en **piloto con datos sintéticos** y se distribuye p
 
 ### Cómo citar
 
-Arias Lombardero, J. A. (2026). *Auditor IA · Sector Público* (versión 2.2.0) [software]. https://github.com/ariaslombardero/Auditor-IA/releases/tag/v2.2.0
+Arias Lombardero, J. A. (2026). *Auditor IA · Sector Público* (versión 2.2.1) [software]. https://github.com/ariaslombardero/Auditor-IA/releases/tag/v2.2.1
 
 Cite siempre la versión etiquetada: las cifras de pruebas, hallazgos y casos de la documentación corresponden a esa versión.
 

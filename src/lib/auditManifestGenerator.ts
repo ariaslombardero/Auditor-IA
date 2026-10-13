@@ -3,6 +3,7 @@ import type { FullAuditState, AppIdioma, RequirementAssessment, DiagnosticResult
 import { generateOfficialDossierMarkdown } from './officialDossierMd';
 import { unaccreditedRequirements } from './assessmentModel';
 import { effectiveDiagnostic } from './validations';
+import { applicableAnswers } from './interviewCatalog';
 import { computeExecutiveVerdict } from './dashboardPillars';
 import { buildAepdCriteria, buildEipdCriteria, eipdScreening } from './eipdCriteria';
 import { buildDocumentTraceability, ENGINE_VERSION, NORMATIVE_SNAPSHOT, type DocumentTraceability } from './traceability';
@@ -121,7 +122,9 @@ export function buildAuditManifest(
   idioma: AppIdioma = 'castellano',
   traceability?: DocumentTraceability
 ): AuditManifestRecord {
-  const { ingest, answers, metadata } = state;
+  const { ingest, metadata } = state;
+  // Solo las respuestas de preguntas que aplican al caso (DOC-17)
+  const answers = applicableAnswers(state.answers);
   const diagnostic = effectiveDiagnostic(state);
   const safeName = ingest.appName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
   const dateStr = metadata.auditDate || new Date().toLocaleDateString('es-ES');

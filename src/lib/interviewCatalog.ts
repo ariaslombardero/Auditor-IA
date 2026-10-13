@@ -308,6 +308,21 @@ function sinContestar(a: LegalEnrichmentAnswers, q: InterviewQuestion): boolean 
 }
 
 /** Preguntas visibles sin contestar, en el orden de la entrevista. */
+/**
+ * Respuestas que se tienen en cuenta: las de las preguntas que la entrevista oculta (porque no
+ * aplican al caso) se tratan como no contestadas, para que una respuesta antigua no alimente
+ * textos ni conclusiones (DOC-17). La visibilidad se calcula sobre las respuestas originales.
+ */
+export function applicableAnswers(a: LegalEnrichmentAnswers): LegalEnrichmentAnswers {
+  let out = a;
+  for (const q of INTERVIEW_QUESTIONS) {
+    if (q.visible(a)) continue;
+    const neutro = q.tipo === 'texto' ? '' : (q.valorDesconocido ?? 'desconocido');
+    if (getAnswerValue(out, q.id) !== neutro) out = setAnswerValue(out, q.id, neutro);
+  }
+  return out;
+}
+
 export function pendingQuestions(a: LegalEnrichmentAnswers): InterviewQuestion[] {
   return INTERVIEW_QUESTIONS.filter((q) => q.visible(a) && sinContestar(a, q));
 }

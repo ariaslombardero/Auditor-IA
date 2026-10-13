@@ -2,8 +2,10 @@ import type { FullAuditState, AppIdioma, RequirementAssessment } from '../types'
 import { applicabilityLabel, obligations, originLabel, prohibitedPractices, requirementsByPillar, resultLabel } from './assessmentModel';
 import { computeExecutivePillars, computeExecutiveVerdict } from './dashboardPillars';
 import { effectiveDiagnostic } from './validations';
+import { applicableAnswers } from './interviewCatalog';
 import { describirAsistencia } from './proveedorEfectivo';
 import { answerProvenanceRows, PROVENANCE_NOTE } from './answerProvenance';
+import { art41Deslinde } from './art41Texto';
 import { ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 /** Escapa los separadores de tabla para que un texto no rompa la tabla Markdown. */
@@ -29,7 +31,9 @@ export function generateOfficialDossierMarkdown(
   _idioma: AppIdioma = 'castellano',
   traceability?: DocumentTraceability
 ): string {
-  const { ingest, answers, metadata } = state;
+  const { ingest, metadata } = state;
+  // Solo las respuestas de preguntas que aplican al caso (DOC-17)
+  const answers = applicableAnswers(state.answers);
   const diagnostic = effectiveDiagnostic(state);
   const dateStr = metadata.auditDate || new Date().toLocaleDateString('es-ES');
   const isGl = _idioma === 'galego';
@@ -65,7 +69,7 @@ export function generateOfficialDossierMarkdown(
 
 - **Clasificación RIA (preliminar, según lo declarado):** **${diagnostic?.riskLabel || '—'}**
 ${diagnostic?.isArticle63Derogation ? '- **Régimen declarado:** **Excepción del Art. 6.3 RIA, pendiente de documentar (Art. 6.4) y registrar (Art. 49.2)**\n' : ''}- **Categoría ENS orientativa (RD 311/2022):** **${diagnostic?.ensCategory || '—'}**
-- **Régimen de operación declarado (Ley 40/2015):** **${diagnostic?.isAutomatedAdministrativeAct ? 'Actuación administrativa automatizada (Art. 41)' : 'Apoyo técnico con intervención directa de un empleado público'}**
+- **Régimen de operación declarado (Ley 40/2015):** **${answers.producesAdministrativeActs === 'no' ? 'No produce actos ni actuaciones administrativas (declarado)' : diagnostic?.isAutomatedAdministrativeAct ? 'Actuación administrativa automatizada (Art. 41)' : answers.directHumanIntervention === 'si' ? 'Apoyo técnico con intervención directa de un empleado público' : 'No consta si interviene un empleado público'}**
 
 ### Cuadro de mando (4 pilares)
 
@@ -196,9 +200,7 @@ ${(diagnostic?.classificationTrace || [])
 - **Rol del supervisor (declarado):** ${answers.supervisionRole || 'No indicado'}
 - **Deslinde con la actuación administrativa automatizada (Ley 40/2015, Art. 41):**
   ${
-    diagnostic?.isAutomatedAdministrativeAct
-      ? 'Se ha declarado que el sistema realiza actuaciones administrativas automatizadas, es decir, sin intervención directa de un empleado público. Antes de su puesta en servicio deben establecerse los órganos competentes para la definición de especificaciones, programación, mantenimiento, supervisión, control de calidad y auditoría, y el órgano responsable a efectos de impugnación (Art. 41.2).'
-      : 'El promotor declara que un empleado público interviene de forma directa en cada actuación, por lo que no habría actuación administrativa automatizada. Esta afirmación no se ha verificado y debe contrastarse con el funcionamiento real del procedimiento.'
+    art41Deslinde(answers, diagnostic)
   }
 - **Responsabilidad patrimonial:**
   Los particulares exigen directamente a la Administración Pública correspondiente la indemnización de las lesiones causadas por el funcionamiento de los servicios públicos, también cuando intervenga este sistema (Arts. 32.1 y 36.1 de la Ley 40/2015). La Administración solo puede exigir responsabilidad a sus autoridades y personal cuando haya concurrido dolo, o culpa o negligencia graves (Art. 36.2).

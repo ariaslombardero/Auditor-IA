@@ -13,7 +13,7 @@
 - Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)
 
 > **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**
-> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
+> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.1) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
 
 ---
 
@@ -229,7 +229,7 @@ Declarado que no se tratan datos personales.
 ### Actuación administrativa automatizada — **No aplica**
 *Ley 40/2015 · Art. 41 · Declaración del promotor*
 
-Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El personal técnico revisa cada ficha antes de usarla; la aplicación no tramita ni resuelve.. No se ha verificado.
+Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El personal técnico revisa cada ficha antes de usarla; la aplicación no tramita ni resuelve. No se ha verificado.
 
 **Acción:** Describir el procedimiento real: quién interviene, en qué momento y con qué capacidad de decisión.
 
@@ -245,10 +245,10 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 - **Norma competencial declarada:** *No indicada*. La base jurídica del tratamiento (Art. 6.1 RGPD) debe verificarla el DPD.
 - **Tratamiento de datos personales (declarado):** no.
 - **Actividad del Registro de Actividades de Tratamiento (declarada):** *No indicada*.
-- **Categorías especiales de datos (Art. 9 RGPD):** declarado que NO se tratan.
-- **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** declarado que NO se tratan.
-- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** declarado que SÍ existe. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
-- **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** declarado que NO se tratan.
+- **Categorías especiales de datos (Art. 9 RGPD):** no consta.
+- **Datos relativos a condenas e infracciones penales (Art. 10 RGPD):** no consta.
+- **Procedimiento de gestión y notificación de brechas de datos personales (Arts. 33 y 34 RGPD):** no consta. Herramientas de la AEPD: Asesora Brecha y Comunica-Brecha RGPD.
+- **Datos de solvencia patrimonial y de crédito de personas físicas (lista de la AEPD, criterio 4):** no consta.
 
 
 
@@ -258,9 +258,9 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
-- **Versión del motor:** 2.2.0
+- **Versión del motor:** 2.2.1
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 32fc18b517a8d79864c0cd2e6a1809d42bd387c0a0aca63ad74881377d07ff99 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-13T06:20:22.810Z
+- **Fecha de generación:** 2026-10-13T14:42:43.186Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

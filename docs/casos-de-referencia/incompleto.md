@@ -13,7 +13,7 @@
 - Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)
 
 > **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**
-> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
+> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.1) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
 
 ---
 
@@ -21,7 +21,7 @@
 
 - **Clasificación RIA (preliminar, según lo declarado):** **REQUIERE REVISIÓN (clasificación no concluyente)**
 - **Categoría ENS orientativa (RD 311/2022):** **BASICA**
-- **Régimen de operación declarado (Ley 40/2015):** **Apoyo técnico con intervención directa de un empleado público**
+- **Régimen de operación declarado (Ley 40/2015):** **No consta si interviene un empleado público**
 
 ### Cuadro de mando (4 pilares)
 
@@ -104,7 +104,7 @@ Diagnóstico preliminar para "Caso sintético": la clasificación no es concluye
 - **Supervisión humana (declarada):** sin intervención humana; puede quedar sujeta a la prohibición del Art. 22 RGPD y exige los requisitos del Art. 41 de la Ley 40/2015.
 - **Rol del supervisor (declarado):** No indicado
 - **Deslinde con la actuación administrativa automatizada (Ley 40/2015, Art. 41):**
-  El promotor declara que un empleado público interviene de forma directa en cada actuación, por lo que no habría actuación administrativa automatizada. Esta afirmación no se ha verificado y debe contrastarse con el funcionamiento real del procedimiento.
+  No consta si el sistema produce actuaciones administrativas ni si un empleado público interviene de forma directa en cada una: debe aclararse antes de descartar una actuación administrativa automatizada (Art. 41).
 - **Responsabilidad patrimonial:**
   Los particulares exigen directamente a la Administración Pública correspondiente la indemnización de las lesiones causadas por el funcionamiento de los servicios públicos, también cuando intervenga este sistema (Arts. 32.1 y 36.1 de la Ley 40/2015). La Administración solo puede exigir responsabilidad a sus autoridades y personal cuando haya concurrido dolo, o culpa o negligencia graves (Art. 36.2).
 - **No discriminación algorítmica (Ley 15/2022, Art. 23):**
@@ -251,9 +251,9 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
-- **Versión del motor:** 2.2.0
+- **Versión del motor:** 2.2.1
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 133cc4314a28a7bb040d0232d27155e4300dd43e608d10992f8b65303daf6b56 (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-13T06:20:22.800Z
+- **Fecha de generación:** 2026-10-13T14:42:43.174Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

@@ -13,7 +13,7 @@
 - Reglamento General de Protección de Datos (RGPD UE 2016/679) y Ley Orgánica 3/2018 (LOPDGDD)
 
 > **⚖️ CLÁUSULA DE SALVAGUARDA Y CALIFICACIÓN PRELIMINAR:**
-> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.0) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
+> *El presente informe técnico ha sido generado mediante una herramienta automatizada de diagnóstico (motor v2.2.1) a partir de lo declarado por el promotor. No es un acto administrativo ni acredita el cumplimiento: la calificación definitiva y la asunción de riesgos corresponden al órgano competente, con la revisión expresa del DPD y del Responsable de Seguridad.*
 
 ---
 
@@ -28,14 +28,14 @@
 | Pilar | Fundamento | Estado / Nivel | Estado de acreditación |
 | :--- | :--- | :--- | :--- |
 | **I. RIA (UE 2024/1689)** | Arts. 3.1, 5, 6 y 50 RIA | RIESGO INADMISIBLE (Práctica Prohibida - Art. 5 RIA) | 11 requisitos por validar |
-| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 3 requisitos por validar |
+| **II. Privacidad y RGPD** | RGPD Arts. 6.1, 9, 10 y 30 / LOPDGDD | Pendiente de verificación del DPD | 4 requisitos por validar |
 | **III. Ciberseguridad ENS** | RD 311/2022, Anexo II | Categoría ENS BÁSICA (orientativa) | 3 requisitos por validar |
 | **IV. Gobernanza pública** | Ley 40/2015 Art. 41 / Ley 15/2022 Art. 23 | Apoyo técnico declarado | 3 requisitos por validar |
 
 
 
 ### Conclusión preliminar
-Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como RIESGO INADMISIBLE (Práctica Prohibida - Art. 5 RIA). Quedan 20 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
+Diagnóstico preliminar para "Caso sintético": según lo declarado, el sistema se clasifica como RIESGO INADMISIBLE (Práctica Prohibida - Art. 5 RIA). Quedan 21 requisitos por validar (los acredita una persona con evidencia). Categoría ENS: BASICA. Las conclusiones se basan en la entrevista y en la documentación aportada; requieren la validación del órgano competente, del Responsable de Seguridad y del Delegado de Protección de Datos.
 
 **BLOQUEADO — PRÁCTICA PROHIBIDA DECLARADA.** Se ha declarado una práctica del Art. 5 del RIA. Requiere revisión jurídica antes de cualquier otra actuación.
 
@@ -183,10 +183,10 @@ Declarada la actividad de tratamiento «Apoyo a la gestión documental». Indica
 
 **Acción:** El DPD debe verificar la inscripción en el RAT.
 
-### Evaluación de impacto en la protección de datos — **No aplica**
+### Evaluación de impacto en la protección de datos — **PENDIENTE**
 *RGPD (UE 2016/679) · Art. 35; lista de la AEPD (Art. 35.4) · Comprobación automática*
 
-Cribado preliminar: según lo declarado no concurren dos o más criterios.
+Cribado preliminar: hay criterios sin contestar que podrían alcanzar el umbral de dos.
 
 **Acción:** Completar el borrador de EIPD con el asesoramiento del DPD.
 
@@ -200,7 +200,7 @@ Declarado que existe un procedimiento para detectar, documentar y notificar brec
 ### Actuación administrativa automatizada — **No aplica**
 *Ley 40/2015 · Art. 41 · Declaración del promotor*
 
-Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El técnico revisa y corrige cada borrador antes de incorporarlo al expediente.. No se ha verificado.
+Declarado que un empleado público interviene de forma directa. Funcionamiento descrito: El técnico revisa y corrige cada borrador antes de incorporarlo al expediente. No se ha verificado.
 
 **Acción:** Describir el procedimiento real: quién interviene, en qué momento y con qué capacidad de decisión.
 
@@ -229,9 +229,9 @@ Las administraciones públicas favorecerán mecanismos de minimización de sesgo
 
 Los preceptos citados proceden de la base de conocimiento de la herramienta (Registro de fuentes de 05/10/2026: RIA (Reglamento (UE) 2024/1689) y Reglamento (UE) 2026/1744; Ley 40/2015; Ley 15/2022; RD 729/2023; ENS (RD 311/2022)). No se ha verificado su vigencia en el momento de emitir este documento: debe comprobarse en el BOE y en EUR-Lex antes de cualquier uso.
 
-- **Versión del motor:** 2.2.0
+- **Versión del motor:** 2.2.1
 - **Huella SHA-256 de las entradas (ingesta y entrevista):** 1668a417224b277f58a66023bf794cd4f9ead5a00d8e34cf03c9f2108ff4a91b (permite comprobar que dos documentos parten de las mismas entradas; no acredita la integridad del documento)
-- **Fecha de generación:** 2026-10-13T06:20:22.775Z
+- **Fecha de generación:** 2026-10-13T14:42:43.147Z
 - **Asistencia de IA:** No se usó ningún modelo de IA: el diagnóstico procede solo del motor determinista.
 
 ### Origen de las respuestas

@@ -1,6 +1,6 @@
 # Guía de uso · Auditor IA · Sector Público
 
-> Versión para la herramienta con motor v2.2.0 y entrevista asistida (octubre de 2026). Escrita para personas sin formación técnica.
+> Versión para la herramienta con motor v2.2.1 y entrevista asistida (octubre de 2026). Escrita para personas sin formación técnica.
 
 ## 1. Qué es, en un minuto
 

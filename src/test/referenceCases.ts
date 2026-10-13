@@ -229,7 +229,14 @@ export const REFERENCE_CASES: ReferenceCase[] = [
     state: () =>
       makeState(
         'Calculadora de plazos administrativos de la Ley 9/2017 con el calendario de festivos de Lugo y Galicia.',
-        answeredAnswers({ ...OPERACION_CONFIRMADA, infersOutputs: 'no', processesPersonalData: 'no', ratActivityName: '' }),
+        answeredAnswers({
+          ...OPERACION_CONFIRMADA,
+          infersOutputs: 'no',
+          supervisionRole: 'Personal de los órganos de contratación',
+          procedureDescription: 'El personal de contratación calcula cada plazo con la herramienta y lo comprueba antes de usarlo; la aplicación no tramita ni resuelve.',
+          processesPersonalData: 'no',
+          ratActivityName: '',
+        }),
         { appName: 'Calculadora de plazos LCSP – Lugo', ...casoReal('calculadora-lcsp'), isAiSystem: false, targetAudience: 'public_employees' }
       ),
     esperado: { clasificacion: 'not_ai_system', eipd: 'no_indicada' },

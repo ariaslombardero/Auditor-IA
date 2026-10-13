@@ -12,7 +12,7 @@ import {
   evaluateTransparency,
 } from './evaluators';
 import { buildObligations, evaluateEns } from './obligations';
-import { pendingQuestions } from '../interviewCatalog';
+import { applicableAnswers, pendingQuestions } from '../interviewCatalog';
 
 export interface EngineOptions {
   /** Fecha de referencia (AAAA-MM-DD) para valorar la exigibilidad. Por defecto, hoy. */
@@ -37,7 +37,8 @@ export function evaluateRulesDeterministically(
   rawAnswers: LegalEnrichmentAnswers,
   options: EngineOptions = {}
 ): DiagnosticResult {
-  const answers = normalizeAnswers(rawAnswers);
+  // Las respuestas de preguntas ocultas no cuentan (DOC-17)
+  const answers = applicableAnswers(normalizeAnswers(rawAnswers));
   const today = options.today || referenceDate();
   const fecha = new Date().toISOString();
   const trace: ClassificationStep[] = [];

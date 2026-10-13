@@ -3,7 +3,8 @@ import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { appliesCodeKit, appliesEipd, appliesModelTests } from '../stepAvailability';
 import { bulkAcceptable, classifySuggestion } from '../interviewSuggestions';
-import { questionById } from '../interviewCatalog';
+import { applicableAnswers, questionById } from '../interviewCatalog';
+import { generateOfficialDossierMarkdown } from '../officialDossierMd';
 import { buildAepdCriteria, buildEipdCriteria } from '../eipdCriteria';
 import { answeredAnswers, makeAnswers, makeIngest, makeState } from '../../test/fixtures';
 import { REFERENCE_CASES } from '../../test/referenceCases';
@@ -138,5 +139,33 @@ describe('La interfaz no promete lo que no hace (DOC-16)', () => {
   ])('ningún texto de la aplicación contiene %s', (_, patron) => {
     const encontrados = fuentes.filter((f) => patron.test(readFileSync(f, 'utf8')));
     expect(encontrados).toEqual([]);
+  });
+});
+
+describe('Los informes no se contradicen (DOC-17)', () => {
+  it.each(REFERENCE_CASES.map((c) => [c.id, c] as const))('caso %s', (_, caso) => {
+    const state = caso.state();
+    const d = state.diagnostic!;
+    const md = generateOfficialDossierMarkdown(state, undefined, 'castellano');
+    // Un requisito que no aplica no puede apoyarse en respuestas de preguntas ocultas
+    for (const r of d.requirements.filter((x) => x.aplicabilidad === 'no_aplica')) {
+      expect(r.hechos, r.id).not.toMatch(/^Declarado: el sistema interactúa con personas o genera contenido/);
+    }
+    // El resumen del régimen de la Ley 40/2015 coincide con el requisito del Art. 41
+    const art41 = d.requirements.find((r) => r.id === 'LEY-40-2015-ART-41')!;
+    const regimen = md.match(/Régimen de operación declarado \(Ley 40\/2015\):\*\* \*\*([^*]+)\*\*/)?.[1] ?? '';
+    if (/no produce ni prepara/.test(art41.hechos)) expect(regimen).toMatch(/No produce actos/);
+    if (regimen.includes('intervención directa')) expect(state.answers.directHumanIntervention).toBe('si');
+    // El párrafo del Art. 41 no afirma una intervención humana que no se ha declarado
+    if (applicableAnswers(state.answers).directHumanIntervention !== 'si') expect(md).not.toMatch(/El promotor declara que un empleado público interviene/);
+    // Sin puntos dobles al encadenar textos
+    for (const r of d.requirements) expect(r.hechos, r.id).not.toMatch(/[^.]\.\.(?!\.)/);
+  });
+
+  it('las respuestas de preguntas ocultas no cuentan (se tratan como no contestadas)', () => {
+    const a = applicableAnswers(answeredAnswers({ infersOutputs: 'no', interactsWithPersons: 'si', producesAdministrativeActs: 'no', directHumanIntervention: 'no' }));
+    expect(a.interactsWithPersons).toBe('desconocido');
+    expect(a.directHumanIntervention).toBe('desconocido');
+    expect(a.infersOutputs).toBe('no');
   });
 });

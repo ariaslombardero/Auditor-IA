@@ -22,8 +22,10 @@ import type { FullAuditState, AppIdioma, RequirementAssessment, RequirementResul
 import { obligations, prohibitedPractices, requirementsByPillar, resultLabel, originLabel, applicabilityLabel } from './assessmentModel';
 import { computeExecutivePillars, computeExecutiveVerdict, type PillarStatus } from './dashboardPillars';
 import { effectiveDiagnostic } from './validations';
+import { applicableAnswers } from './interviewCatalog';
 import { describirAsistencia } from './proveedorEfectivo';
 import { answerProvenanceRows, PROVENANCE_NOTE } from './answerProvenance';
+import { art41Deslinde } from './art41Texto';
 import { buildDocumentTraceability, ENGINE_VERSION, NORMATIVE_SNAPSHOT, TRACEABILITY_NOT_COMPUTED, type DocumentTraceability } from './traceability';
 
 const FONT_BODY = 'Calibri';
@@ -54,7 +56,9 @@ export function buildOfficialDossierDocument(
   idioma: AppIdioma = 'castellano',
   traceability?: DocumentTraceability
 ): Document {
-  const { ingest, answers, metadata } = state;
+  const { ingest, metadata } = state;
+  // Solo las respuestas de preguntas que aplican al caso (DOC-17)
+  const answers = applicableAnswers(state.answers);
   const diagnostic = effectiveDiagnostic(state);
   const isGl = idioma === 'galego';
   const requirements = diagnostic?.requirements || [];
@@ -574,9 +578,7 @@ export function buildOfficialDossierDocument(
           new Paragraph({
             children: [
               new TextRun({
-                text: diagnostic?.isAutomatedAdministrativeAct
-                  ? 'Deslinde con el Artículo 41 de la Ley 40/2015: se ha declarado que el sistema realiza actuaciones administrativas automatizadas, es decir, sin intervención directa de un empleado público. Antes de su puesta en servicio deben establecerse los órganos competentes para la definición de especificaciones, programación, mantenimiento, supervisión, control de calidad y auditoría, y el órgano responsable a efectos de impugnación (Art. 41.2).'
-                  : 'Deslinde con el Artículo 41 de la Ley 40/2015: el promotor declara que un empleado público interviene de forma directa en cada actuación, por lo que no habría actuación administrativa automatizada. Esta afirmación no se ha verificado y debe contrastarse con el funcionamiento real del procedimiento.',
+                text: `Deslinde con el Artículo 41 de la Ley 40/2015: ${art41Deslinde(answers, diagnostic)}`,
               }),
             ],
             spacing: { after: 200 },

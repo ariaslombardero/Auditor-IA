@@ -260,16 +260,20 @@ export function buildObligations(ctx: ObligationsContext): RequirementAssessment
     resultado: ctx.appliesArt50 === 'si' ? 'pendiente' : ctx.appliesArt50 === 'no' ? 'no_evaluado' : 'pendiente',
     origen: 'declaracion_promotor',
     hechos:
-      ctx.appliesArt50 === 'si'
+      ctx.isAi === 'no'
+        ? 'Declarado que el sistema no es un sistema de IA (Art. 3.1 RIA): el Art. 50 no se aplica.'
+        : ctx.appliesArt50 === 'si'
         ? withDate('Declarado: el sistema interactúa con personas o genera contenido. La herramienta no comprueba que la información de transparencia esté implantada.', art50Date)
         : ctx.appliesArt50 === 'no'
           ? 'Declarado: no interactúa con personas ni genera contenido sintético.'
           : 'No consta si el sistema interactúa con personas o genera contenido sintético.',
     accionRequerida:
-      ctx.appliesArt50 === 'no'
+      ctx.isAi === 'no'
+        ? 'Revisar la declaración si el sistema llega a usar inteligencia artificial.'
+        : ctx.appliesArt50 === 'no'
         ? 'Revisar la declaración si el sistema llega a interactuar con personas o a generar contenido.'
         : art50Actions.join(' '),
-    exigibleDesde: ctx.appliesArt50 === 'no' ? undefined : art50Date,
+    exigibleDesde: ctx.isAi === 'no' || ctx.appliesArt50 === 'no' ? undefined : art50Date,
     fecha,
   });
 
@@ -474,7 +478,8 @@ export function buildObligations(ctx: ObligationsContext): RequirementAssessment
 
   // Ley 40/2015: actuación administrativa automatizada
   const direct = a.directHumanIntervention;
-  const procedure = a.procedureDescription.trim();
+  // Sin punto final: el texto se encadena en una frase que ya termina en punto
+  const procedure = a.procedureDescription.trim().replace(/\.+$/, '');
   if (a.producesAdministrativeActs === 'no') {
     reqs.push({
       id: 'LEY-40-2015-ART-41',
